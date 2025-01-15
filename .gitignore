@@ -1,0 +1,6 @@
+.vscode/
+build/
+src/*.gch
+src/*.out
+src/NodeJS/node_modules/
+src/NodeJS/config

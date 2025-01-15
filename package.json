@@ -1,0 +1,23 @@
+{
+  "name": "notflix-v3.0",
+  "version": "1.0.0",
+  "description": "Notflix is a movie recommendation app.\r The app currently supports 5 commands:",
+  "homepage": "https://github.com/Tal-Gordon/Notflix-v3.0#readme",
+  "bugs": {
+    "url": "https://github.com/Tal-Gordon/Notflix-v3.0/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tal-Gordon/Notflix-v3.0.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

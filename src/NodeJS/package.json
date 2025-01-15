@@ -1,0 +1,20 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "SET NODE_ENV=local && node app.js",
+    "dock": "NODE_ENV=local && npm i && node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "custom-env": "^2.0.6",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.4"
+  },
+  "type": "commonjs"
+}

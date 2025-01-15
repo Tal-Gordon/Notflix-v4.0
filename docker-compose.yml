@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  cpp-server:
+    build: .
+    container_name: cpp-app
+    networks:
+      - notflix-network
+    ports:
+      - "12345:12345" # Expose the C++ server port
+    volumes:
+      - ./src:/Notflix/src
+      - ./tests:/Notflix/tests
+    restart: always
+
+  node-app:
+    build: ./src/nodejs
+    container_name: node-app
+    depends_on:
+      - mongo
+      - cpp-server # Ensure the C++ server starts first
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=local
+      - CONNECTION_STRING=mongodb://mongo:27017/Notflix
+      - CPP_SERVER=cpp-app:12345
+      - PORT=3000
+    networks:
+      - notflix-network
+    volumes:
+      - ./src/nodejs:/app
+    restart: always
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - notflix-network
+
+networks:
+  notflix-network: # Shared network for all services
+    driver: bridge
+
+volumes:
+  mongo-data:
