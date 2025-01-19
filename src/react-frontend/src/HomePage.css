@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.error-message {
+  color: red;
+  background-color: #ffe6e6;
+  border: 1px solid #cc0000;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  display: inline-block;
+}
