@@ -39,30 +39,34 @@ function HomePage() {
   }, [errorMessage]); 
 
   return (
-    <div>
+    <div className="auth-container">
       {isAuthenticated ? (
-        <h1>Welcome, User!</h1>
+        <h1 className="welcome-message">Welcome, User!</h1>
       ) : (
-        <div>
-          <h1>Please Login</h1>
-          <input 
-            type="text" 
-            placeholder="Username" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
+        <div className="login-form">
+          <h1 className="login-title">Welcome back. <br/>You have been missed.</h1>
+          <input
+            type="text"
+            className="login-input"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+          <input
+            type="password"
+            className="login-input"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-          <button onClick={handleLogin}>Login</button><br></br>
+          <button className="login-button" onClick={handleLogin}>
+            Login
+          </button>
           {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
       )}
     </div>
-  );
+  );  
 }
 
 export default HomePage;
