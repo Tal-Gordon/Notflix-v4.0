@@ -1,8 +1,8 @@
-import './Login.css';
+import './login.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login({ setIsAuthenticated }) {
+function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -19,8 +19,7 @@ function Login({ setIsAuthenticated }) {
             const authResponse = await fetch('/tokens', authRequestOptions);
             if (authResponse.ok) {
                 // Mark user as authenticated and navigate to the authenticated home
-                setIsAuthenticated(true);
-                navigate('/');
+                navigate('/browse');
             } else {
                 const errorText = await authResponse.text();
                 const errorObject = JSON.parse(errorText);

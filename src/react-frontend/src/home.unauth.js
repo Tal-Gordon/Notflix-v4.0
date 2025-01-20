@@ -1,5 +1,6 @@
 import './home.unauth.css';
 import Login from './Login';
+import HomeAuth from './home.auth';
 import { BrowserRouter, Routes, Route, Link } from "react-router";
 
 function HomeUnauth() {
@@ -7,6 +8,7 @@ function HomeUnauth() {
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/browse" element={<HomeAuth />} /> 
             </Routes>
             <body>
                 <nav className="navbar">

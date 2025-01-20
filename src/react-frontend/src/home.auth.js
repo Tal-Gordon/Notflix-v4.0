@@ -1,5 +1,5 @@
 import './home.auth.css';
-import { BrowserRouter, Routes, Route, Link } from "react-router";
+import { Link } from "react-router";
 
 // Placeholder for components like Profile, Browse, etc.
 function PlaceholderComponent({ text }) {
@@ -8,12 +8,7 @@ function PlaceholderComponent({ text }) {
 
 function HomeAuth() {
     return (
-        <BrowserRouter>
-            <Routes>
-                {/* Placeholder for actual authenticated routes */}
-                <Route path="/profile" element={<PlaceholderComponent text="Profile Page Placeholder" />} />
-                <Route path="/browse" element={<PlaceholderComponent text="Browse Page Placeholder" />} />
-            </Routes>
+
             <body>
                 <nav className="navbar">
                     <ul className="nav-list">
@@ -39,7 +34,6 @@ function HomeAuth() {
                     </div>
                 </div>
             </body>
-        </BrowserRouter>
     );
 }
 
