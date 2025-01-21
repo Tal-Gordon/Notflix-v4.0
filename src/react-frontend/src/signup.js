@@ -55,7 +55,6 @@ function Signup() {
 
         try {
             const postResponse = await fetch('/users', fetchOptions);
-            console.log(await postResponse.text());
             if (postResponse.ok) {
                 // User is created
                 navigate("/browse")
