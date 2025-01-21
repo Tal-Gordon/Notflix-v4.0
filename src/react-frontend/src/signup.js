@@ -21,37 +21,52 @@ function Signup() {
             return; // Prevent form submission if validation fails
         }
 
-        const postUser = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-        };
-        const requestBody = { username, password };
-
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
         if (name) {
-            requestBody.name = name;
+            formData.append('name', name);
         }
         if (surname) {
-            requestBody.surname = surname;
+            formData.append('surname', surname);
         }
         if (picture) {
-            requestBody.picture = picture;
+            formData.append('picture', picture);
         }
 
-        postUser.body = JSON.stringify(requestBody);
         try {
-            const postResponse = await fetch('/users', postUser);
+            const postResponse = await fetch('/users', {
+                method: 'POST',
+                body: formData,
+            });
             if (postResponse.ok) {
                 // User is created
                 navigate("/browse")
             } else {
-            // User is not authenticated
-                const errorText = await postResponse.text(); // Get error message from server
-                const errorObject = JSON.parse(errorText);
-                const serverErrorMessage = errorObject.message || errorObject.error || errorObject.description || errorMessage; 
-                if (serverErrorMessage === "A user with this username already exists.") /* TODO: make it not hardcoded */ {
-                    setUsernameError(serverErrorMessage);
-                } else {
-                    setErrorMessage(serverErrorMessage);
+                // User is not created
+                const errorObject = JSON.parse(await postResponse.text());
+                try {
+                    let serverErrorMessage = "An unknown error occurred."; // Default message
+
+                    // TODO: fix this atrocity, ain't no way we leave it as is
+                    if (errorObject && errorObject.errors && errorObject.errors.length > 0) {
+                        // Access the first error in the errors array
+                        const firstError = errorObject.errors[0];
+                        serverErrorMessage = firstError.details || firstError.error || serverErrorMessage;
+                    } else if (errorObject && (errorObject.message || errorObject.error || errorObject.description || errorObject.details)) {
+                        // Handle cases where the error is not in an 'errors' array
+                        serverErrorMessage = errorObject.message || errorObject.error || errorObject.description || errorObject.details || serverErrorMessage;
+                    }
+                
+                    if (serverErrorMessage === "A user with this username already exists.") {
+                        setUsernameError(serverErrorMessage);
+                    } else {
+                        setErrorMessage(serverErrorMessage);
+                    }
+                } catch (parseError) {
+                    console.error("Error parsing JSON:", parseError);
+                    console.error("Raw error text:", errorObject)
+                    setErrorMessage("An error occurred while processing the server response.");
                 }
             }
         } catch(error) {
@@ -61,7 +76,9 @@ function Signup() {
 
     function validateForm() {
         let isValid = true;
+        setUsernameError('');
         setPasswordError('');
+        setErrorMessage('');
     
         if (password.length < 8) {
             setPasswordError('Password must be at least 8 characters');
