@@ -2,14 +2,13 @@ import './signup.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-function Signup(event) {
-    event.preventDefault();
+function Signup() {
     let navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [picture, setPicture] = useState('');
+    const [picture, setPicture] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleSignup = async () => {
@@ -25,9 +24,9 @@ function Signup(event) {
     if (surname) {
         requestBody.surname = surname;
     }
-    if (picture) {
-        requestBody.picture = picture;
-    }
+    // if (picture) {
+    //     requestBody.picture = picture;
+    // }
 
     postUser.body = JSON.stringify(requestBody);
     try {
@@ -49,7 +48,7 @@ function Signup(event) {
 
 const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-        handleSignup(event);
+        handleSignup();
     }
 };
 
@@ -89,6 +88,31 @@ return (
                 value={surname}
                 onChange={(e) => setSurname(e.target.value)}
             />
+            <input
+                type="file"
+                name="myImage"
+                onChange={(event) => {
+                    const file = event.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        setPicture(file);
+                    } else {
+                        alert("Please upload an image file.");
+                    }
+                }}
+            />
+            {picture && (
+                <div>
+                {/* Display the selected image */}
+                <img
+                    alt="not found"
+                    width={"250px"}
+                    src={URL.createObjectURL(picture)}
+                />
+                <br /> <br />
+                {/* Button to remove the selected image */}
+                <button onClick={() => setPicture(null)}>Remove</button>
+                </div>
+            )}
             {/* TODO: picture */}
             <button className="signup-button" onClick={handleSignup}>
                 Sign Up

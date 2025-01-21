@@ -16,8 +16,8 @@ root.render(
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 {/* <Route path="/browse" element={<HomeAuth />} /> */}
+			    <Route path="/" element={<HomeUnauth />} />
             </Routes>
-			<HomeUnauth />
 		</BrowserRouter>
 	</React.StrictMode>
 );

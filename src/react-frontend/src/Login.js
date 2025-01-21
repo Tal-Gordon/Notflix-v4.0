@@ -8,8 +8,7 @@ function Login() {
 	const [password, setPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 
-	const handleLogin = async (event) => {
-        event.preventDefault();
+	const handleLogin = async () => {
         const authRequestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -34,7 +33,7 @@ function Login() {
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-            handleLogin(event);
+            handleLogin();
         }
     };
 
