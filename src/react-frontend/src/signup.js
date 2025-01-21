@@ -21,24 +21,41 @@ function Signup() {
             return; // Prevent form submission if validation fails
         }
 
-        const formData = new FormData();
-        formData.append('username', username);
-        formData.append('password', password);
-        if (name) {
-            formData.append('name', name);
-        }
-        if (surname) {
-            formData.append('surname', surname);
-        }
+        let base64Picture = null;
         if (picture) {
-            formData.append('picture', picture);
+            try {
+                base64Picture = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(picture); // Reads as Base64
+                    reader.onload = () => resolve(reader.result.split(',')[1]); // Extract Base64 data
+                    reader.onerror = (error) => reject(error);
+                });
+            } catch (error) {
+                console.error("Error converting image to Base64:", error);
+                setErrorMessage("Error processing image.");
+                return; // Stop signup if image conversion fails
+            }
         }
+        
+        const userData = {
+            username: username,
+            password: password,
+            name: name || null,
+            surname: surname || null,
+            picture: base64Picture,
+        };
+        
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        };
 
         try {
-            const postResponse = await fetch('/users', {
-                method: 'POST',
-                body: formData,
-            });
+            const postResponse = await fetch('/users', fetchOptions);
+            console.log(await postResponse.text());
             if (postResponse.ok) {
                 // User is created
                 navigate("/browse")
@@ -83,6 +100,7 @@ function Signup() {
         if (password.length < 8) {
             setPasswordError('Password must be at least 8 characters');
             isValid = false;
+            return isValid;
         }
     
         // I loooooove regex :')
@@ -122,7 +140,7 @@ function Signup() {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={handleKeyDown}    
+                        onKeyDown={handleKeyDown}
                         required
                     />
                     {passwordError && <div className="error-message">{passwordError}</div>}
