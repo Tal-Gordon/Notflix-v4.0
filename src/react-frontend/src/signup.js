@@ -23,13 +23,13 @@ function Signup() {
 
         const formData = new FormData();
         
-        formData.append(username);
-        formData.append(password);
+        formData.append("username", username);
+        formData.append("password", password);
         if (name) {
-            formData.append(name);
+            formData.append("name", name);
         }
         if (surname) {
-            formData.append(surname);
+            formData.append("surname", surname);
         }
         
         const imageFile = picture.files[0];
