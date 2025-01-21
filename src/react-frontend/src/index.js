@@ -13,10 +13,10 @@ root.render(
 	<React.StrictMode>
 		<BrowserRouter>
             <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                {/* <Route path="/browse" element={<HomeAuth />} /> */}
-			    <Route path="/" element={<HomeUnauth />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  {/* <Route path="/browse" element={<HomeAuth />} /> */}
+                  <Route path="/" element={<HomeUnauth />} />
             </Routes>
 		</BrowserRouter>
 	</React.StrictMode>

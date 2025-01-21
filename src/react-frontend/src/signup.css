@@ -61,3 +61,16 @@
     text-align: center;
     display: block;
 }
+
+.tooltip {
+    position: absolute;
+    bottom: -30px; /* Adjust as needed */
+    left: 0;
+    background-color: #333; /* Example background color */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: small;
+    white-space: nowrap; /* Prevent tooltip from wrapping */
+    z-index: 1; /* Ensure tooltip is above other elements */
+}
