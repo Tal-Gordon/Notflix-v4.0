@@ -2,7 +2,8 @@ import './signup.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-function Signup() {
+function Signup(event) {
+    event.preventDefault();
     let navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -46,6 +47,12 @@ function Signup() {
     };
 };
 
+const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+        handleSignup(event);
+    }
+};
+
 return (
     <div className="input-container">
         <div className="signup-form">
@@ -56,6 +63,7 @@ return (
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                onKeyDown={handleKeyDown}
                 required
             />
             <input
@@ -64,6 +72,7 @@ return (
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
                 required
             />
             <input
