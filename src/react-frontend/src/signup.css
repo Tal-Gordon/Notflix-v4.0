@@ -29,7 +29,7 @@
 .input-field {
     width: 100%;
     padding: 10px 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 3px;
     font-size: 1rem;
@@ -56,21 +56,11 @@
 .error-message {
     color: #cc0000;
     padding: 10px;
-    margin-top: 10px;
     font-size: 0.9rem;
     text-align: center;
     display: block;
 }
 
-.tooltip {
-    position: absolute;
-    bottom: -30px; /* Adjust as needed */
-    left: 0;
-    background-color: #333; /* Example background color */
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: small;
-    white-space: nowrap; /* Prevent tooltip from wrapping */
-    z-index: 1; /* Ensure tooltip is above other elements */
+.error-adjacent {
+    margin-bottom: 0px;
 }

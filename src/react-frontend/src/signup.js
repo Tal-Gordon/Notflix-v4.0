@@ -14,10 +14,9 @@ function Signup() {
     const [errorMessage, setErrorMessage] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const [isUsernameFocused, setIsUsernameFocused] = useState(false);
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-    const handleSignup = async () => {
+    const handleSignup = async (event) => {
+        event.preventDefault(); 
         if (!validateForm(username, password)) {
             return; // Prevent form submission if validation fails
         }
@@ -34,9 +33,9 @@ function Signup() {
         if (surname) {
             requestBody.surname = surname;
         }
-        // if (picture) {
-        //     requestBody.picture = picture;
-        // }
+        if (picture) {
+            requestBody.picture = picture;
+        }
 
         postUser.body = JSON.stringify(requestBody);
         try {
@@ -49,7 +48,11 @@ function Signup() {
                 const errorText = await postResponse.text(); // Get error message from server
                 const errorObject = JSON.parse(errorText);
                 const serverErrorMessage = errorObject.message || errorObject.error || errorObject.description || errorMessage; 
-                setErrorMessage(serverErrorMessage);
+                if (serverErrorMessage === "A user with this username already exists.") /* TODO: make it not hardcoded */ {
+                    setUsernameError(serverErrorMessage);
+                } else {
+                    setErrorMessage(serverErrorMessage);
+                }
             }
         } catch(error) {
             setErrorMessage(error.message || 'An error occurred during signup.'); // TODO: proper error managing
@@ -58,20 +61,9 @@ function Signup() {
 
     function validateForm() {
         let isValid = true;
-        setUsernameError('');
         setPasswordError('');
-
-        if (username === '') {
-            setUsernameError('Please fill out this field.');
-            isValid = false;
-        }
-
-        if (password === '') {
-            setPasswordError('Please fill out this field.');
-            isValid = false;
-        }
     
-        else if (password.length < 8) {
+        if (password.length < 8) {
             setPasswordError('Password must be at least 8 characters');
             isValid = false;
         }
@@ -82,13 +74,13 @@ function Signup() {
             setPasswordError('Password must contain lowercase, uppercase, number, and special character');
             isValid = false;
         }
-    
+        
         return isValid;
     }
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-            handleSignup();
+            handleSignup(event);
         }
     };
 
@@ -99,22 +91,24 @@ function Signup() {
                 <form onSubmit={handleSignup}>
                     <input
                         type="text"
-                        className="input-field"
+                        className={`input-field ${usernameError ? 'error-adjacent' : ''}`}
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         onKeyDown={handleKeyDown}
                         required
                     />
+                    {usernameError && <div className="error-message">{usernameError}</div>}
                     <input
                         type="password"
-                        className="input-field"
+                        className={`input-field ${passwordError ? 'error-adjacent' : ''}`}
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={handleKeyDown}
+                        onKeyDown={handleKeyDown}    
                         required
                     />
+                    {passwordError && <div className="error-message">{passwordError}</div>}
                     <input
                         type="text"
                         className="input-field"
