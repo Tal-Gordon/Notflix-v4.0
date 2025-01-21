@@ -31,9 +31,9 @@ function Signup() {
         if (surname) {
             formData.append("surname", surname);
         }
-        
-        const imageFile = picture.files[0];
-        formData.append('picture', imageFile, imageFile.name);
+        if (picture) {
+            formData.append('picture', picture);
+        }
 
         try {
             const postResponse = await fetch('/users', {
