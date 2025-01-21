@@ -21,40 +21,25 @@ function Signup() {
             return; // Prevent form submission if validation fails
         }
 
-        let base64Picture = null;
-        if (picture) {
-            try {
-                base64Picture = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(picture); // Reads as Base64
-                    reader.onload = () => resolve(reader.result.split(',')[1]); // Extract Base64 data
-                    reader.onerror = (error) => reject(error);
-                });
-            } catch (error) {
-                console.error("Error converting image to Base64:", error);
-                setErrorMessage("Error processing image.");
-                return; // Stop signup if image conversion fails
-            }
+        const formData = new FormData();
+        
+        formData.append(username);
+        formData.append(password);
+        if (name) {
+            formData.append(name);
+        }
+        if (surname) {
+            formData.append(surname);
         }
         
-        const userData = {
-            username: username,
-            password: password,
-            name: name || null,
-            surname: surname || null,
-            picture: base64Picture,
-        };
-        
-        const fetchOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        };
+        const imageFile = picture.files[0];
+        formData.append('picture', imageFile, imageFile.name);
 
         try {
-            const postResponse = await fetch('/users', fetchOptions);
+            const postResponse = await fetch('/users', {
+                method: 'POST',
+                body: formData,
+            })
             if (postResponse.ok) {
                 // User is created
                 navigate("/browse")
