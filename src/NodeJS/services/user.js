@@ -85,8 +85,13 @@ const getUserById = async (id) => { return await User.findById(id); };
 
 const authenticateUserById = async (id) => { return getUserById(id) };
 
+const adminAuthUserById = async (id) => {
+     const user = getUserById(id);
+     return user == null ? false : user.isAdmin;
+     };
+
 const getUserByCredentials = async(username, password) => { return await User.findOne({ username, password }).select('_id'); }
 
 module.exports = {
-    createUser, getUserById, authenticateUserById, getUserByCredentials
+    createUser, getUserById, authenticateUserById, getUserByCredentials, adminAuthUserById
 }
