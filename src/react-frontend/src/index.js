@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import './index.css';
 import HomeAuth from './home.auth';
 import HomeUnauth from './home.unauth';
-// import HomeAuth from './home.auth';
 import Login from './login';
 import Signup from './signup';
 
@@ -16,7 +15,7 @@ root.render(
             <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
-                  {/* <Route path="/browse" element={<HomeAuth />} /> */}
+                  <Route path="/browse" element={<HomeAuth />} />
                   <Route path="/" element={<HomeUnauth />} />
             </Routes>
 		</BrowserRouter>

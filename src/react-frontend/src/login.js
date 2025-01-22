@@ -17,8 +17,16 @@ function Login() {
         try {
             const authResponse = await fetch('/tokens', authRequestOptions);
             if (authResponse.ok) {
-                // User is authenticated
-                navigate("/browse");
+            // Access the user ID from the response headers
+            const data = await authResponse.json(); // Extract response body
+            const userId = data.id; // Assume userId is provided in the body
+
+            if (!userId) {
+                throw new Error('User ID is missing in the response headers.');
+            }
+
+            // Navigate to the authenticated home page and pass the user ID
+            navigate('/browse', { state: { userId } });
             } else {
             // User is not authenticated
                 const errorText = await authResponse.text(); // Get error message from server

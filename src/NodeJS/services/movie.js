@@ -72,11 +72,13 @@ const getMoviesForUser = async (userId) => {
 
     // Get the last 20 watched movies and reshuffle them
     if (watchedMovies.length > 0) {
-      recentlyWatched = watchedMovies
-        .slice(-20) // Take the last 20 movies
-        .sort(() => 0.5 - Math.random()); // Randomize order
-    }
+      // Fetch the full movie objects for the last 20 watched movie IDs
+      const movieIds = watchedMovies.slice(-20); // Take the last 20 MongoDB ObjectIDs
+      recentlyWatched = await Movie.find({ _id: { $in: movieIds } }).lean(); // Fetch movie objects from DB
 
+      // Shuffle the movies randomly
+      recentlyWatched = recentlyWatched.sort(() => 0.5 - Math.random());
+    }
     return {
       moviesByCategory,
       recentlyWatched,
