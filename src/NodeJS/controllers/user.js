@@ -14,9 +14,9 @@ const createUser = async (req, res) => {
         {
             return res.status(400).json({ error: 'Username cannot be empty' });
         }
-        else if (!req.body.password)
+        else if (!req.body.password || (typeof req.body.password == string && req.body.password.length < 8))
         {
-            return res.status(400).json({ error: 'Password cannot be empty' });
+            return res.status(400).json({ error: 'Password must have at least 8 characters' });
         }
         if (req.body.watchedMovies && !isValidArrayOfNumbers(req.body.watchedMovies)) {
             return res.status(400).json({error: 'watchedMovies must be an array of numbers'});

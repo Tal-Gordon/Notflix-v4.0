@@ -10,6 +10,8 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    admin: { type: Boolean,
+        default: false },
     name: {
         type: String,
         default: ""
