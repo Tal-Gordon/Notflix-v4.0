@@ -14,7 +14,12 @@ const movieSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Category',
         }
-    ]
+    ],
+    actors: [{ type: String }],
+    description: {type: String, default: ""},
+    directors: [{ type: String }],
+    picture: {type: String},
+    video: {type: String}
 });
 
 module.exports = mongoose.model('Movie', movieSchema, 'Movies');

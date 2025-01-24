@@ -12,8 +12,9 @@ const isValidArrayOfObjectIds = (arr) => {
 
 // Create a new movie
 const createMovie = async (req, res) => {
-    const { title, categories } = req.body;
-
+    const { title, categories, actors, description, directors } = req.body;
+    const picture = req.files?.picture?.[0];
+    const video = req.files?.video?.[0];
     // Validate inputs
     if (!title || typeof title !== 'string' || title.trim() === '') {
         return res.status(400).json({ error: 'Invalid or missing title' });
@@ -23,7 +24,9 @@ const createMovie = async (req, res) => {
     }
 
     try {
-        const newMovie = await movieService.createMovie(title, categories);
+        const newMovie = await movieService.createMovie(title, categories, actors, description, directors, 
+            picture,
+            video);
         res.status(201).json(newMovie);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });

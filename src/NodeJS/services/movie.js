@@ -4,6 +4,8 @@ const Category = require("../models/category");
 const IdService = require("../services/globalId");
 const mongoose = require("mongoose");
 const net = require("net");
+const path = require('path');
+const fs = require('fs').promises;
 
 // Create a new movie
 const createMovie = async (title, categories = []) => {
@@ -16,6 +18,26 @@ const createMovie = async (title, categories = []) => {
 
     // Generate global movie ID
     movie.id = await IdService.generateId();
+
+    if (picture) {
+      const uploadDir = 'Media/Movies/Pictures';
+      const fileExt = path.extname(picture.originalname);
+      const fileName = `${movie._id}${fileExt}`;
+      const filePath = path.join(uploadDir, fileName);
+    
+      await fs.writeFile(filePath, picture.buffer);
+      movie.picture = filePath;
+    }
+
+  if (video) {
+      const videoDir = 'Media/movies/Videos';
+      const videoExt = path.extname(video.originalname);
+      const videoName = `${movie.id}${videoExt}`;
+      const videoPath = path.join(videoDir, videoName);
+
+      await fs.writeFile(videoPath, video.buffer);
+      movie.video = videoPath;
+  }
 
     // Save the movie
     await movie.save();
