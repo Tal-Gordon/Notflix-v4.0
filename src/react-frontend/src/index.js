@@ -6,6 +6,7 @@ import HomeAuth from './home.auth';
 import HomeUnauth from './home.unauth';
 import Login from './login';
 import Signup from './signup';
+import VideoPlayer from './videoPlayer';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -16,6 +17,7 @@ root.render(
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/browse" element={<HomeAuth />} />
+                  <Route path="/watch/:id" element={<VideoPlayer />} />
                   <Route path="/" element={<HomeUnauth />} />
             </Routes>
 		</BrowserRouter>
