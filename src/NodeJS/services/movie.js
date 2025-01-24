@@ -4,8 +4,8 @@ const Category = require("../models/category");
 const IdService = require("../services/globalId");
 const mongoose = require("mongoose");
 const net = require("net");
-const path = require('path');
-const fs = require('fs').promises;
+const path = require("path");
+const fs = require("fs").promises;
 
 // Create a new movie
 const createMovie = async (title, categories = []) => {
@@ -13,31 +13,34 @@ const createMovie = async (title, categories = []) => {
     // Create the new movie
     const movie = new Movie({
       title: title,
-      categories: categories,
+      categories: categories || [],
+      actors: actors || [],
+      description: description || "",
+      directors: directors || [],
     });
 
     // Generate global movie ID
     movie.id = await IdService.generateId();
 
     if (picture) {
-      const uploadDir = 'Media/Movies/Pictures';
+      const uploadDir = "Media/Movies/Pictures";
       const fileExt = path.extname(picture.originalname);
       const fileName = `${movie._id}${fileExt}`;
       const filePath = path.join(uploadDir, fileName);
-    
+
       await fs.writeFile(filePath, picture.buffer);
       movie.picture = filePath;
     }
 
-  if (video) {
-      const videoDir = 'Media/movies/Videos';
+    if (video) {
+      const videoDir = "Media/movies/Videos";
       const videoExt = path.extname(video.originalname);
       const videoName = `${movie.id}${videoExt}`;
       const videoPath = path.join(videoDir, videoName);
 
       await fs.writeFile(videoPath, video.buffer);
       movie.video = videoPath;
-  }
+    }
 
     // Save the movie
     await movie.save();
@@ -182,7 +185,7 @@ const deleteMovie = async (movieId) => {
 
     // Connect to the recommendation server
     const client = new net.Socket();
-    const serverHost = process.env.HOST || '127.0.0.1';
+    const serverHost = process.env.HOST || "127.0.0.1";
     const serverPort = 12345;
 
     await new Promise((resolve, reject) => {
@@ -236,7 +239,7 @@ const deleteMovie = async (movieId) => {
     );
     await Movie.findByIdAndDelete(movie._id);
 
-    if (errors.some(error => error.startsWith("400"))) {
+    if (errors.some((error) => error.startsWith("400"))) {
       // At least one error starts with "400"
       return {
         status: 500,
@@ -266,7 +269,7 @@ const postMovieToServer = async (userId, movieId) => {
     }
 
     // Open a TCP connection to the other server
-    const serverHost = process.env.HOST || '127.0.0.1';
+    const serverHost = process.env.HOST || "127.0.0.1";
     const serverPort = 12345;
 
     let isPatching = false; // Variable to track if the request is a patch
@@ -352,7 +355,7 @@ const getRecommendations = async (userId, movieId) => {
 
     // Open a TCP connection to the other server
     const client = new net.Socket();
-    const serverHost = process.env.HOST || '127.0.0.1';
+    const serverHost = process.env.HOST || "127.0.0.1";
     const serverPort = 12345;
 
     return new Promise((resolve, reject) => {
@@ -374,9 +377,9 @@ const getRecommendations = async (userId, movieId) => {
         } else if (response.startsWith("200")) {
           try {
             const movieIds = response
-            .split("\n\n")[1] // Extract IDs after the 200 OK line
-            .split(" ") // Split by space
-            .filter((id) => id.trim()); // Remove empty strings
+              .split("\n\n")[1] // Extract IDs after the 200 OK line
+              .split(" ") // Split by space
+              .filter((id) => id.trim()); // Remove empty strings
           } catch {
             resolve({ status: 404, result: "Recommendation not found" }); // In case no movies were returned, and second split fails
           }
