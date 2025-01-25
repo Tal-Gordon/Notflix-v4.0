@@ -1,10 +1,10 @@
 package com.example.notflix.ui.login;
 
+import android.app.Application;
+
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
 
-import com.example.notflix.data.LoginDataSource;
 import com.example.notflix.data.LoginRepository;
 
 /**
@@ -12,15 +12,18 @@ import com.example.notflix.data.LoginRepository;
  * Required given LoginViewModel has a non-empty constructor
  */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
+    private Application application;
 
-    @NonNull
+    public LoginViewModelFactory(Application application) {
+        this.application = application;
+    }
+
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+    public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LoginViewModel.class)) {
-            return (T) new LoginViewModel(LoginRepository.getInstance(new LoginDataSource()));
-        } else {
-            throw new IllegalArgumentException("Unknown ViewModel class");
+            LoginRepository repository = new LoginRepository(application);
+            return (T) new LoginViewModel(repository);
         }
+        throw new IllegalArgumentException("Unknown ViewModel class");
     }
 }

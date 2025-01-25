@@ -1,31 +1,45 @@
 package com.example.notflix.data;
 
+import android.app.Application;
+
 import com.example.notflix.data.model.LoggedInUser;
+import com.example.notflix.data.model.UserEntity;
 
 /**
  * Class that requests authentication and user information from the remote data source and
  * maintains an in-memory cache of login status and user credentials information.
  */
 public class LoginRepository {
-
-    private static volatile LoginRepository instance;
-
     private LoginDataSource dataSource;
-
-    // If user credentials will be cached in local storage, it is recommended it be encrypted
-    // @see https://developer.android.com/training/articles/keystore
+    private UserDao userDao;
     private LoggedInUser user = null;
 
-    // private constructor : singleton access
-    private LoginRepository(LoginDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
-    public static LoginRepository getInstance(LoginDataSource dataSource) {
-        if (instance == null) {
-            instance = new LoginRepository(dataSource);
-        }
-        return instance;
+    public LoginRepository(Application application) {
+        dataSource = new LoginDataSource();
+        userDao = AppDatabase.getInstance(application).userDao();
+    }
+    public void login(String username, String password, LoginDataSource.LoginCallback callback) {
+        dataSource.login(username, password, new LoginDataSource.LoginCallback() {
+            @Override
+            public void onSuccess(Result<LoggedInUser> result) {
+                // Save the user to Room
+                if (result instanceof Result.Success) {
+                    LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
+                    UserEntity userEntity = new UserEntity(
+                            loggedInUser.getUserId(),
+                            loggedInUser.getDisplayName()
+                    );
+                    AppDatabase.executor.execute(() -> userDao.insertUser(userEntity));
+                }
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onError(Result<LoggedInUser> result) {
+                callback.onError(result);
+            }
+        });
     }
 
     public boolean isLoggedIn() {
@@ -41,9 +55,5 @@ public class LoginRepository {
         this.user = user;
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
-    }
-
-    public void login(String username, String password, LoginDataSource.LoginCallback callback) {
-        dataSource.login(username, password, callback);
     }
 }

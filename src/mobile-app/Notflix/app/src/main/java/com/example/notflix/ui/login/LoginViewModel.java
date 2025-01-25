@@ -19,8 +19,6 @@ public class LoginViewModel extends ViewModel {
     private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private final LoginRepository loginRepository;
 
-    private String passwordError = "";
-
     LoginViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
@@ -37,7 +35,7 @@ public class LoginViewModel extends ViewModel {
         loginRepository.login(username, password, new LoginDataSource.LoginCallback() {
             @Override
             public void onSuccess(Result<LoggedInUser> result) {
-                // Cast to Result.Success and extract data
+                // Handle UI updates
                 if (result instanceof Result.Success) {
                     LoggedInUser user = ((Result.Success<LoggedInUser>) result).getData();
                     loginResult.postValue(new LoginResult(new LoggedInUserView(user.getDisplayName(), user.getUserId())));

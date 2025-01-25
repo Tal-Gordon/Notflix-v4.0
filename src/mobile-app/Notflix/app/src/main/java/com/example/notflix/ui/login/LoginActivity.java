@@ -1,6 +1,7 @@
 package com.example.notflix.ui.login;
 
 import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,12 +17,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.notflix.MainActivity;
 import com.example.notflix.R;
+import com.example.notflix.data.AppDatabase;
 import com.example.notflix.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private ActivityLoginBinding binding;
+    AppDatabase db = AppDatabase.getInstance(getApplication());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,9 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
+        Application application = getApplication();
+
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(application))
                 .get(LoginViewModel.class);
 
         final EditText usernameEditText = binding.username;
@@ -103,15 +108,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName() + "!";
-        welcome += "\n your userId is " + model.getUserId();
-        // TODO : initiate successful logged in experience
-        // Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-        MainActivity.getInstance().SetLoginTextView(welcome);
+        db.userDao().getUserById(model.getUserId())
+            .observe(this, userEntity -> {
+                String welcome = getString(R.string.welcome) + model.getDisplayName() + "!";
+                welcome += "\n your userId is " + model.getUserId();
+                // TODO : initiate successful logged in experience
+                MainActivity.getInstance().SetLoginTextView(welcome);
+            });
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        // Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
         MainActivity.getInstance().SetLoginTextView(getString(errorString));
     }
 }
