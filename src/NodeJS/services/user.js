@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const IdService = require('../services/globalId');
 const movieService = require('../services/movie');
+const path = require('path');
+const fs = require('fs').promises;
 
 const createUser = async (username, password, name, surname, picture, watchedMovies) => {
     const errors = []; // Array to collect errors
@@ -15,8 +17,7 @@ const createUser = async (username, password, name, surname, picture, watchedMov
             username: username,
             password: password,
             name: name || "",
-            surname: surname || "",
-            picture: picture || ""
+            surname: surname || ""
         });
         user.id = await IdService.generateId();
 
@@ -53,6 +54,16 @@ const createUser = async (username, password, name, surname, picture, watchedMov
             });
         } 
 
+        if (picture) {
+            const uploadDir = 'Media/Profiles/';
+            const fileExt = path.extname(picture.originalname);
+            const fileName = `${user.id}${fileExt}`;
+            const filePath = path.join(uploadDir, fileName);
+
+            await fs.writeFile(filePath, picture.buffer);
+            user.picture = filePath;
+        }
+        
         const savedUser = await user.save();
         return {
             success: true,
@@ -74,8 +85,13 @@ const getUserById = async (id) => { return await User.findById(id); };
 
 const authenticateUserById = async (id) => { return getUserById(id) };
 
+const adminAuthUserById = async (id) => {
+     const user = getUserById(id);
+     return user == null ? false : user.isAdmin;
+     };
+
 const getUserByCredentials = async(username, password) => { return await User.findOne({ username, password }).select('_id'); }
 
 module.exports = {
-    createUser, getUserById, authenticateUserById, getUserByCredentials
+    createUser, getUserById, authenticateUserById, getUserByCredentials, adminAuthUserById
 }

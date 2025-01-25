@@ -2,10 +2,20 @@ const express = require('express');
 var router = express.Router();
 const movieController = require('../controllers/movie');
 const authMiddleware = require('../middleware/auth');
+const multer = require('multer');
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.route('/')
     // Create a new movie
-    .post(authMiddleware, movieController.createMovie)
+    .post(
+        authMiddleware,
+        upload.fields([
+            { name: 'picture', maxCount: 1 },
+            { name: 'video', maxCount: 1 }
+        ]),
+        movieController.createMovie
+    )
     // Get a list of movies for a user
     .get(authMiddleware, movieController.getMoviesForUser);
 

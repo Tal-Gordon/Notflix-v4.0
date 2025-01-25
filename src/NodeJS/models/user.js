@@ -10,6 +10,8 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    isAdmin: { type: Boolean,
+        default: false },
     name: {
         type: String,
         default: ""
@@ -20,7 +22,7 @@ const userSchema = new Schema({
     },
     picture: {
         type: String,
-        default: ""
+        default: "/Profiles/anonymous.webp"
     },
     id: {
         type: Number
