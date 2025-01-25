@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Notflix</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="welcome">"Welcome "</string>
+    <string name="username_empty">Username cannot be empty</string>
+    <string name="password_empty">Password cannot be empty</string>
+    <string name="password_too_short">Password must be >8 characters</string>
+    <string name="password_invalid_format">Password must contain lowercase, uppercase, number, and special character</string>
+    <string name="login_failed">"Login failed"</string>
+</resources>
