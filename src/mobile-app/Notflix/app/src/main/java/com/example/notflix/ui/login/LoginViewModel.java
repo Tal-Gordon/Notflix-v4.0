@@ -8,10 +8,27 @@ import com.example.notflix.R;
 import com.example.notflix.data.LoginDataSource;
 import com.example.notflix.data.LoginRepository;
 import com.example.notflix.data.Result;
+import com.example.notflix.data.model.ErrorMapper;
 import com.example.notflix.data.model.LoggedInUser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+/**
+ * The {@code LoginViewModel} class is responsible for managing the data and business logic
+ * related to user login in the UI layer. It provides observable LiveData to update the UI
+ * based on user interactions and authentication results.
+ *
+ * <p>This class integrates with the {@link LoginRepository} to handle authentication processes
+ * and performs form validation to ensure correct user input.
+ *
+ * <p>Main features of this ViewModel:
+ * <ul>
+ *     <li>Validates username and password input with real-time feedback.</li>
+ *     <li>Handles login requests and processes success or failure responses.</li>
+ *     <li>Maps backend error messages to user-friendly string resources via {@link ErrorMapper}.</li>
+ *     <li>Provides LiveData to observe the state of the login form and login results.</li>
+ * </ul>
+ */
 
 public class LoginViewModel extends ViewModel {
 
@@ -44,7 +61,13 @@ public class LoginViewModel extends ViewModel {
 
             @Override
             public void onError(Result<LoggedInUser> result) {
-                loginResult.postValue(new LoginResult(R.string.login_failed));
+                int errorResId = R.string.error_unknown;
+                if (result instanceof Result.Error) {
+                    Exception error = ((Result.Error) result).getError();
+                    String errorMessage = error.getMessage(); // Extract message from backend
+                    errorResId = ErrorMapper.getErrorResource(errorMessage); // Map to string resource
+                }
+                loginResult.postValue(new LoginResult(errorResId));
             }
         });
     }

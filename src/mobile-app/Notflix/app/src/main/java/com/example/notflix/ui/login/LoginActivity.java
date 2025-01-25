@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private ActivityLoginBinding binding;
-    AppDatabase db = AppDatabase.getInstance(getApplication());
+    AppDatabase db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         Application application = getApplication();
+
+        db = AppDatabase.getInstance(application);
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(application))
                 .get(LoginViewModel.class);

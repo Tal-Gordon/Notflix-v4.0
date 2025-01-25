@@ -6,8 +6,17 @@ import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.UserEntity;
 
 /**
- * Class that requests authentication and user information from the remote data source and
- * maintains an in-memory cache of login status and user credentials information.
+ * The {@code LoginRepository} class acts as the single source of truth for handling user authentication
+ * and session management. It serves as a bridge between the {@link LoginDataSource}, which communicates
+ * with the remote server, and the local database via {@link UserDao} to store user data.
+ *
+ * <p>This class provides the following functionalities:
+ * <ul>
+ *     <li>Handles login operations and processes server responses.</li>
+ *     <li>Saves logged-in user information to the local Room database.</li>
+ *     <li>Manages the user's logged-in state.</li>
+ *     <li>Handles logout operations.</li>
+ * </ul>
  */
 public class LoginRepository {
     private LoginDataSource dataSource;
