@@ -8,7 +8,13 @@ const path = require("path");
 const fs = require("fs").promises;
 
 // Create a new movie
-const createMovie = async (title, categories = []) => {
+const createMovie = async (
+  title,
+  categories,
+  actors,
+  description,
+  directors
+) => {
   try {
     // Create the new movie
     const movie = new Movie({
@@ -125,7 +131,14 @@ const getMovieById = async (id) => {
 };
 
 // Update an existing movie
-const replaceMovie = async (id, title, categories) => {
+const replaceMovie = async (
+  id,
+  title,
+  categories,
+  actors,
+  description,
+  directors
+) => {
   try {
     const existingMovie = await Movie.findById(id);
     if (!existingMovie) {
@@ -148,6 +161,9 @@ const replaceMovie = async (id, title, categories) => {
       );
 
       update.categories = categories;
+      update.actors = actors;
+      update.description = description;
+      update.directors = directors;
     }
 
     const updatedMovie = await Movie.findByIdAndUpdate(

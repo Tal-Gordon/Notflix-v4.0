@@ -9,13 +9,4 @@ const authMiddleware = async (req, res, next) => {
   next();
 };
 
-const adminAuthMiddleware = async (req, res, next) => {
-  if (!(await userService.adminAuthMiddleware(req.headers["id"]))) {
-    return res
-      .status(400)
-      .json({ error: "No admin is signed in" });
-  }
-  next();
-};
-
 module.exports = authMiddleware;
