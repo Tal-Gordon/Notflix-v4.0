@@ -22,7 +22,23 @@ const createMovie = async (req, res) => {
   if (categories && !isValidArrayOfObjectIds(categories)) {
     return res.status(400).json({ error: "Invalid categories format" });
   }
-
+  if (
+    actors &&
+    (!Array.isArray(actors) ||
+      !actors.every((item) => typeof item === "string"))
+  ) {
+    return res.status(400).json({ error: "Invalid actors format" });
+  }
+  if (description && typeof description !== "string") {
+    return res.status(400).json({ error: "Invalid description format" });
+  }
+  if (
+    directors &&
+    (!Array.isArray(actors) ||
+      !actors.every((item) => typeof item === "string"))
+  ) {
+    return res.status(400).json({ error: "Invalid directors format" });
+  }
   try {
     const newMovie = await movieService.createMovie(
       title,

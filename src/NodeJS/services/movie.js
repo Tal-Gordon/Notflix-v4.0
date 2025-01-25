@@ -438,13 +438,35 @@ const searchMovies = async (query) => {
       }).lean();
     }
 
+    // Query by actors, add if query matches any actor
+    const actorMatches = await Movie.find({
+      actors: { $elemMatch: { $regex: query, $options: "i" } }, // Actor contains query
+    }).lean();
+
+    // Query by directors, add if query matches any director
+    const directorMatches = await Movie.find({
+      directors: { $elemMatch: { $regex: query, $options: "i" } }, // Director contains query
+    }).lean();
+
+    // Query by description (string), add if description contains query
+    const descriptionMatches = await Movie.find({
+      description: { $regex: query, $options: "i" }, // Description contains query
+    }).lean();
+
     // Query by MongoDB ID, add if exactly equal
     const mongoIdMatches = mongoose.isValidObjectId(query)
       ? [await Movie.findById(query).lean()].filter(Boolean)
       : [];
 
     // Combine results in the order: title, category, MongoDB ID
-    return [...titleMatches, ...categoryMatches, ...mongoIdMatches];
+    return [
+      ...titleMatches,
+      ...categoryMatches,
+      ...actorMatches,
+      ...directorMatches,
+      ...descriptionMatches,
+      ...mongoIdMatches,
+    ];
   } catch (error) {
     throw new Error("Error while searching for movies");
   }
