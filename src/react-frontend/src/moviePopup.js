@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './moviePopup.css';
 
 const MoviePopup = ({ movie, onClose }) => {
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate(`/watch/${movie._id}`);
+    };
 
     useEffect(() => {
         // Since movie's categories are ids, we have to fetch the category names from the server
@@ -60,9 +67,9 @@ const MoviePopup = ({ movie, onClose }) => {
                     <p>{movie.description}</p>
                 </div>
 
-                <a href={`http://localhost:3001/${movie.video}`} className="play-button">
+                <button onClick={handleClick} className="play-button">
                     Play Movie
-                </a>
+                </button>
             </div>
         </div>
     );

@@ -1,10 +1,8 @@
 import './signup.css';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLogin } from './index'
 
 function Signup() {
-    let navigate = useNavigate();
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -14,6 +12,8 @@ function Signup() {
     const [errorMessage, setErrorMessage] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+    const login = useLogin();
 
     const handleSignup = async (event) => {
         event.preventDefault(); 
@@ -42,7 +42,8 @@ function Signup() {
             })
             if (postResponse.ok) {
                 // User is created
-                navigate("/browse")
+                const data = await postResponse.json(); 
+                login(data.data._id);
             } else {
                 // User is not created
                 const errorObject = JSON.parse(await postResponse.text());

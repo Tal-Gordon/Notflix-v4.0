@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import SearchBar from './search';
 import './home.auth.css';
 import MoviePopup from './moviePopup';
+import { useLogout } from './index';
 
 function HomeAuth() {
     const [categories, setCategories] = useState([]);
@@ -11,11 +11,11 @@ function HomeAuth() {
     const [error, setError] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
-    const location = useLocation();
-    const navigate = useNavigate();
+    
+    const logout = useLogout();
+    const userId = sessionStorage.getItem('userId');
 
     useEffect(() => {
-        const userId = location.state?.userId;
 
         const fetchMovies = async () => {
             try {
@@ -43,7 +43,6 @@ function HomeAuth() {
                             video: movie.video || 'sampleVideo.mp4'
                         }))
                     }));
-                    console.log(categoryData);
 
                     const watchedMovies = data.recentlyWatched.map(movie => ({
                         ...movie,
@@ -65,7 +64,7 @@ function HomeAuth() {
         if (!isSearching) {
             fetchMovies();
         }
-    }, [location.state?.userId, isSearching]);
+    }, [isSearching, userId]);
 
     const handleSearch = async (query) => {
         if (!query) {
@@ -81,7 +80,7 @@ function HomeAuth() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'id': location.state?.userId,
+                    'id': userId,
                 },
             });
 
@@ -101,10 +100,6 @@ function HomeAuth() {
         }
     };
 
-    const handleLogout = () => {
-        navigate('/');
-    };
-
     return (
         <div className="home-auth">
             <nav className="navbar2">
@@ -112,12 +107,12 @@ function HomeAuth() {
                     <li className="nav-item">
                         <SearchBar 
                             onSearch={handleSearch} 
-                            userId={location.state?.userId}
+                            userId={userId}
                         />
                     </li>
                     <li className="nav-item">
-                        <button className="logout-button-navbar" onClick={handleLogout}>
-                            Logout
+                        <button className="logout-button-navbar" onClick={logout}>
+                                Logout
                         </button>
                     </li>
                 </ul>
