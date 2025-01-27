@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './videoPlayer.css';
 
 const VideoPlayer = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const videoRef = useRef(null);
-    const [movie, setMovie] = useState(null);
+    const [movie, setMovie] = useState('');
     const [duration, setDuration] = useState('00:00');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const userId = sessionStorage.getItem('userId');
 
     const sampleVideo = '/videos/sample.mp4';
 
@@ -30,7 +32,13 @@ const VideoPlayer = () => {
                     throw new Error(`Invalid movie ID format: ${id}`);
                 }
 
-                const response = await fetch(`/movies/${id}`);
+                const response = await fetch(`/movies/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'id': userId,
+                    },
+                });
                 if (!response.ok) throw new Error('Movie not found');
                 
                 const movieData = await response.json();
@@ -38,13 +46,14 @@ const VideoPlayer = () => {
                 setError(null);
             } catch (err) {
                 setError(err.message);
-                setMovie(null); // Clear any previous movie data
+                console.log(err.message)
+                setMovie(null);
             }
             setLoading(false);
         };
 
         fetchMovie();
-    }, [id]);
+    }, [id, userId]);
 
     const handleGoBack = () => navigate(-1);
 
@@ -76,7 +85,7 @@ const VideoPlayer = () => {
                                 className="browser-video-player"
                                 onLoadedMetadata={handleLoadedMetadata}
                             >
-                                <source src={sampleVideo} type="video/mp4" />
+                                <source src={`http://localhost:3001/${movie.video}` || sampleVideo} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         </div>

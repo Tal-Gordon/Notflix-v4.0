@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import SearchBar from './search';
 import './home.auth.css';
+import MoviePopup from './moviePopup';
+import { useLogout } from './index';
 
 function HomeAuth() {
     const [categories, setCategories] = useState([]);
@@ -9,11 +10,12 @@ function HomeAuth() {
     const [searchResults, setSearchResults] = useState([]);
     const [error, setError] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
-    const location = useLocation();
-    const navigate = useNavigate();
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    
+    const logout = useLogout();
+    const userId = sessionStorage.getItem('userId');
 
     useEffect(() => {
-        const userId = location.state?.userId;
 
         const fetchMovies = async () => {
             try {
@@ -35,11 +37,18 @@ function HomeAuth() {
                     // Process categories
                     const categoryData = data.moviesByCategory.map((category) => ({
                         name: category.category.name,
-                        movies: category.movies.map(movie => movie.title)
+                        movies: category.movies.map(movie => ({
+                            ...movie,
+                            picture: movie.picture || 'samplePicture.jpg',
+                            video: movie.video || 'sampleVideo.mp4'
+                        }))
                     }));
 
-                    // Process watched movies
-                    const watchedMovies = data.recentlyWatched.map(movie => movie.title);
+                    const watchedMovies = data.recentlyWatched.map(movie => ({
+                        ...movie,
+                        picture: movie.picture || 'samplePicture.jpg',
+                        video: movie.video || 'sampleVideo.mp4'
+                    }));
 
                     setCategories(categoryData);
                     setRecentlyWatched(watchedMovies);
@@ -55,7 +64,7 @@ function HomeAuth() {
         if (!isSearching) {
             fetchMovies();
         }
-    }, [location.state?.userId, isSearching]);
+    }, [isSearching, userId]);
 
     const handleSearch = async (query) => {
         if (!query) {
@@ -71,7 +80,7 @@ function HomeAuth() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'id': location.state?.userId,
+                    'id': userId,
                 },
             });
 
@@ -91,10 +100,6 @@ function HomeAuth() {
         }
     };
 
-    const handleLogout = () => {
-        navigate('/');
-    };
-
     return (
         <div className="home-auth">
             <nav className="navbar2">
@@ -102,12 +107,12 @@ function HomeAuth() {
                     <li className="nav-item">
                         <SearchBar 
                             onSearch={handleSearch} 
-                            userId={location.state?.userId}
+                            userId={userId}
                         />
                     </li>
                     <li className="nav-item">
-                        <button className="logout-button-navbar" onClick={handleLogout}>
-                            Logout
+                        <button className="logout-button-navbar" onClick={logout}>
+                                Logout
                         </button>
                     </li>
                 </ul>
@@ -129,7 +134,7 @@ function HomeAuth() {
                                 <ul className="movies-row">
                                     {searchResults.map((movie, index) => (
                                         <li key={index}>
-                                            <button className="movie-item">
+                                            <button className="movie-item" onClick={() => setSelectedMovie(movie)}>
                                                 {movie.title}
                                             </button>
                                         </li>
@@ -149,8 +154,15 @@ function HomeAuth() {
                                             <ul className="movies-row">
                                                 {category.movies.map((movie, idx) => (
                                                     <li key={`${index}-${idx}`}>
-                                                        <button className="movie-item">
-                                                            {movie}
+                                                        <button 
+                                                            className="movie-item" 
+                                                            onClick={() => setSelectedMovie(movie)}
+                                                            style={{
+                                                                backgroundImage: `url(http://localhost:3001/${movie.picture})`,
+                                                                backgroundSize: 'cover',
+                                                                backgroundPosition: 'center'
+                                                            }}>
+                                                            <span>{movie.title}</span>
                                                         </button>
                                                     </li>
                                                 ))}
@@ -168,8 +180,8 @@ function HomeAuth() {
                                         <ul className="watched-movies-list">
                                             {recentlyWatched.map((movie, index) => (
                                                 <li key={index}>
-                                                    <button className="watched-item">
-                                                        {movie}
+                                                    <button className="watched-item" onClick={() => setSelectedMovie(movie)}>
+                                                        {movie.title}
                                                     </button>
                                                 </li>
                                             ))}
@@ -180,6 +192,10 @@ function HomeAuth() {
                         )}
                     </div>
                 )}
+                <MoviePopup 
+                    movie={selectedMovie}
+                    onClose={() => setSelectedMovie(null)}
+                />
             </div>
         </div>
     );

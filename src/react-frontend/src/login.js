@@ -1,12 +1,12 @@
 import './login.css';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLogin } from './index'
 
 function Login() {
-    let navigate = useNavigate();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
+    const login = useLogin()
 
 	const handleLogin = async () => {
         const authRequestOptions = {
@@ -17,19 +17,16 @@ function Login() {
         try {
             const authResponse = await fetch('/tokens', authRequestOptions);
             if (authResponse.ok) {
-            // Access the user ID from the response headers
-            const data = await authResponse.json(); // Extract response body
-            const userId = data.id; // Assume userId is provided in the body
+                const data = await authResponse.json();
+                const userId = data.id;
 
-            if (!userId) {
-                throw new Error('User ID is missing in the response headers.');
-            }
+                if (!userId) {
+                    throw new Error('User ID is missing in the response headers.');
+                }
 
-            // Navigate to the authenticated home page and pass the user ID
-            navigate('/browse', { state: { userId } });
+                login(userId);
             } else {
-            // User is not authenticated
-                const errorText = await authResponse.text(); // Get error message from server
+                const errorText = await authResponse.text();
                 const errorObject = JSON.parse(errorText);
                 const serverErrorMessage = errorObject.message || errorObject.error || errorObject.description || errorMessage; 
                 setErrorMessage(serverErrorMessage);

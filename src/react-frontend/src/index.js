@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './index.css';
 import HomeAuth from './home.auth';
 import HomeUnauth from './home.unauth';
@@ -8,18 +8,122 @@ import Login from './login';
 import Signup from './signup';
 import VideoPlayer from './videoPlayer';
 
+// Create a custom hook for authentication state
+const useAuth = () =>
+{
+	// Use a reactive approach to track authentication
+	const [isLoggedIn, setIsLoggedIn] = useState(() =>
+		!!sessionStorage.getItem('userId')
+	);
+
+	const login = useCallback((userId) =>
+	{
+		sessionStorage.setItem('userId', userId);
+		setIsLoggedIn(true);
+	}, []);
+
+	const logout = useCallback(() =>
+	{
+		sessionStorage.removeItem('userId');
+		setIsLoggedIn(false);
+	}, []);
+
+	return { isLoggedIn, login, logout };
+};
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) =>
+{
+	const { isLoggedIn } = useAuth();
+	return isLoggedIn ? children : <Navigate replace to="/login" />;
+};
+
+// Public Route Component (for login/signup when already authenticated)
+const PublicRoute = ({ children }) =>
+{
+	const { isLoggedIn } = useAuth();
+	return isLoggedIn ? <Navigate replace to="/browse" /> : children;
+};
+
+const App = () =>
+{
+	const { isLoggedIn } = useAuth();
+
+	return (
+		<Routes>
+			<Route
+				path="/login"
+				element={
+					<PublicRoute>
+						<Login />
+					</PublicRoute>
+				}
+			/>
+			<Route
+				path="/signup"
+				element={
+					<PublicRoute>
+						<Signup />
+					</PublicRoute>
+				}
+			/>
+			<Route
+				path="/browse"
+				element={
+					<ProtectedRoute>
+						<HomeAuth />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/watch/:id"
+				element={
+					<ProtectedRoute>
+						<VideoPlayer />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/"
+				element={isLoggedIn ? <Navigate replace to="/browse" /> : <HomeUnauth />}
+			/>
+		</Routes>
+	);
+};
+
+// Login function (to be used in components)
+export const useLogin = () =>
+{
+	const navigate = useNavigate();
+	const { login } = useAuth();
+
+	return (userId) =>
+	{
+		login(userId);
+		navigate('/browse');
+	};
+};
+
+// Logout function (to be used in components)
+export const useLogout = () =>
+{
+	const navigate = useNavigate();
+	const { logout } = useAuth();
+
+	return () =>
+	{
+		logout();
+		navigate('/');
+	};
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
 		<BrowserRouter>
-            <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/browse" element={<HomeAuth />} />
-                  <Route path="/watch/:id" element={<VideoPlayer />} />
-                  <Route path="/" element={<HomeUnauth />} />
-            </Routes>
+			<App />
 		</BrowserRouter>
 	</React.StrictMode>
 );
+
+export { useAuth };
