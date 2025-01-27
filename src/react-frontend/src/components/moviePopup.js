@@ -41,7 +41,7 @@ const MoviePopup = ({ movie, onClose }) => {
     if (!movie) return null;
 
     return (
-        <div className="popup-overlay">
+        <div className="popup-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}> 
             <div className="popup-content">
                 <button className="close-button" onClick={onClose}>×</button>
 

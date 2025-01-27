@@ -3,6 +3,7 @@ const IdService = require('../services/globalId');
 const movieService = require('../services/movie');
 const path = require('path');
 const fs = require('fs').promises;
+const mongoose = require('mongoose')
 
 const createUser = async (username, password, name, surname, picture, watchedMovies) =>
 {
