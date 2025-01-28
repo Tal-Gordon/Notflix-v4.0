@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './search.css';
 
-const SearchBar = ({ onSearch, userId }) => {
+const SearchBar = ({ onSearch }) => {
     const [query, setQuery] = useState('');
     const [isActive, setIsActive] = useState(false);
     const timeoutRef = useRef(null);

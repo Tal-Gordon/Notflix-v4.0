@@ -44,7 +44,7 @@ function Signup() {
             if (postResponse.ok) {
                 // User is created
                 const data = await postResponse.json(); 
-                login(data.data._id);
+                login(data.data);
             } else {
                 // User is not created
                 const errorObject = JSON.parse(await postResponse.text());

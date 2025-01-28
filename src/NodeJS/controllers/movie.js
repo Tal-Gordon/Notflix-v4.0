@@ -1,6 +1,6 @@
-const movie = require("../models/movie");
 const movieService = require("../services/movie");
 const mongoose = require("mongoose");
+const jwt = require('jsonwebtoken')
 
 // Helper to validate an array of ObjectId strings
 const isValidArrayOfObjectIds = (arr) =>
@@ -68,15 +68,9 @@ const createMovie = async (req, res) =>
 // Get movies for a user (including random unwatched movies and recently watched)
 const getMoviesForUser = async (req, res) =>
 {
-	const userId = req.headers["id"];
-
-	if (!userId || !mongoose.Types.ObjectId.isValid(userId))
-	{
-		return res.status(400).json({ error: "User ID is required" });
-	}
-
 	try
 	{
+		const userId = getUserIdFromToken(req);
 		// Check if the user exists in the database
 		const movies = await movieService.getMoviesForUser(userId);
 		if (!movies)
@@ -241,15 +235,14 @@ const getRecommendations = async (req, res) =>
 {
 	try
 	{
-		const userId = req.headers["id"];
+		const userId = getUserIdFromToken(req);
 
-		const urlSegments = req.path.split("/");
-		const movieId = urlSegments[urlSegments.length - 2];
+		const urlSegments = req.path.split('/');
+        const movieId = urlSegments[urlSegments.length - 2];
 
-		if (!userId || !movieId)
-		{
-			return res.status(400).json({ error: "Movie ID or user ID are missing" });
-		}
+        if (!movieId) {
+            return res.status(400).json({ error: "Movie ID is missing" });
+        }
 
 		// Call the recommendation service
 		const recommendationResponse = await movieService.getRecommendations(
@@ -284,18 +277,54 @@ const getRecommendations = async (req, res) =>
 	}
 };
 
+const getUserIdFromToken = (req) => {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new Error('Missing or invalid authorization header');
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    if (!decoded.userId) {
+        throw new Error('Token does not contain user ID');
+    }
+
+    return decoded.userId;
+};
+
 const postMovieToServer = async (req, res) =>
 {
 	try
 	{
-		const userId = req.headers["id"];
+		const userId = getUserIdFromToken(req);
 
-		const urlSegments = req.path.split("/");
-		const movieId = urlSegments[urlSegments.length - 2];
+		const urlSegments = req.path.split('/');
+        const movieId = urlSegments[urlSegments.length - 2];
 
-		if (!userId || !movieId)
-		{
-			return res.status(400).json({ error: "Movie ID or user ID are missing" });
+        if (!movieId) {
+            return res.status(400).json({ error: "Movie ID is missing" });
+        }
+
+		try {
+			// Verify and decode the token
+			const decoded = jwt.verify(token, process.env.JWT_SECRET);
+			
+			// Get user ID from decoded token
+			const userId = decoded.userId; // Assuming your token payload has 'userId'
+			
+			// Get movie ID from URL
+			const urlSegments = req.path.split('/');
+			const movieId = urlSegments[urlSegments.length - 2];
+		
+			if (!userId || !movieId) {
+				return res.status(400).json({ error: "Movie ID or user ID are missing" });
+			}
+		
+			// Continue with your logic...
+		} catch (err) {
+			return res.status(401).json({ error: "Invalid or expired token" });
 		}
 
 		// Call the service to post the movie
@@ -325,9 +354,13 @@ const postMovieToServer = async (req, res) =>
 
 		// In case something unexpected happens
 		return res.status(500).json({ error: "Unexpected error occurred" });
-	} catch (error)
-	{
-		// Handle any unexpected errors
+	} catch (error) {
+		if (error.message.includes('authorization header')) {
+            return res.status(401).json({ error: error.message });
+        }
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
 		console.error(error);
 		res.status(500).json({ error: "Internal Server Error" });
 	}

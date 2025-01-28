@@ -11,7 +11,7 @@ const VideoPlayer = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const userId = sessionStorage.getItem('userId');
+    const token = sessionStorage.getItem('token');
 
     const sampleVideo = '/videos/sample.mp4';
 
@@ -36,7 +36,7 @@ const VideoPlayer = () => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'id': userId,
+                        'Authorization': `Bearer ${token}`
                     },
                 });
                 if (!response.ok) throw new Error('Movie not found');
@@ -53,7 +53,7 @@ const VideoPlayer = () => {
         };
 
         fetchMovie();
-    }, [id, userId]);
+    }, [id, token]);
 
     if (loading) {
         return <div className="video-loading">Loading...</div>;

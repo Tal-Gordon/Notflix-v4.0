@@ -12,21 +12,21 @@ function HomeAuth() {
     const [isSearching, setIsSearching] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
     
-    const userId = sessionStorage.getItem('userId');
+    const token = sessionStorage.getItem('token');
 
     useEffect(() => {
 
         const fetchMovies = async () => {
             try {
-                if (!userId) {
-                    throw new Error('User ID not found. Please log in again.');
+                if (!token) {
+                    throw new Error('No authentication token found. Please log in again.');
                 }
 
                 const response = await fetch('/movies', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'id': userId,
+                        'Authorization': `Bearer ${token}`
                     },
                 });
 
@@ -63,7 +63,7 @@ function HomeAuth() {
         if (!isSearching) {
             fetchMovies();
         }
-    }, [isSearching, userId]);
+    }, [isSearching, token]);
 
     const handleSearch = async (query) => {
         if (!query) {
@@ -79,7 +79,7 @@ function HomeAuth() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'id': userId,
+                    'Authorization': `Bearer ${token}`
                 },
             });
 
@@ -113,7 +113,6 @@ function HomeAuth() {
                 injectRight={
                     <SearchBar 
                         onSearch={handleSearch} 
-                        userId={userId}
                     />
                 }
             /> 

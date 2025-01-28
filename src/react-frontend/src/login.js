@@ -19,13 +19,13 @@ function Login() {
             const authResponse = await fetch('/tokens', authRequestOptions);
             if (authResponse.ok) {
                 const data = await authResponse.json();
-                const userId = data.id;
+                const token = data.token;
 
-                if (!userId) {
-                    throw new Error('User ID is missing in the response headers.');
+                if (!token) {
+                    throw new Error('Authentication token is missing in response');
                 }
 
-                login(userId);
+                login(token);
             } else {
                 const errorText = await authResponse.text();
                 const errorObject = JSON.parse(errorText);
