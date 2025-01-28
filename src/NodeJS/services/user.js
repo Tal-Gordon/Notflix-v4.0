@@ -3,6 +3,7 @@ const IdService = require('../services/globalId');
 const movieService = require('../services/movie');
 const path = require('path');
 const fs = require('fs').promises;
+const mongoose = require('mongoose')
 
 const createUser = async (username, password, name, surname, picture, watchedMovies) =>
 {
@@ -104,7 +105,9 @@ const adminAuthUserById = async (id) =>
     return user == null ? false : user.isAdmin;
 };
 
-const getUserByCredentials = async (username, password) => { return await User.findOne({ username, password }).select('_id'); }
+const getUserByCredentials = async (username, password) => { 
+    return await User.findOne({ username, password }).select('_id isAdmin'); 
+}
 
 module.exports = {
     createUser, getUserById, authenticateUserById, getUserByCredentials, adminAuthUserById

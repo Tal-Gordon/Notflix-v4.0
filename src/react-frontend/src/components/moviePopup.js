@@ -8,6 +8,8 @@ const MoviePopup = ({ movie, onClose }) => {
 
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem('token');
+
     const handleClick = () => {
         navigate(`/watch/${movie._id}`);
     };
@@ -18,8 +20,18 @@ const MoviePopup = ({ movie, onClose }) => {
             if (!movie?.categories) return;
 
             try {
+                if (!token) {
+                    throw new Error('No authentication token found. Please log in again.');
+                }
                 const categoryPromises = movie.categories.map(async (categoryId) => {
-                    const response = await fetch(`/categories/${categoryId}`);
+                    const response = await fetch(`/categories/${categoryId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                    });
+                    
                     if (!response.ok) {
                         throw new Error(`Failed to fetch category ${categoryId}`);
                     }
@@ -36,12 +48,12 @@ const MoviePopup = ({ movie, onClose }) => {
         };
 
         fetchCategoryNames();
-    }, [movie]); // Run effect whenever movie changes
+    }, [movie, token]); // Run effect whenever movie changes
 
     if (!movie) return null;
 
     return (
-        <div className="popup-overlay">
+        <div className="popup-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}> 
             <div className="popup-content">
                 <button className="close-button" onClick={onClose}>×</button>
 

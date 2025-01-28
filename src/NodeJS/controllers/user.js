@@ -1,4 +1,5 @@
 const userService = require("../services/user");
+const jwt = require('jsonwebtoken');
 
 const isValidArrayOfNumbers = (arr) =>
 {
@@ -63,11 +64,13 @@ const createUser = async (req, res) =>
 				data: result.user,
 				errors: result.errors,
 			});
-		} else
-		{
-			res.status(201).json({
-				data: result.user,
-			});
+		} else {
+			const token = jwt.sign(
+				{ userId: result.user._id, isAdmin: result.user.isAdmin },
+				process.env.JWT_SECRET
+			);
+
+			return res.status(201).json({ data: token });
 		}
 	} catch (error)
 	{
@@ -92,31 +95,27 @@ const getUser = async (req, res) =>
 	}
 };
 
-const isUserRegistered = async (req, res) =>
-{
-	try
-	{
-		const { username, password } = req.body;
-		if (!username || !password)
-		{
-			return res
-				.status(400)
-				.json({ error: "Username and password are required" });
-		}
-		const user = await userService.getUserByCredentials(username, password);
+const isUserRegistered = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ error: "Username and password are required" });
+        }
+        const user = await userService.getUserByCredentials(username, password);
 
-		if (!user)
-		{
-			return res
-				.status(404)
-				.json({ error: "User not found or incorrect credentials" });
-		}
+        if (!user) {
+            return res.status(404).json({ error: "User not found or incorrect credentials" });
+        }
 
-		return res.status(200).json({ id: user._id });
-	} catch (error)
-	{
-		return res.status(500).json({ error: "Internal server error" });
-	}
+        const token = jwt.sign(
+            { userId: user._id, isAdmin: user.isAdmin },
+            process.env.JWT_SECRET
+        );
+
+        return res.status(200).json({ token });
+    } catch (error) {
+        return res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 module.exports = {

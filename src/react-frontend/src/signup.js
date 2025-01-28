@@ -1,6 +1,7 @@
 import './signup.css';
 import { useState } from 'react';
 import { useLogin } from './index'
+import { Navbar, BUTTON_TYPES } from './components/navbar';
 
 function Signup() {
     const [username, setUsername] = useState('');
@@ -43,7 +44,7 @@ function Signup() {
             if (postResponse.ok) {
                 // User is created
                 const data = await postResponse.json(); 
-                login(data.data._id);
+                login(data.data);
             } else {
                 // User is not created
                 const errorObject = JSON.parse(await postResponse.text());
@@ -105,76 +106,87 @@ function Signup() {
     };
 
     return (
-        <div className="input-container">
-            <div className="signup-form">
-                <h1 className="signup-title">Welcome to Notflix. The best is about to get better!</h1>
-                <form onSubmit={handleSignup}>
-                    <input
-                        type="text"
-                        className={`input-field ${usernameError ? 'error-adjacent' : ''}`}
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        required
-                    />
-                    {usernameError && <div className="error-message">{usernameError}</div>}
-                    <input
-                        type="password"
-                        className={`input-field ${passwordError ? 'error-adjacent' : ''}`}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        required
-                    />
-                    {passwordError && <div className="error-message">{passwordError}</div>}
-                    <input
-                        type="text"
-                        className="input-field"
-                        placeholder="Name (optional)"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        className="input-field"
-                        placeholder="Surname (optional)"
-                        value={surname}
-                        onChange={(e) => setSurname(e.target.value)}
-                    />
-                    <input
-                        type="file"
-                        name="myImage"
-                        onChange={(event) => {
-                            const file = event.target.files[0];
-                            if (file && file.type.startsWith('image/')) {
-                                setPicture(file);
-                            } else {
-                                alert("Please upload an image file.");
-                            }
-                        }}
-                    />
-                    {picture && (
-                        <div>
-                        {/* Display the selected image */}
-                        <img
-                            alt="not found"
-                            width={"250px"}
-                            src={URL.createObjectURL(picture)}
+        <div>
+            <Navbar 
+                leftButtons={[
+                    BUTTON_TYPES.HOME
+                ]}
+                rightButtons={[
+                    BUTTON_TYPES.LIGHTDARK,
+                    BUTTON_TYPES.LOGIN
+                ]}
+            />
+            <div className="input-container">
+                <div className="signup-form">
+                    <h1 className="signup-title">Welcome to Notflix. The best is about to get better!</h1>
+                    <form onSubmit={handleSignup}>
+                        <input
+                            type="text"
+                            className={`input-field ${usernameError ? 'error-adjacent' : ''}`}
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            required
                         />
-                        <br /> <br />
-                        {/* Button to remove the selected image */}
-                        <button onClick={() => setPicture(null)}>Remove</button>
-                        </div>
-                    )}
-                    {/* TODO: picture */}
-                    <button className="signup-button" type="submit">
-                        Sign Up
-                    </button>
-                    {/* TODO: need an account? */}
-                    {errorMessage && <div className="error-message">{errorMessage}</div>}
-                </form>
+                        {usernameError && <div className="error-message">{usernameError}</div>}
+                        <input
+                            type="password"
+                            className={`input-field ${passwordError ? 'error-adjacent' : ''}`}
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            required
+                            />
+                        {passwordError && <div className="error-message">{passwordError}</div>}
+                        <input
+                            type="text"
+                            className="input-field"
+                            placeholder="Name (optional)"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            />
+                        <input
+                            type="text"
+                            className="input-field"
+                            placeholder="Surname (optional)"
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
+                            />
+                        <input
+                            type="file"
+                            name="myImage"
+                            onChange={(event) => {
+                                const file = event.target.files[0];
+                                if (file && file.type.startsWith('image/')) {
+                                    setPicture(file);
+                                } else {
+                                    alert("Please upload an image file.");
+                                }
+                            }}
+                            />
+                        {picture && (
+                            <div>
+                            {/* Display the selected image */}
+                            <img
+                                alt="not found"
+                                width={"250px"}
+                                src={URL.createObjectURL(picture)}
+                                />
+                            <br /> <br />
+                            {/* Button to remove the selected image */}
+                            <button onClick={() => setPicture(null)}>Remove</button>
+                            </div>
+                        )}
+                        {/* TODO: picture */}
+                        <button className="signup-button" type="submit">
+                            Sign Up
+                        </button>
+                        {/* TODO: need an account? */}
+                        {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    </form>
+                </div>
             </div>
         </div>
     );  

@@ -1,6 +1,7 @@
 import './login.css';
 import { useState } from 'react';
 import { useLogin } from './index'
+import { Navbar, BUTTON_TYPES } from './components/navbar';
 
 function Login() {
 	const [username, setUsername] = useState('');
@@ -18,13 +19,13 @@ function Login() {
             const authResponse = await fetch('/tokens', authRequestOptions);
             if (authResponse.ok) {
                 const data = await authResponse.json();
-                const userId = data.id;
+                const token = data.token;
 
-                if (!userId) {
-                    throw new Error('User ID is missing in the response headers.');
+                if (!token) {
+                    throw new Error('Authentication token is missing in response');
                 }
 
-                login(userId);
+                login(token);
             } else {
                 const errorText = await authResponse.text();
                 const errorObject = JSON.parse(errorText);
@@ -43,32 +44,43 @@ function Login() {
     };
 
     return (
-        <div className="auth-container">
-            <div className="login-form">
-                <h1 className="login-title">Welcome back. <br/>You have been missed.</h1>
-                <input
-                    type="text"
-                    className="login-input"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    required
+        <div>
+            <div className="auth-container">
+                <Navbar 
+                    leftButtons={[
+                        BUTTON_TYPES.HOME
+                    ]}
+                    rightButtons={[
+                        BUTTON_TYPES.LIGHTDARK,
+                        BUTTON_TYPES.SIGNUP
+                    ]}
                 />
-                <input
-                    type="password"
-                    className="login-input"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    required
-                />
-                <button className="login-button" onClick={handleLogin}>
-                    Login
-                </button>
-                {/* TODO: need an account? */}
-                {errorMessage && <div className="error-message">{errorMessage}</div>}
+                <div className="login-form">
+                    <h1 className="login-title">Welcome back. <br/>You have been missed.</h1>
+                    <input
+                        type="text"
+                        className="login-input"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        required
+                        />
+                    <input
+                        type="password"
+                        className="login-input"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        required
+                        />
+                    <button className="login-button" onClick={handleLogin}>
+                        Login
+                    </button>
+                    {/* TODO: need an account? */}
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                </div>
             </div>
         </div>
     );  

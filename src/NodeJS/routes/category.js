@@ -2,17 +2,17 @@ const express = require("express");
 var router = express.Router();
 
 const categories = require("../controllers/category");
-const authMiddleware = require("../middleware/auth");
+const { authMiddleware, adminAuthMiddleware } = require("../middleware/auth");
 
 router
-  .get("/", categories.getCategories);
+  .get("/", authMiddleware, categories.getCategories);
 router
-  .post("/", authMiddleware, categories.postCategory);
+  .post("/", authMiddleware, adminAuthMiddleware, categories.postCategory);
 router
-  .get("/:id", categories.getCategoryById);
+  .get("/:id", authMiddleware, categories.getCategoryById);
 router
-  .patch("/:id", authMiddleware, categories.patchCategory);
+  .patch("/:id", authMiddleware, adminAuthMiddleware, categories.patchCategory);
 router
-  .delete("/:id", authMiddleware, categories.deleteCategory);
+  .delete("/:id", authMiddleware, adminAuthMiddleware, categories.deleteCategory);
 
 module.exports = router;

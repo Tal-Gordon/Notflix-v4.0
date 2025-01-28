@@ -13,18 +13,18 @@ const useAuth = () =>
 {
 	// Use a reactive approach to track authentication
 	const [isLoggedIn, setIsLoggedIn] = useState(() =>
-		!!sessionStorage.getItem('userId')
+		!!sessionStorage.getItem('token')
 	);
 
-	const login = useCallback((userId) =>
+	const login = useCallback((token) =>
 	{
-		sessionStorage.setItem('userId', userId);
+		sessionStorage.setItem('token', token);
 		setIsLoggedIn(true);
 	}, []);
 
 	const logout = useCallback(() =>
 	{
-		sessionStorage.removeItem('userId');
+		sessionStorage.removeItem('token');
 		setIsLoggedIn(false);
 	}, []);
 
@@ -97,9 +97,9 @@ export const useLogin = () =>
 	const navigate = useNavigate();
 	const { login } = useAuth();
 
-	return (userId) =>
+	return (token) =>
 	{
-		login(userId);
+		login(token);
 		navigate('/browse');
 	};
 };

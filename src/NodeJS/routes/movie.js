@@ -1,7 +1,7 @@
 const express = require('express');
 var router = express.Router();
 const movieController = require('../controllers/movie');
-const authMiddleware = require('../middleware/auth');
+const { authMiddleware, adminAuthMiddleware } = require("../middleware/auth");
 const multer = require('multer');
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -9,7 +9,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.route('/')
     // Create a new movie
     .post(
-        authMiddleware,
+        authMiddleware, adminAuthMiddleware,
         upload.fields([
             { name: 'picture', maxCount: 1 },
             { name: 'video', maxCount: 1 }
@@ -23,9 +23,9 @@ router.route('/:id')
     // Get a movie by its ID
     .get(authMiddleware, movieController.getMovie)
     // Update a movie by its ID
-    .put(authMiddleware, movieController.replaceMovie)
+    .put(authMiddleware, adminAuthMiddleware, movieController.replaceMovie)
     // Delete a movie by its ID
-    .delete(authMiddleware, movieController.deleteMovie);
+    .delete(authMiddleware, adminAuthMiddleware, movieController.deleteMovie);
 
 router.route('/:id/recommend')
     // Get recommendations for movies
