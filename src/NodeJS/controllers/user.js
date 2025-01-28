@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
       return res.status(400).json({ error: "Username cannot be empty" });
     } else if (
       !req.body.password ||
-      typeof req.body.password == "string" ||
+      typeof req.body.password !== "string" ||
       req.body.password.length < 8 ||
       !regex.test(req.body.password)
     ) {
