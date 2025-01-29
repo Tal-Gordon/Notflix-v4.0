@@ -2,12 +2,14 @@ package com.example.notflix.data;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.UserEntity;
 
 /**
  * The {@code LoginRepository} class acts as the single source of truth for handling user authentication
- * and session management. It serves as a bridge between the {@link LoginDataSource}, which communicates
+ * and session management. It serves as a bridge between the {@link UserDataSource}, which communicates
  * with the remote server, and the local database via {@link UserDao} to store user data.
  *
  * <p>This class provides the following functionalities:
@@ -19,27 +21,27 @@ import com.example.notflix.data.model.UserEntity;
  * </ul>
  */
 public class LoginRepository {
-    private LoginDataSource dataSource;
+    private UserDataSource dataSource;
     private UserDao userDao;
     private LoggedInUser user = null;
 
 
     public LoginRepository(Application application) {
-        dataSource = new LoginDataSource();
+        dataSource = new UserDataSource();
         userDao = AppDatabase.getInstance(application).userDao();
     }
-    public void login(String username, String password, LoginDataSource.LoginCallback callback) {
-        dataSource.login(username, password, new LoginDataSource.LoginCallback() {
+    public void login(String username, String password, UserDataSource.LoginCallback callback) {
+        dataSource.login(username, password, new UserDataSource.LoginCallback() {
             @Override
             public void onSuccess(Result<LoggedInUser> result) {
                 // Save the user to Room
                 if (result instanceof Result.Success) {
                     LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
                     UserEntity userEntity = new UserEntity(
-                            loggedInUser.getUserId(),
-                            loggedInUser.getDisplayName()
+                            loggedInUser.getToken(),
+                            loggedInUser.getUsername()
                     );
-                    AppDatabase.executor.execute(() -> userDao.insertUser(userEntity));
+                    saveUser(userEntity);
                 }
                 callback.onSuccess(result);
             }
@@ -51,14 +53,44 @@ public class LoginRepository {
         });
     }
 
-    public boolean isLoggedIn() {
-        return user != null;
+//    public void logout(UserDataSource.LogoutCallback callback) {
+//        new Thread(() -> {
+//            try {
+//                UserEntity user = userDao.getLoggedInUser().getValue();
+//
+//                if (user != null) {
+//                    user.invalidateToken();
+//                    userDao.updateUser(user);
+//
+//                    Result<Void> result = new Result.Success<>(null); // Indicate successful logout
+//                    callback.onSuccess(result);
+//
+//                } else {
+//                    // Handle the case where no logged-in user is found (maybe already logged out, or an error state).
+//                    Result<Void> result = new Result.Error(new IOException("No user found to log out.")); // Or a more appropriate error.
+//                    callback.onError(result);
+//                }
+//            } catch (Exception e) {
+//                Result<Void> result = new Result.Error(e); // Handle any database or other errors
+//                callback.onError(result);
+//            }
+//        }).start();
+//    }
+
+
+    public LiveData<UserEntity> getLoggedInUser() {
+        return userDao.getLoggedInUser();
     }
 
-    public void logout() {
-        user = null;
-        dataSource.logout();
+    public void saveUser(UserEntity user) {
+        AppDatabase.executor.execute(() -> userDao.insertUser(user));
     }
+
+//    private void clearLocalUserData(UserDataSource.LogoutCallback callback) {
+//        userDao.deleteUser();
+//
+//        callback.onSuccess();
+//    }
 
     private void setLoggedInUser(LoggedInUser user) {
         this.user = user;

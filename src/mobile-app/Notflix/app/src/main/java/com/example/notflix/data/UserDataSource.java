@@ -1,5 +1,7 @@
 package com.example.notflix.data;
 
+import android.util.Log;
+
 import com.example.notflix.data.model.ErrorResponse;
 import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.LoginRequest;
@@ -14,11 +16,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 /**
- * The {@code LoginDataSource} class is responsible for handling the login and logout operations
+ * The {@code UserDataSource} class is responsible for handling user authentication operations
  * for the application. It communicates with a remote server using Retrofit to authenticate users.
  *
  * <p>This class utilizes the {@link ApiService} interface to perform API requests and callbacks
- * to notify about the success or failure of login operations.
+ * to notify about the success or failure of login and sign up operations.
  *
  * <p>It supports the following functionalities:
  * <ul>
@@ -30,9 +32,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
  *
  * <p>Base URL for the API requests is: {@code http://10.0.2.2:3001/}, which routes to the PC's localhost.
  */
-public class LoginDataSource {
+public class UserDataSource {
 
-    private static final String BASE_URL = "http://10.0.2.2:3001/"; // Routes to PC's localhost
+    private static final String BASE_URL = "http://10.0.2.2:3001/";
     private final ApiService apiService;
 
     public interface LoginCallback {
@@ -40,7 +42,12 @@ public class LoginDataSource {
         void onError(Result<LoggedInUser> result);
     }
 
-    public LoginDataSource() {
+    public interface LogoutCallback {
+        void onSuccess();
+        void onError(Result<LoggedInUser> result);
+    }
+
+    public UserDataSource() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -58,9 +65,10 @@ public class LoginDataSource {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse loginResponse = response.body();
                     LoggedInUser user = new LoggedInUser(
-                            loginResponse.getUserId(),
+                            loginResponse.getToken(),
                             username
                     );
+                    Log.i("UserDataSource", "token: " + loginResponse.getToken());
                     callback.onSuccess(new Result.Success<>(user));
                 } else {
                     try {
@@ -70,6 +78,7 @@ public class LoginDataSource {
                                 ErrorResponse.class
                         );
                         String errorMessage = errorResponse.getError();
+                        Log.i("LoginDataSourceError", errorMessage);
                         callback.onError(new Result.Error(new IOException(errorMessage)));
                     } catch (Exception e) {
                         callback.onError(new Result.Error(new IOException("Login failed")));
@@ -84,7 +93,34 @@ public class LoginDataSource {
         });
     }
 
-    public void logout() {
-        // TODO: Implement logout if needed (e.g., invalidate token)
-    }
+//    public void logout(String token, LogoutCallback callback) {
+//
+//        // Should we have a logout function in the backend that invalidates tokens?
+//        apiService.logout(token).enqueue(new Callback<Void>() {
+//            @Override
+//            public void onResponse(Call<Void> call, Response<Void> response) {
+//                if (response.isSuccessful()) {
+//                    clearLocalUserData(callback);
+//                } else {
+//                    // Handle logout error on the server-side
+//                    try {
+//                        Gson gson = new Gson();
+//                        ErrorResponse errorResponse = gson.fromJson(
+//                                response.errorBody().charStream(),
+//                                ErrorResponse.class
+//                        );
+//                        String errorMessage = errorResponse.getError();
+//                        callback.onError(new Result.Error(new IOException(errorMessage)));
+//                    } catch (Exception e) {
+//                        callback.onError(new Result.Error(new IOException("Logout failed on server")));
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Void> call, Throwable t) {
+//                callback.onError(new Result.Error(new IOException("Network error during logout: " + t.getMessage())));
+//            }
+//        });
+//    }
 }

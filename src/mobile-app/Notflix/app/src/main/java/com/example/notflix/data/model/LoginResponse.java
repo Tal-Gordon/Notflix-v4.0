@@ -3,10 +3,10 @@ package com.example.notflix.data.model;
 import com.google.gson.annotations.SerializedName;
 
 public class LoginResponse {
-    @SerializedName("id")
-    private String userId;
+    @SerializedName("token")
+    private String token;
 
-    public String getUserId() {
-        return userId;
+    public String getToken() {
+        return token;
     }
 }

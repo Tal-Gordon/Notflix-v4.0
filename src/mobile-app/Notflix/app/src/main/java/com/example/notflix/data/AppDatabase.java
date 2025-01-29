@@ -11,7 +11,7 @@ import com.example.notflix.data.model.UserEntity;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {UserEntity.class}, version = 1)
+@Database(entities = {UserEntity.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public static ExecutorService executor = Executors.newFixedThreadPool(4);
     public abstract UserDao userDao();

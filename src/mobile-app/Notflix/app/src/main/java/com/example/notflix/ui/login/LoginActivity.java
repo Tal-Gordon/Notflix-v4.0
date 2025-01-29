@@ -26,6 +26,11 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     AppDatabase db;
 
+    EditText usernameEditText;
+    EditText passwordEditText;
+    Button loginButton;
+    ProgressBar loadingProgressBar;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,43 +42,17 @@ public class LoginActivity extends AppCompatActivity {
 
         db = AppDatabase.getInstance(application);
 
+//        getApplicationContext().deleteDatabase("notflix-db"); // for resetting the database
+
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(application))
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = binding.username;
-        final EditText passwordEditText = binding.password;
-        final Button loginButton = binding.login;
-        final ProgressBar loadingProgressBar = binding.loading;
+        usernameEditText = binding.username;
+        passwordEditText = binding.password;
+        loginButton = binding.login;
+        loadingProgressBar = binding.loading;
 
-        loginViewModel.getLoginFormState().observe(this, loginFormState -> {
-            if (loginFormState == null) {
-                return;
-            }
-            loginButton.setEnabled(loginFormState.isDataValid());
-            if (loginFormState.getUsernameError() != null) {
-                usernameEditText.setError(getString(loginFormState.getUsernameError()));
-            }
-            if (loginFormState.getPasswordError() != null) {
-                passwordEditText.setError(getString(loginFormState.getPasswordError()));
-            }
-        });
-
-        loginViewModel.getLoginResult().observe(this, loginResult -> {
-            if (loginResult == null) {
-                return;
-            }
-            loadingProgressBar.setVisibility(View.GONE);
-            if (loginResult.getError() != null) {
-                showLoginFailed(loginResult.getError());
-            }
-            if (loginResult.getSuccess() != null) {
-                updateUiWithUser(loginResult.getSuccess());
-            }
-            setResult(Activity.RESULT_OK);
-
-            //Complete and destroy login activity once successful
-            finish();
-        });
+        setupObservers();
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -109,11 +88,43 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void setupObservers() {
+        loginViewModel.getLoginFormState().observe(this, loginFormState -> {
+            if (loginFormState == null) {
+                return;
+            }
+            loginButton.setEnabled(loginFormState.isDataValid());
+            if (loginFormState.getUsernameError() != null) {
+                usernameEditText.setError(getString(loginFormState.getUsernameError()));
+            }
+            if (loginFormState.getPasswordError() != null) {
+                passwordEditText.setError(getString(loginFormState.getPasswordError()));
+            }
+        });
+
+        loginViewModel.getLoginResult().observe(this, loginResult -> {
+            if (loginResult == null) {
+                return;
+            }
+            loadingProgressBar.setVisibility(View.GONE);
+            if (loginResult.getError() != null) {
+                showLoginFailed(loginResult.getError());
+            }
+            if (loginResult.getSuccess() != null) {
+                updateUiWithUser(loginResult.getSuccess());
+            }
+            setResult(Activity.RESULT_OK);
+
+            //Complete and destroy login activity once successful
+            finish();
+        });
+    }
+
     private void updateUiWithUser(LoggedInUserView model) {
-        db.userDao().getUserById(model.getUserId())
+        db.userDao().getLoggedInUser()
             .observe(this, userEntity -> {
-                String welcome = getString(R.string.welcome) + model.getDisplayName() + "!";
-                welcome += "\n your userId is " + model.getUserId();
+                String welcome = getString(R.string.welcome) + model.getUsername() + "!";
+                welcome += "\n your token is " + userEntity.getToken();
                 // TODO : initiate successful logged in experience
                 MainActivity.getInstance().SetLoginTextView(welcome);
             });

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.notflix.R;
-import com.example.notflix.data.LoginDataSource;
+import com.example.notflix.data.UserDataSource;
 import com.example.notflix.data.LoginRepository;
 import com.example.notflix.data.Result;
 import com.example.notflix.data.model.ErrorMapper;
@@ -49,13 +49,13 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password) {
-        loginRepository.login(username, password, new LoginDataSource.LoginCallback() {
+        loginRepository.login(username, password, new UserDataSource.LoginCallback() {
             @Override
             public void onSuccess(Result<LoggedInUser> result) {
                 // Handle UI updates
                 if (result instanceof Result.Success) {
                     LoggedInUser user = ((Result.Success<LoggedInUser>) result).getData();
-                    loginResult.postValue(new LoginResult(new LoggedInUserView(user.getDisplayName(), user.getUserId())));
+                    loginResult.postValue(new LoginResult(new LoggedInUserView(user.getUsername())));
                 }
             }
 
@@ -74,38 +74,26 @@ public class LoginViewModel extends ViewModel {
 
     public void loginDataChanged(String username, String password) {
         // Checks that username is not empty
-        if (!isUserNameValid(username)) {
+        if (isInputNotValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.username_empty, null));
             return;
         }
 
         // Checks that password is not empty
-        if (password == null || password.trim().isEmpty()) {
+        if (isInputNotValid(password)) {
             loginFormState.setValue(new LoginFormState(null, R.string.password_empty));
             return;
         }
-
-        // Checks that password is at least 8 characters
-        if (password.trim().length() < 8) {
-            loginFormState.setValue(new LoginFormState(null, R.string.password_too_short));
-            return;
-        }
-
-        // Checks for 1 uppercase, lowercase, number, special character in password
-//        if (!isPasswordValidRegex(password)) {
-//            loginFormState.setValue(new LoginFormState(null, R.string.password_invalid_format));
-//            return;
-//        }
 
         // All validations passed
         loginFormState.setValue(new LoginFormState(true));
     }
 
-    private boolean isUserNameValid(String username) {
-        if (username == null) {
-            return false;
+    private boolean isInputNotValid(String input) {
+        if (input == null) {
+            return true;
         } else {
-            return !username.trim().isEmpty();
+            return input.trim().isEmpty();
         }
     }
 
