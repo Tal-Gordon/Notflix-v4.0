@@ -80,6 +80,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
         if (injectRightRef.current) {
             const el = injectRightRef.current;
             el.addEventListener('mouseover', () => {
+                el.style.borderRadius = "8px";
                 el.style.backgroundColor = '#e0e0e0';
                 el.style.transform = 'translateY(-1px)';
             });
