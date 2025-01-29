@@ -1,6 +1,6 @@
 import "./admin.css";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navbar, BUTTON_TYPES } from "./components/navbar";
 
 function Admin() {
   const [categories, setCategories] = useState([]);
@@ -219,260 +219,268 @@ function Admin() {
   };
 
   return (
-    <div className="split-screen">
-      <div className="left-panel">
-        <h1>Categories</h1>
-        <button className="create-button" onClick={handleCreate}>
-          Create New Category
-        </button>
+    <div>
+      <Navbar
+        leftButtons={[BUTTON_TYPES.HOME]}
+        rightButtons={[BUTTON_TYPES.LIGHTDARK, BUTTON_TYPES.LOGOUT]}
+      />
+      <div className="split-screen">
+        <div className="left-panel">
+          <h1>Categories</h1>
+          <button className="create-button" onClick={handleCreate}>
+            Create New Category
+          </button>
 
-        <div className="categories-list">
-          <h2>Existing Categories</h2>
-          <div className="categories-container">
-            {categories.map((category) => (
-              <div key={category._id} className="category-item">
-                <h3>{category.name}</h3>
-                <p>Promoted: {category.promoted ? "Yes" : "No"}</p>
-                <p>Movies: {category.movie_list.length} IDs</p>
-                <div className="category-actions">
-                  <button
-                    className="edit-button"
-                    onClick={() => handleEdit(category)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDelete(category._id)}
-                  >
-                    Delete
-                  </button>
+          <div className="categories-list">
+            <h2>Existing Categories</h2>
+            <div className="categories-container">
+              {categories.map((category) => (
+                <div key={category._id} className="category-item">
+                  <h3>{category.name}</h3>
+                  <p>Promoted: {category.promoted ? "Yes" : "No"}</p>
+                  <p>Movies: {category.movie_list.length} IDs</p>
+                  <div className="category-actions">
+                    <button
+                      className="edit-button"
+                      onClick={() => handleEdit(category)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDelete(category._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="right-panel">
-        <h1>Movies</h1>
-        <button className="create-button" onClick={handleCreateMovie}>
-          Create New Movie
-        </button>
+        <div className="right-panel">
+          <h1>Movies</h1>
+          <button className="create-button" onClick={handleCreateMovie}>
+            Create New Movie
+          </button>
 
-        <div className="movies-list">
-          <h2>Existing Movies</h2>
-          <div className="movies-container">
-            {movies.map((movie) => (
-              <div key={movie.id} className="movie-item">
-                {movie.picture && (
-                  <img
-                    src={movie.picture}
-                    alt={movie.title}
-                    className="movie-thumbnail"
-                  />
-                )}
-                <h3>{movie.title}</h3>
-                <p>ID: {movie.id}</p>
-                <p>Categories: {movie.categories.length}</p>
-                <p>Actors: {movie.actors.length}</p>
-                <div className="movie-actions">
-                  <button
-                    className="edit-button"
-                    onClick={() => handleEditMovie(movie)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDeleteMovie(movie.id)}
-                  >
-                    Delete
-                  </button>
+          <div className="movies-list">
+            <h2>Existing Movies</h2>
+            <div className="movies-container">
+              {movies.map((movie) => (
+                <div key={movie.id} className="movie-item">
+                  {movie.picture && (
+                    <img
+                      src={movie.picture}
+                      alt={movie.title}
+                      className="movie-thumbnail"
+                    />
+                  )}
+                  <h3>{movie.title}</h3>
+                  <p>ID: {movie.id}</p>
+                  <p>Categories: {movie.categories.length}</p>
+                  <p>Actors: {movie.actors.length}</p>
+                  <div className="movie-actions">
+                    <button
+                      className="edit-button"
+                      onClick={() => handleEditMovie(movie)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteMovie(movie.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {showMovieModal && (
-        <div
-          className="modal-overlay"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowMovieModal(false);
-              resetMovieForm();
-            }
-          }}
-        >
-          <div className="modal-content">
-            <h1 className="movie-title">
-              {editingMovie ? "Edit Movie" : "Create New Movie"}
-            </h1>
-            <form onSubmit={handleMovieSubmit}>
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Movie Title *"
-                value={movieTitle}
-                onChange={(e) => setMovieTitle(e.target.value)}
-                required
-              />
+        {showMovieModal && (
+          <div
+            className="modal-overlay"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowMovieModal(false);
+                resetMovieForm();
+              }
+            }}
+          >
+            <div className="modal-content">
+              <h1 className="movie-title">
+                {editingMovie ? "Edit Movie" : "Create New Movie"}
+              </h1>
+              <form onSubmit={handleMovieSubmit}>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Movie Title *"
+                  value={movieTitle}
+                  onChange={(e) => setMovieTitle(e.target.value)}
+                  required
+                />
 
-              <select
-                multiple
-                className="input-field"
-                value={movieCategories}
-                onChange={(e) =>
-                  setMovieCategories(
-                    Array.from(
-                      e.target.selectedOptions,
-                      (option) => option.value
+                <select
+                  multiple
+                  className="input-field"
+                  value={movieCategories}
+                  onChange={(e) =>
+                    setMovieCategories(
+                      Array.from(
+                        e.target.selectedOptions,
+                        (option) => option.value
+                      )
                     )
-                  )
-                }
-              >
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+                  }
+                >
+                  {categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
 
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Actors (comma-separated)"
-                value={movieActors}
-                onChange={(e) => setMovieActors(e.target.value)}
-              />
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Actors (comma-separated)"
+                  value={movieActors}
+                  onChange={(e) => setMovieActors(e.target.value)}
+                />
 
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Directors (comma-separated)"
-                value={movieDirectors}
-                onChange={(e) => setMovieDirectors(e.target.value)}
-              />
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Directors (comma-separated)"
+                  value={movieDirectors}
+                  onChange={(e) => setMovieDirectors(e.target.value)}
+                />
 
-              <textarea
-                className="input-field"
-                placeholder="Description"
-                value={movieDescription}
-                onChange={(e) => setMovieDescription(e.target.value)}
-              />
+                <textarea
+                  className="input-field"
+                  placeholder="Description"
+                  value={movieDescription}
+                  onChange={(e) => setMovieDescription(e.target.value)}
+                />
 
-              <div className="file-inputs">
-                <div className="file-input-group">
-                  <label>Picture:</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setMoviePicture(e.target.files[0])}
-                  />
+                <div className="file-inputs">
+                  <div className="file-input-group">
+                    <label>Picture:</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setMoviePicture(e.target.files[0])}
+                    />
+                  </div>
+
+                  <div className="file-input-group">
+                    <label>Video:</label>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={(e) => setMovieVideo(e.target.files[0])}
+                    />
+                  </div>
                 </div>
 
-                <div className="file-input-group">
-                  <label>Video:</label>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    onChange={(e) => setMovieVideo(e.target.files[0])}
-                  />
+                {movieError && (
+                  <div className="error-message">{movieError}</div>
+                )}
+
+                <button className="movie-button" type="submit">
+                  {editingMovie ? "Update Movie" : "Create Movie"}
+                </button>
+                <button
+                  type="button"
+                  className="movie-button cancel"
+                  onClick={() => {
+                    setShowMovieModal(false);
+                    resetMovieForm();
+                  }}
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showModal && (
+          <div
+            className="modal-overlay"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowModal(false);
+                setEditingCategory(null);
+                setName("");
+                setPromoted(false);
+                setMovieList("");
+              }
+            }}
+          >
+            <div className="modal-content">
+              <h1 className="category-title">
+                {editingCategory ? "Edit Category" : "Create New Category"}
+              </h1>
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Category Name *"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+
+                <div className="checkbox-container left-align">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={promoted}
+                      onChange={(e) => setPromoted(e.target.checked)}
+                    />
+                    Promoted
+                  </label>
                 </div>
-              </div>
 
-              {movieError && <div className="error-message">{movieError}</div>}
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Movie IDs (comma-separated)"
+                  value={movieList}
+                  onChange={(e) => setMovieList(e.target.value)}
+                />
 
-              <button className="movie-button" type="submit">
-                {editingMovie ? "Update Movie" : "Create Movie"}
-              </button>
-              <button
-                type="button"
-                className="movie-button cancel"
-                onClick={() => {
-                  setShowMovieModal(false);
-                  resetMovieForm();
-                }}
-              >
-                Cancel
-              </button>
-            </form>
+                {errorMessage && (
+                  <div className="error-message">{errorMessage}</div>
+                )}
+
+                <button className="category-button" type="submit">
+                  {editingCategory ? "Update Category" : "Create Category"}
+                </button>
+                <button
+                  type="button"
+                  className="category-button cancel"
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingCategory(null);
+                    setName("");
+                    setPromoted(false);
+                    setMovieList("");
+                  }}
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-
-      {showModal && (
-        <div
-          className="modal-overlay"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowModal(false);
-              setEditingCategory(null);
-              setName("");
-              setPromoted(false);
-              setMovieList("");
-            }
-          }}
-        >
-          <div className="modal-content">
-            <h1 className="category-title">
-              {editingCategory ? "Edit Category" : "Create New Category"}
-            </h1>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Category Name *"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-
-              <div className="checkbox-container left-align">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={promoted}
-                    onChange={(e) => setPromoted(e.target.checked)}
-                  />
-                  Promoted
-                </label>
-              </div>
-
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Movie IDs (comma-separated)"
-                value={movieList}
-                onChange={(e) => setMovieList(e.target.value)}
-              />
-
-              {errorMessage && (
-                <div className="error-message">{errorMessage}</div>
-              )}
-
-              <button className="category-button" type="submit">
-                {editingCategory ? "Update Category" : "Create Category"}
-              </button>
-              <button
-                type="button"
-                className="category-button cancel"
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingCategory(null);
-                  setName("");
-                  setPromoted(false);
-                  setMovieList("");
-                }}
-              >
-                Cancel
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

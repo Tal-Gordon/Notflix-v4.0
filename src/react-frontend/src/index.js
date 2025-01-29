@@ -13,6 +13,7 @@ import HomeUnauth from "./home.unauth";
 import Login from "./login";
 import Signup from "./signup";
 import VideoPlayer from "./videoPlayer";
+import Admin from "./admin";
 
 // Create a custom hook for authentication state
 const useAuth = () => {
@@ -87,6 +88,14 @@ const App = () => {
         path="/"
         element={
           isLoggedIn ? <Navigate replace to="/browse" /> : <HomeUnauth />
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <Admin />
+          </ProtectedRoute>
         }
       />
     </Routes>
