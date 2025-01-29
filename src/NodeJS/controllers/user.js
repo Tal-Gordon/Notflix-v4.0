@@ -1,4 +1,5 @@
 const userService = require("../services/user");
+const jwt = require("jsonwebtoken");
 
 const isValidArrayOfNumbers = (arr) => {
   if (!Array.isArray(arr)) {
@@ -14,7 +15,7 @@ const createUser = async (req, res) => {
       return res.status(400).json({ error: "Username cannot be empty" });
     } else if (
       !req.body.password ||
-      typeof req.body.password !== "string" ||
+      typeof req.body.password != "string" ||
       req.body.password.length < 8 ||
       !regex.test(req.body.password)
     ) {
@@ -55,9 +56,12 @@ const createUser = async (req, res) => {
         errors: result.errors,
       });
     } else {
-      res.status(201).json({
-        data: result.user,
-      });
+      const token = jwt.sign(
+        { userId: result.user._id, isAdmin: result.user.isAdmin },
+        process.env.JWT_SECRET
+      );
+
+      return res.status(201).json({ data: token });
     }
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
@@ -93,7 +97,12 @@ const isUserRegistered = async (req, res) => {
         .json({ error: "User not found or incorrect credentials" });
     }
 
-    return res.status(200).json({ id: user._id });
+    const token = jwt.sign(
+      { userId: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET
+    );
+
+    return res.status(200).json({ token });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
   }

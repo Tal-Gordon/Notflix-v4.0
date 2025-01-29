@@ -39,7 +39,7 @@ const createMovie = async (
     }
 
     if (video) {
-      const videoDir = "Media/movies/Videos";
+      const videoDir = "Media/Movies/Videos";
       const videoExt = path.extname(video.originalname);
       const videoName = `${movie.id}${videoExt}`;
       const videoPath = path.join(videoDir, videoName);

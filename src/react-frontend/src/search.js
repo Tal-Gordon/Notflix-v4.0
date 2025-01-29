@@ -1,19 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './search.css';
 
-const SearchBar = ({ onSearch, userId }) => {
+const SearchBar = ({ onSearch }) => {
     const [query, setQuery] = useState('');
     const [isActive, setIsActive] = useState(false);
     const timeoutRef = useRef(null);
     const inputRef = useRef(null);
-
     // Focus the input when it becomes visible
     useEffect(() => {
         if (isActive && inputRef.current) {
             inputRef.current.focus();
         }
     }, [isActive]);
-
     // Cleanup timeout on component unmount
     useEffect(() => {
         return () => {
@@ -22,23 +20,19 @@ const SearchBar = ({ onSearch, userId }) => {
             }
         };
     }, []);
-
     const handleInputChange = (e) => {
         const newQuery = e.target.value;
         setQuery(newQuery);
-
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
-
         timeoutRef.current = setTimeout(() => {
             onSearch(newQuery);
         }, 500);
     };
-
     return (
         <div className={`search-container ${isActive ? 'active' : ''}`}>
-            <button 
+            <button
                 className="search-button"
                 onClick={() => setIsActive(!isActive)}
             >
@@ -58,5 +52,4 @@ const SearchBar = ({ onSearch, userId }) => {
         </div>
     );
 };
-
 export default SearchBar;
