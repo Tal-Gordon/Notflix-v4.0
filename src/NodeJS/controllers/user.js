@@ -70,7 +70,7 @@ const createUser = async (req, res) =>
 				process.env.JWT_SECRET
 			);
 
-			return res.status(201).json({ data: token });
+			return res.status(201).json({ token });
 		}
 	} catch (error)
 	{
