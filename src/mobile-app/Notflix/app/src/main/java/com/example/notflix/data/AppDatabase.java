@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
         UserEntity.class,
         MovieEntity.class,
         CategoryEntity.class
-}, version = 3) // Incremented version because of schema change
+}, version = 3)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
     public static ExecutorService executor = Executors.newFixedThreadPool(4);

@@ -1,11 +1,11 @@
-package com.example.notflix.ui.login;
+package com.example.notflix.ui.auth.login;
 
 import android.app.Application;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.notflix.data.LoginRepository;
+import com.example.notflix.data.UserRepository;
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
@@ -21,7 +21,7 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LoginViewModel.class)) {
-            LoginRepository repository = new LoginRepository(application);
+            UserRepository repository = new UserRepository(application);
             return (T) new LoginViewModel(repository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");

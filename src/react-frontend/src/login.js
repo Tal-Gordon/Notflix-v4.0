@@ -1,12 +1,13 @@
 import './login.css';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLogin } from './index'
+import { Navbar, BUTTON_TYPES } from './components/navbar';
 
 function Login() {
-    let navigate = useNavigate();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
+    const login = useLogin()
 
 	const handleLogin = async () => {
         const authRequestOptions = {
@@ -17,19 +18,16 @@ function Login() {
         try {
             const authResponse = await fetch('/tokens', authRequestOptions);
             if (authResponse.ok) {
-            // Access the user ID from the response headers
-            const data = await authResponse.json(); // Extract response body
-            const userId = data.id; // Assume userId is provided in the body
+                const data = await authResponse.json();
+                const token = data.token;
 
-            if (!userId) {
-                throw new Error('User ID is missing in the response headers.');
-            }
+                if (!token) {
+                    throw new Error('Authentication token is missing in response');
+                }
 
-            // Navigate to the authenticated home page and pass the user ID
-            navigate('/browse', { state: { userId } });
+                login(token);
             } else {
-            // User is not authenticated
-                const errorText = await authResponse.text(); // Get error message from server
+                const errorText = await authResponse.text();
                 const errorObject = JSON.parse(errorText);
                 const serverErrorMessage = errorObject.message || errorObject.error || errorObject.description || errorMessage; 
                 setErrorMessage(serverErrorMessage);
@@ -46,32 +44,43 @@ function Login() {
     };
 
     return (
-        <div className="auth-container">
-            <div className="login-form">
-                <h1 className="login-title">Welcome back. <br/>You have been missed.</h1>
-                <input
-                    type="text"
-                    className="login-input"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    required
+        <div>
+            <div className="auth-container">
+                <Navbar 
+                    leftButtons={[
+                        BUTTON_TYPES.HOME
+                    ]}
+                    rightButtons={[
+                        BUTTON_TYPES.LIGHTDARK,
+                        BUTTON_TYPES.SIGNUP
+                    ]}
                 />
-                <input
-                    type="password"
-                    className="login-input"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    required
-                />
-                <button className="login-button" onClick={handleLogin}>
-                    Login
-                </button>
-                {/* TODO: need an account? */}
-                {errorMessage && <div className="error-message">{errorMessage}</div>}
+                <div className="login-form">
+                    <h1 className="login-title">Welcome back. <br/>You have been missed.</h1>
+                    <input
+                        type="text"
+                        className="login-input"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        required
+                        />
+                    <input
+                        type="password"
+                        className="login-input"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        required
+                        />
+                    <button className="login-button" onClick={handleLogin}>
+                        Login
+                    </button>
+                    {/* TODO: need an account? */}
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                </div>
             </div>
         </div>
     );  

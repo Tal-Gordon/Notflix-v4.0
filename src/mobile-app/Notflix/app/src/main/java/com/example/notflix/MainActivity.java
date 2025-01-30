@@ -12,7 +12,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.notflix.databinding.ActivityMainBinding;
-import com.example.notflix.ui.login.LoginActivity;
+import com.example.notflix.ui.auth.login.LoginActivity;
+import com.example.notflix.ui.auth.signup.SignupActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,10 +32,9 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button button = binding.button;
-        button.setOnClickListener(view -> {
-            startActivity(new Intent(this, LoginActivity.class));
-        });
+        binding.btnLogin.setOnClickListener(view -> startActivity(new Intent(this, LoginActivity.class)));
+        binding.btnSignup.setOnClickListener(view -> startActivity(new Intent(this, SignupActivity.class)));
+
         instance = this;
     }
 

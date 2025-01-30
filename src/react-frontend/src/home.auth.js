@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import SearchBar from './search';
 import './home.auth.css';
+import MoviePopup from './components/moviePopup';
+import { Navbar, BUTTON_TYPES } from './components/navbar';
 
 function HomeAuth() {
     const [categories, setCategories] = useState([]);
@@ -9,23 +10,23 @@ function HomeAuth() {
     const [searchResults, setSearchResults] = useState([]);
     const [error, setError] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
-    const location = useLocation();
-    const navigate = useNavigate();
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    
+    const token = sessionStorage.getItem('token');
 
     useEffect(() => {
-        const userId = location.state?.userId;
 
         const fetchMovies = async () => {
             try {
-                if (!userId) {
-                    throw new Error('User ID not found. Please log in again.');
+                if (!token) {
+                    throw new Error('No authentication token found. Please log in again.');
                 }
 
                 const response = await fetch('/movies', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'id': userId,
+                        'Authorization': `Bearer ${token}`
                     },
                 });
 
@@ -35,11 +36,18 @@ function HomeAuth() {
                     // Process categories
                     const categoryData = data.moviesByCategory.map((category) => ({
                         name: category.category.name,
-                        movies: category.movies.map(movie => movie.title)
+                        movies: category.movies.map(movie => ({
+                            ...movie,
+                            picture: movie.picture || 'samplePicture.jpg',
+                            video: movie.video || 'sampleVideo.mp4'
+                        }))
                     }));
 
-                    // Process watched movies
-                    const watchedMovies = data.recentlyWatched.map(movie => movie.title);
+                    const watchedMovies = data.recentlyWatched.map(movie => ({
+                        ...movie,
+                        picture: movie.picture || 'samplePicture.jpg',
+                        video: movie.video || 'sampleVideo.mp4'
+                    }));
 
                     setCategories(categoryData);
                     setRecentlyWatched(watchedMovies);
@@ -55,7 +63,7 @@ function HomeAuth() {
         if (!isSearching) {
             fetchMovies();
         }
-    }, [location.state?.userId, isSearching]);
+    }, [isSearching, token]);
 
     const handleSearch = async (query) => {
         if (!query) {
@@ -71,7 +79,7 @@ function HomeAuth() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'id': location.state?.userId,
+                    'Authorization': `Bearer ${token}`
                 },
             });
 
@@ -91,27 +99,23 @@ function HomeAuth() {
         }
     };
 
-    const handleLogout = () => {
-        navigate('/');
-    };
-
     return (
-        <div className="home-auth">
-            <nav className="navbar2">
-                <ul className="nav-list">
-                    <li className="nav-item">
-                        <SearchBar 
-                            onSearch={handleSearch} 
-                            userId={location.state?.userId}
-                        />
-                    </li>
-                    <li className="nav-item">
-                        <button className="logout-button-navbar" onClick={handleLogout}>
-                            Logout
-                        </button>
-                    </li>
-                </ul>
-            </nav>
+        <div>
+            <Navbar 
+                leftButtons={[
+                    BUTTON_TYPES.HOME
+                ]}
+                rightButtons={[
+                    BUTTON_TYPES.SEARCH,
+                    BUTTON_TYPES.LIGHTDARK,
+                    BUTTON_TYPES.LOGOUT
+                ]}
+                injectRight={
+                    <SearchBar 
+                        onSearch={handleSearch} 
+                    />
+                }
+            /> 
             <div className="home-container">
                 <div className="welcome-header">
                     <h1 className="welcome-message-home">Welcome Back! What will you watch today?</h1>
@@ -126,35 +130,121 @@ function HomeAuth() {
                         {searchResults.length > 0 ? (
                             <>
                                 <h2>Search Results</h2>
-                                <ul className="movies-row">
-                                    {searchResults.map((movie, index) => (
-                                        <li key={index}>
-                                            <button className="movie-item">
-                                                {movie.title}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <div className="movies-row-container">
+                                    <ul className="movies-row">
+                                        <button 
+                                            className="scroll-button left"
+                                            onClick={() => {
+                                                const container = document.querySelector('.movies-row');
+                                                container.scrollBy({ left: -container.clientWidth * 0.8, behavior: 'smooth' });
+                                            }}
+                                        >
+                                            <svg
+                                                width="30"
+                                                height="100%"
+                                                viewBox="0 0 30 100"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <line x1="25" y1="22" x2="5" y2="52" stroke="white" strokeWidth="5" />
+                                                <line x1="25" y1="80" x2="5" y2="50" stroke="white" strokeWidth="5" />
+                                            </svg>
+                                        </button>
+                                        {searchResults.map((movie, index) => (
+                                            <li key={index}>
+                                                <button 
+                                                    className="movie-item" 
+                                                    onClick={() => setSelectedMovie(movie)}
+                                                    style={{
+                                                        backgroundImage: `url(http://localhost:3001/${movie.picture})`,
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center'
+                                                    }}
+                                                    >
+                                                    <span>{movie.title}</span>
+                                                </button>
+                                            </li>
+                                        ))}
+                                        <button 
+                                            className="scroll-button right"
+                                            onClick={() => {
+                                                const container = document.querySelector('.movies-row');
+                                                container.scrollBy({ left: container.clientWidth * 0.8, behavior: 'smooth' });
+                                            }}
+                                        >
+                                            <svg
+                                                width="30"
+                                                height="100%"
+                                                viewBox="0 0 30 100"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <line x1="5" y1="22" x2="25" y2="52" stroke="white" strokeWidth="5" />
+                                                <line x1="5" y1="80" x2="25" y2="50" stroke="white" strokeWidth="5" />
+                                            </svg>
+                                        </button>
+                                    </ul>
+                                </div>
                             </>
                         ) : (
                             <>
                                 {/* Render Categories */}
-                                <h2>Movie Categories</h2>
                                 {categories.length === 0 ? (
                                     <p>Loading categories...</p>
                                 ) : (
                                     categories.map((category, index) => (
                                         <div key={index} className="category-section">
                                             <h3 className="category-title">{category.name}</h3>
-                                            <ul className="movies-row">
+                                            <div className="movies-row-container">
+                                                <ul className="movies-row">
+                                                    <button 
+                                                        className="scroll-button left"
+                                                        onClick={() => {
+                                                            const container = document.querySelector('.movies-row');
+                                                            container.scrollBy({ left: -container.clientWidth * 0.8, behavior: 'smooth' });
+                                                        }}
+                                                    >
+                                                        <svg
+                                                            width="30"
+                                                            height="100%"
+                                                            viewBox="0 0 30 100"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <line x1="25" y1="22" x2="5" y2="52" stroke="white" strokeWidth="5" />
+                                                            <line x1="25" y1="80" x2="5" y2="50" stroke="white" strokeWidth="5" />
+                                                        </svg>
+                                                    </button>
                                                 {category.movies.map((movie, idx) => (
                                                     <li key={`${index}-${idx}`}>
-                                                        <button className="movie-item">
-                                                            {movie}
+                                                        <button 
+                                                            className="movie-item" 
+                                                            onClick={() => setSelectedMovie(movie)}
+                                                            style={{
+                                                                backgroundImage: `url(http://localhost:3001/${movie.picture})`,
+                                                                backgroundSize: 'cover',
+                                                                backgroundPosition: 'center'
+                                                            }}>
+                                                            <span>{movie.title}</span>
                                                         </button>
                                                     </li>
                                                 ))}
-                                            </ul>
+                                                    <button 
+                                                        className="scroll-button right"
+                                                        onClick={() => {
+                                                            const container = document.querySelector('.movies-row');
+                                                            container.scrollBy({ left: container.clientWidth * 0.8, behavior: 'smooth' });
+                                                        }}
+                                                    >
+                                                        <svg
+                                                            width="30"
+                                                            height="100%"
+                                                            viewBox="0 0 30 100"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <line x1="5" y1="22" x2="25" y2="52" stroke="white" strokeWidth="5" />
+                                                            <line x1="5" y1="80" x2="25" y2="50" stroke="white" strokeWidth="5" />
+                                                        </svg>
+                                                    </button>
+                                                </ul>
+                                            </div>
                                         </div>
                                     ))
                                 )}
@@ -168,8 +258,8 @@ function HomeAuth() {
                                         <ul className="watched-movies-list">
                                             {recentlyWatched.map((movie, index) => (
                                                 <li key={index}>
-                                                    <button className="watched-item">
-                                                        {movie}
+                                                    <button className="watched-item" onClick={() => setSelectedMovie(movie)}>
+                                                        {movie.title}
                                                     </button>
                                                 </li>
                                             ))}
@@ -180,6 +270,10 @@ function HomeAuth() {
                         )}
                     </div>
                 )}
+                <MoviePopup 
+                    movie={selectedMovie}
+                    onClose={() => setSelectedMovie(null)}
+                    />
             </div>
         </div>
     );

@@ -3,13 +3,16 @@ const IdService = require('../services/globalId');
 const movieService = require('../services/movie');
 const path = require('path');
 const fs = require('fs').promises;
+const mongoose = require('mongoose')
 
-const createUser = async (username, password, name, surname, picture, watchedMovies) => {
+const createUser = async (username, password, name, surname, picture, watchedMovies) =>
+{
     const errors = []; // Array to collect errors
     try 
     {
         const existingUser = await User.findOne({ username: username });
-        if (existingUser) {
+        if (existingUser)
+        {
             throw new Error("A user with this username already exists.");
         }
 
@@ -27,7 +30,8 @@ const createUser = async (username, password, name, surname, picture, watchedMov
             const invalidIds = [];
 
             // Catch ids of invalid format
-            watchedMovies.forEach(id => {
+            watchedMovies.forEach(id =>
+            {
                 if (!mongoose.Types.ObjectId.isValid(id)) 
                 {
                     invalidIds.push({ id, error: 'Invalid ID format' });
@@ -42,7 +46,8 @@ const createUser = async (username, password, name, surname, picture, watchedMov
             const existingMovieIds = new Set(existingMovies.map(movie => movie._id.toString()));
 
             // Catch nonexistent ids
-            validObjectIds.forEach(id => {
+            validObjectIds.forEach(id =>
+            {
                 if (!existingMovieIds.has(id.toString())) 
                 {
                     errors.push({ id, error: 'Movie does not exist' });
@@ -52,9 +57,10 @@ const createUser = async (username, password, name, surname, picture, watchedMov
                     movieService.postMovieToServer(user._id, id)
                 }
             });
-        } 
+        }
 
-        if (picture) {
+        if (picture)
+        {
             const uploadDir = 'Media/Profiles/';
             const fileExt = path.extname(picture.originalname);
             const fileName = `${user.id}${fileExt}`;
@@ -63,14 +69,15 @@ const createUser = async (username, password, name, surname, picture, watchedMov
             await fs.writeFile(filePath, picture.buffer);
             user.picture = filePath;
         }
-        
+
         const savedUser = await user.save();
         return {
             success: true,
             user: savedUser,
             errors
         };
-    } catch (error) {
+    } catch (error)
+    {
         // Catch unexpected errors
         errors.push({ error: 'error', details: error.message });
         return {
@@ -83,14 +90,24 @@ const createUser = async (username, password, name, surname, picture, watchedMov
 
 const getUserById = async (id) => { return await User.findById(id); };
 
-const authenticateUserById = async (id) => { return getUserById(id) };
+const authenticateUserById = async (id) => { 
+    if (!mongoose.Types.ObjectId.isValid(id))
+    {
+        return false;
+    }
+    
+    return getUserById(id) 
+    };
 
-const adminAuthUserById = async (id) => {
-     const user = getUserById(id);
-     return user == null ? false : user.isAdmin;
-     };
+const adminAuthUserById = async (id) =>
+{
+    const user = getUserById(id);
+    return user == null ? false : user.isAdmin;
+};
 
-const getUserByCredentials = async(username, password) => { return await User.findOne({ username, password }).select('_id'); }
+const getUserByCredentials = async (username, password) => { 
+    return await User.findOne({ username, password }).select('_id isAdmin'); 
+}
 
 module.exports = {
     createUser, getUserById, authenticateUserById, getUserByCredentials, adminAuthUserById

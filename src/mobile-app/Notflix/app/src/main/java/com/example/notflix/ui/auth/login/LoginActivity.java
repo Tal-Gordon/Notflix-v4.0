@@ -1,4 +1,4 @@
-package com.example.notflix.ui.login;
+package com.example.notflix.ui.auth.login;
 
 import android.app.Activity;
 import android.app.Application;
@@ -19,12 +19,18 @@ import com.example.notflix.MainActivity;
 import com.example.notflix.R;
 import com.example.notflix.data.AppDatabase;
 import com.example.notflix.databinding.ActivityLoginBinding;
+import com.example.notflix.ui.auth.LoggedInUserView;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private ActivityLoginBinding binding;
     AppDatabase db;
+
+    EditText usernameEditText;
+    EditText passwordEditText;
+    Button loginButton;
+    ProgressBar loadingProgressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,14 +43,53 @@ public class LoginActivity extends AppCompatActivity {
 
         db = AppDatabase.getInstance(application);
 
+//        getApplicationContext().deleteDatabase("notflix-db"); // for resetting the database
+
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(application))
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = binding.username;
-        final EditText passwordEditText = binding.password;
-        final Button loginButton = binding.login;
-        final ProgressBar loadingProgressBar = binding.loading;
+        usernameEditText = binding.username;
+        passwordEditText = binding.password;
+        loginButton = binding.login;
+        loadingProgressBar = binding.loading;
 
+        setupObservers();
+
+        TextWatcher afterTextChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // ignore
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
+            }
+        };
+        usernameEditText.addTextChangedListener(afterTextChangedListener);
+        passwordEditText.addTextChangedListener(afterTextChangedListener);
+        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                loginViewModel.login(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
+            }
+            return false;
+        });
+
+        loginButton.setOnClickListener(view -> {
+            loadingProgressBar.setVisibility(View.VISIBLE);
+            loginViewModel.login(usernameEditText.getText().toString(),
+                    passwordEditText.getText().toString());
+        });
+    }
+
+    private void setupObservers() {
         loginViewModel.getLoginFormState().observe(this, loginFormState -> {
             if (loginFormState == null) {
                 return;
@@ -74,52 +119,18 @@ public class LoginActivity extends AppCompatActivity {
             //Complete and destroy login activity once successful
             finish();
         });
-
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-        };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-            return false;
-        });
-
-        loginButton.setOnClickListener(v -> {
-            loadingProgressBar.setVisibility(View.VISIBLE);
-            loginViewModel.login(usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString());
-        });
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        db.userDao().getUserById(model.getUserId())
+        db.userDao().getLoggedInUser()
             .observe(this, userEntity -> {
-                String welcome = getString(R.string.welcome) + model.getDisplayName() + "!";
-                welcome += "\n your userId is " + model.getUserId();
+                // to get username: model.getUsername();
+                // to get token: userEntity.getToken();
                 // TODO : initiate successful logged in experience
-                MainActivity.getInstance().SetLoginTextView(welcome);
             });
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        MainActivity.getInstance().SetLoginTextView(getString(errorString));
+        // TODO : show error
     }
 }

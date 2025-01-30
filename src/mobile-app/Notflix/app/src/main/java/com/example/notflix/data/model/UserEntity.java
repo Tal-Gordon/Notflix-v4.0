@@ -6,17 +6,19 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
 public class UserEntity {
+    private String token;
     @PrimaryKey
     @NonNull
-    private String userId;
-    private String displayName;
+    private final String username;
 
-    public UserEntity(String userId, String displayName) {
-        this.userId = userId;
-        this.displayName = displayName;
+    public UserEntity(String token, @NonNull String username) {
+        this.token = token;
+        this.username = username;
     }
 
-    // Getters
-    public String getUserId() { return userId; }
-    public String getDisplayName() { return displayName; }
+    public String getToken() { return token; }
+    public void invalidateToken() { token = null; }
+    @NonNull
+    public String getUsername() { return username; }
+
 }
