@@ -13,8 +13,6 @@ class LoggedInUserView {
         this.userId = userId;
     }
 
-    String getDisplayName() {
-        return displayName;
-    }
+    String getDisplayName() { return displayName; }
     String getUserId() { return userId; }
 }
