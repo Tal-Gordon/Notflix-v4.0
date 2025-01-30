@@ -13,7 +13,7 @@ function HomeUnauth() {
                 ]}
             />
             <div className="home-container">
-                <h1 className="welcome-message-home">We've been waiting for you. Are you ready?</h1>
+                <h1 className="welcome-message-home-unauth">We've been waiting for you. Are you ready?</h1>
             </div>
         </div>
         ); 
