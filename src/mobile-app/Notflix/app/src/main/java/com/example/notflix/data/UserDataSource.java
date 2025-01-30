@@ -5,7 +5,8 @@ import android.util.Log;
 import com.example.notflix.data.model.ErrorResponse;
 import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.LoginRequest;
-import com.example.notflix.data.model.LoginResponse;
+import com.example.notflix.data.model.AuthResponse;
+import com.example.notflix.data.model.SignupRequest;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class UserDataSource {
     private static final String BASE_URL = "http://10.0.2.2:3001/";
     private final ApiService apiService;
 
-    public interface LoginCallback {
+    public interface AuthCallback {
         void onSuccess(Result<LoggedInUser> result);
         void onError(Result<LoggedInUser> result);
     }
@@ -56,19 +57,18 @@ public class UserDataSource {
         apiService = retrofit.create(ApiService.class);
     }
 
-    public void login(String username, String password, LoginCallback callback) {
+    public void login(String username, String password, AuthCallback callback) {
         LoginRequest loginRequest = new LoginRequest(username, password);
 
-        apiService.login(loginRequest).enqueue(new Callback<LoginResponse>() {
+        apiService.login(loginRequest).enqueue(new Callback<AuthResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse loginResponse = response.body();
+                    AuthResponse authResponse = response.body();
                     LoggedInUser user = new LoggedInUser(
-                            loginResponse.getToken(),
+                            authResponse.getToken(),
                             username
                     );
-                    Log.i("UserDataSource", "token: " + loginResponse.getToken());
                     callback.onSuccess(new Result.Success<>(user));
                 } else {
                     try {
@@ -78,7 +78,6 @@ public class UserDataSource {
                                 ErrorResponse.class
                         );
                         String errorMessage = errorResponse.getError();
-                        Log.i("LoginDataSourceError", errorMessage);
                         callback.onError(new Result.Error(new IOException(errorMessage)));
                     } catch (Exception e) {
                         callback.onError(new Result.Error(new IOException("Login failed")));
@@ -87,8 +86,43 @@ public class UserDataSource {
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
                 callback.onError(new Result.Error(new IOException("Error logging in: " + t.getMessage())));
+            }
+        });
+    }
+
+    public void signup(String username, String password, String name, String surname, AuthCallback callback) {
+        SignupRequest signupRequest = new SignupRequest(username, password, name, surname);
+
+        apiService.signup(signupRequest.toPartMap()).enqueue(new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AuthResponse authResponse = response.body();
+                    LoggedInUser user = new LoggedInUser(
+                            authResponse.getToken(),
+                            username
+                    );
+                    callback.onSuccess(new Result.Success<>(user));
+                } else {
+                    try {
+                        Gson gson = new Gson();
+                        ErrorResponse errorResponse = gson.fromJson(
+                                response.errorBody().charStream(),
+                                ErrorResponse.class
+                        );
+                        String errorMessage = errorResponse.getError();
+                        callback.onError(new Result.Error(new IOException(errorMessage)));
+                    } catch (Exception e) {
+                        callback.onError(new Result.Error(new IOException("Signup failed")));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                callback.onError(new Result.Error(new IOException("Error signing up: " + t.getMessage())));
             }
         });
     }

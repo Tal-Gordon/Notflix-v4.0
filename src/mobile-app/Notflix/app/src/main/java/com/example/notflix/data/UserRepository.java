@@ -8,7 +8,7 @@ import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.UserEntity;
 
 /**
- * The {@code LoginRepository} class acts as the single source of truth for handling user authentication
+ * The {@code UserRepository} class acts as the single source of truth for handling user authentication
  * and session management. It serves as a bridge between the {@link UserDataSource}, which communicates
  * with the remote server, and the local database via {@link UserDao} to store user data.
  *
@@ -20,18 +20,41 @@ import com.example.notflix.data.model.UserEntity;
  *     <li>Handles logout operations.</li>
  * </ul>
  */
-public class LoginRepository {
+public class UserRepository {
     private UserDataSource dataSource;
     private UserDao userDao;
     private LoggedInUser user = null;
 
 
-    public LoginRepository(Application application) {
+    public UserRepository(Application application) {
         dataSource = new UserDataSource();
         userDao = AppDatabase.getInstance(application).userDao();
     }
-    public void login(String username, String password, UserDataSource.LoginCallback callback) {
-        dataSource.login(username, password, new UserDataSource.LoginCallback() {
+    public void login(String username, String password, UserDataSource.AuthCallback callback) {
+        dataSource.login(username, password, new UserDataSource.AuthCallback() {
+            @Override
+            public void onSuccess(Result<LoggedInUser> result) {
+                // Save the user to Room
+                if (result instanceof Result.Success) {
+                    LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
+                    UserEntity userEntity = new UserEntity(
+                            loggedInUser.getToken(),
+                            loggedInUser.getUsername()
+                    );
+                    saveUser(userEntity);
+                }
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onError(Result<LoggedInUser> result) {
+                callback.onError(result);
+            }
+        });
+    }
+
+    public void signup(String username, String password, String name, String surname, UserDataSource.AuthCallback callback) {
+        dataSource.signup(username, password, name, surname, new UserDataSource.AuthCallback() {
             @Override
             public void onSuccess(Result<LoggedInUser> result) {
                 // Save the user to Room

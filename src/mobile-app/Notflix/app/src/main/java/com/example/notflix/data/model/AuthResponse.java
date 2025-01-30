@@ -2,7 +2,7 @@ package com.example.notflix.data.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LoginResponse {
+public class AuthResponse {
     @SerializedName("token")
     private String token;
 

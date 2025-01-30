@@ -1,55 +1,66 @@
-package com.example.notflix.ui.login;
+package com.example.notflix.ui.auth.signup;
 
 import android.app.Activity;
+
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.app.Application;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.notflix.MainActivity;
 import com.example.notflix.R;
 import com.example.notflix.data.AppDatabase;
-import com.example.notflix.databinding.ActivityLoginBinding;
+import com.example.notflix.ui.auth.AuthResult;
+import com.example.notflix.ui.auth.LoggedInUserView;
+import com.example.notflix.databinding.ActivitySignupBinding;
 
-public class LoginActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity {
 
-    private LoginViewModel loginViewModel;
-    private ActivityLoginBinding binding;
+    private SignupViewModel signupViewModel;
+    private ActivitySignupBinding binding;
     AppDatabase db;
 
     EditText usernameEditText;
     EditText passwordEditText;
-    Button loginButton;
+    EditText nameEditText;
+    EditText surnameEditText;
+    Button signupButton;
     ProgressBar loadingProgressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        binding = ActivitySignupBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         Application application = getApplication();
-
         db = AppDatabase.getInstance(application);
 
-//        getApplicationContext().deleteDatabase("notflix-db"); // for resetting the database
-
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(application))
-                .get(LoginViewModel.class);
+        signupViewModel = new ViewModelProvider(this, new SignupViewModelFactory(application))
+                .get(SignupViewModel.class);
 
         usernameEditText = binding.username;
         passwordEditText = binding.password;
-        loginButton = binding.login;
+        nameEditText = binding.name;
+        surnameEditText = binding.surname;
+        signupButton = binding.btnSignup;
         loadingProgressBar = binding.loading;
 
         setupObservers();
@@ -67,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
+                signupViewModel.signupDataChanged(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
             }
         };
@@ -75,25 +86,30 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                signupViewModel.Signup(
+                        usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString(),
+                        nameEditText.getText().toString(),
+                        surnameEditText.getText().toString());
             }
             return false;
         });
 
-        loginButton.setOnClickListener(v -> {
+        signupButton.setOnClickListener(view -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
-            loginViewModel.login(usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString());
+            signupViewModel.Signup(usernameEditText.getText().toString(),
+                                    passwordEditText.getText().toString(),
+                                    nameEditText.getText().toString(),
+                                    surnameEditText.getText().toString());
         });
     }
 
     private void setupObservers() {
-        loginViewModel.getLoginFormState().observe(this, loginFormState -> {
+        signupViewModel.getSignupFormState().observe(this, loginFormState -> {
             if (loginFormState == null) {
                 return;
             }
-            loginButton.setEnabled(loginFormState.isDataValid());
+            signupButton.setEnabled(loginFormState.isDataValid());
             if (loginFormState.getUsernameError() != null) {
                 usernameEditText.setError(getString(loginFormState.getUsernameError()));
             }
@@ -102,13 +118,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginViewModel.getLoginResult().observe(this, loginResult -> {
+        signupViewModel.getSignupResult().observe(this, loginResult -> {
             if (loginResult == null) {
                 return;
             }
             loadingProgressBar.setVisibility(View.GONE);
             if (loginResult.getError() != null) {
-                showLoginFailed(loginResult.getError());
+                showSignupFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
                 updateUiWithUser(loginResult.getSuccess());
@@ -122,15 +138,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUiWithUser(LoggedInUserView model) {
         db.userDao().getLoggedInUser()
-            .observe(this, userEntity -> {
-                String welcome = getString(R.string.welcome) + model.getUsername() + "!";
-                welcome += "\n your token is " + userEntity.getToken();
-                // TODO : initiate successful logged in experience
-                MainActivity.getInstance().SetLoginTextView(welcome);
-            });
+                .observe(this, userEntity -> {
+                    // to get username: model.getUsername();
+                    // to get token: userEntity.getToken();
+                    // TODO : initiate successful logged in experience
+                });
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        MainActivity.getInstance().SetLoginTextView(getString(errorString));
+    private void showSignupFailed(@StringRes Integer errorString) {
+        // TODO : initiate error
     }
 }

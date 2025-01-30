@@ -1,4 +1,4 @@
-package com.example.notflix.ui.login;
+package com.example.notflix.ui.auth.login;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.notflix.R;
 import com.example.notflix.data.UserDataSource;
-import com.example.notflix.data.LoginRepository;
+import com.example.notflix.data.UserRepository;
 import com.example.notflix.data.Result;
 import com.example.notflix.data.model.ErrorMapper;
 import com.example.notflix.data.model.LoggedInUser;
+import com.example.notflix.ui.auth.AuthResult;
+import com.example.notflix.ui.auth.LoggedInUserView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +20,7 @@ import java.util.regex.Pattern;
  * related to user login in the UI layer. It provides observable LiveData to update the UI
  * based on user interactions and authentication results.
  *
- * <p>This class integrates with the {@link LoginRepository} to handle authentication processes
+ * <p>This class integrates with the {@link UserRepository} to handle authentication processes
  * and performs form validation to ensure correct user input.
  *
  * <p>Main features of this ViewModel:
@@ -33,29 +35,29 @@ import java.util.regex.Pattern;
 public class LoginViewModel extends ViewModel {
 
     private final MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private final MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private final LoginRepository loginRepository;
+    private final MutableLiveData<AuthResult> loginResult = new MutableLiveData<>();
+    private final UserRepository userRepository;
 
-    LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    LoginViewModel(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     LiveData<LoginFormState> getLoginFormState() {
         return loginFormState;
     }
 
-    LiveData<LoginResult> getLoginResult() {
+    LiveData<AuthResult> getLoginResult() {
         return loginResult;
     }
 
     public void login(String username, String password) {
-        loginRepository.login(username, password, new UserDataSource.LoginCallback() {
+        userRepository.login(username, password, new UserDataSource.AuthCallback() {
             @Override
             public void onSuccess(Result<LoggedInUser> result) {
                 // Handle UI updates
                 if (result instanceof Result.Success) {
                     LoggedInUser user = ((Result.Success<LoggedInUser>) result).getData();
-                    loginResult.postValue(new LoginResult(new LoggedInUserView(user.getUsername())));
+                    loginResult.postValue(new AuthResult(new LoggedInUserView(user.getUsername())));
                 }
             }
 
@@ -67,7 +69,7 @@ public class LoginViewModel extends ViewModel {
                     String errorMessage = error.getMessage(); // Extract message from backend
                     errorResId = ErrorMapper.getErrorResource(errorMessage); // Map to string resource
                 }
-                loginResult.postValue(new LoginResult(errorResId));
+                loginResult.postValue(new AuthResult(errorResId));
             }
         });
     }

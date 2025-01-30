@@ -14,11 +14,11 @@
         android:layout_margin="15dp"
         android:layout_marginTop="225dp"
         android:text="Sign Up"
-        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/btnLogin"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -30,9 +30,9 @@
         android:id="@+id/loginInfoText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/welcome"
         android:textAlignment="center"
-        android:text="Currently not logged in"
-        android:textSize="16sp"
+        android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
