@@ -47,8 +47,6 @@ const PublicRoute = ({ children }) =>
 
 const App = () =>
 {
-	const { isLoggedIn } = useAuth();
-
 	return (
 		<Routes>
 			<Route
@@ -85,7 +83,11 @@ const App = () =>
 			/>
 			<Route
 				path="/"
-				element={isLoggedIn ? <Navigate replace to="/browse" /> : <HomeUnauth />}
+				element={
+					<PublicRoute>
+						<HomeUnauth />
+					</PublicRoute>
+				}
 			/>
 		</Routes>
 	);
