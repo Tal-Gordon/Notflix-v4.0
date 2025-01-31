@@ -2,9 +2,11 @@ package com.example.notflix.ui.auth.login;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -15,11 +17,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.notflix.MainActivity;
-import com.example.notflix.R;
 import com.example.notflix.data.AppDatabase;
 import com.example.notflix.databinding.ActivityLoginBinding;
 import com.example.notflix.ui.auth.LoggedInUserView;
+import com.example.notflix.ui.home.HomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -124,6 +125,8 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUiWithUser(LoggedInUserView model) {
         db.userDao().getLoggedInUser()
             .observe(this, userEntity -> {
+                Log.i("LoginAttempt", "ALLAH HU AKBAR");
+                startActivity(new Intent(this, HomeActivity.class));
                 // to get username: model.getUsername();
                 // to get token: userEntity.getToken();
                 // TODO : initiate successful logged in experience
@@ -131,6 +134,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        // TODO : show error
+        Log.i("LoginAttempt", getString(errorString));
     }
 }

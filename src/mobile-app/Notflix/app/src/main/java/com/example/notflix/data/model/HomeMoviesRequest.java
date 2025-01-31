@@ -4,6 +4,6 @@ public class HomeMoviesRequest {
     private String token;
 
     public HomeMoviesRequest(String token) {
-        this.token = token;
+        this.token = "Bearer " + token;
     }
 }

@@ -19,11 +19,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Retrieve userId from Intent
-        token = getIntent().getStringExtra("USER_ID");
-
         // Initialize ViewModel with Factory
-        HomeViewModelFactory factory = new HomeViewModelFactory(getApplication(), token);
+        HomeViewModelFactory factory = new HomeViewModelFactory(getApplication());
         homeViewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
         // Observe LiveData
@@ -32,6 +29,6 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Trigger data refresh
-        homeViewModel.refreshMovies(token);
+        homeViewModel.refreshMovies();
     }
 }

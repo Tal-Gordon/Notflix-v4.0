@@ -5,17 +5,20 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 @Entity(tableName = "categories")
 public class CategoryEntity {
     @PrimaryKey
-    @NonNull
-    private String categoryId;
+    @SerializedName("_id")
+    @NonNull private String categoryId;
 
     private String name;
     private boolean promoted;
-    private List<String> movieIds; // List of movie IDs
+    @SerializedName("movie_list")
+    private List<String> movieIds;
 
     public CategoryEntity(@NonNull String categoryId,
                           String name,
@@ -38,4 +41,13 @@ public class CategoryEntity {
     public void setName(String name) { this.name = name; }
     public void setPromoted(boolean promoted) { this.promoted = promoted; }
     public void setMovieIds(List<String> movieIds) { this.movieIds = movieIds; }
+    @NonNull
+    public String toString() {
+        return "Category{" +
+                "id='" + categoryId + '\'' +
+                ", name='" + name + '\'' +
+                ", promoted=" + promoted +
+                ", movies=" + movieIds +
+                '}';
+    }
 }

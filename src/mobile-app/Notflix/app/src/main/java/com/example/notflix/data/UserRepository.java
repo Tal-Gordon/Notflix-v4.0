@@ -1,6 +1,7 @@
 package com.example.notflix.data;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -42,6 +43,8 @@ public class UserRepository {
                             loggedInUser.getUsername()
                     );
                     saveUser(userEntity);
+                    Log.i("notATag", userEntity.getToken());
+                    setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
             }
@@ -65,6 +68,7 @@ public class UserRepository {
                             loggedInUser.getUsername()
                     );
                     saveUser(userEntity);
+                    setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
             }
@@ -117,7 +121,5 @@ public class UserRepository {
 
     private void setLoggedInUser(LoggedInUser user) {
         this.user = user;
-        // If user credentials will be cached in local storage, it is recommended it be encrypted
-        // @see https://developer.android.com/training/articles/keystore
     }
 }

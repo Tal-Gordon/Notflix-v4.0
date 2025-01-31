@@ -6,17 +6,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class HomeViewModelFactory implements ViewModelProvider.Factory {
     private final Application application;
-    private final String token;
 
-    public HomeViewModelFactory(Application application, String token) {
+    public HomeViewModelFactory(Application application) {
         this.application = application;
-        this.token = token;
     }
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass.isAssignableFrom(HomeViewModel.class)) {
-            return (T) new HomeViewModel(application, token);
+            return (T) new HomeViewModel(application);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

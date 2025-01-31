@@ -5,13 +5,15 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 @Entity(tableName = "movies")
 public class MovieEntity {
     @PrimaryKey
-    @NonNull
-    private String movieId;
+    @SerializedName("_id")
+    @NonNull private String movieId;
 
     @NonNull
     private String title;
@@ -21,7 +23,8 @@ public class MovieEntity {
     private String video;
     private String actors;
     private String directors;
-    private List<String> categoryIds; // List of category IDs
+    @SerializedName("categories")
+    private List<String> categoryIds;
 
     public MovieEntity(@NonNull String movieId,
                        @NonNull String title,
@@ -60,4 +63,13 @@ public class MovieEntity {
     public void setActors(String actors) { this.actors = actors; }
     public void setDirectors(String directors) { this.directors = directors; }
     public void setCategoryIds(List<String> categoryIds) { this.categoryIds = categoryIds; }
+
+    @NonNull
+    public String toString() {
+        return "Movie{" +
+                "id='" + movieId + '\'' +
+                ", title='" + title + '\'' +
+                ", categories=" + categoryIds +
+                '}';
+    }
 }

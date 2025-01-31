@@ -13,11 +13,13 @@ function HomeAuth() {
     const [selectedMovie, setSelectedMovie] = useState(null);
     
     const token = sessionStorage.getItem('token');
+    
 
     useEffect(() => {
 
         const fetchMovies = async () => {
             try {
+                console.log(token);
                 if (!token) {
                     throw new Error('No authentication token found. Please log in again.');
                 }

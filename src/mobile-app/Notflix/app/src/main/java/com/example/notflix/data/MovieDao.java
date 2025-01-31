@@ -34,6 +34,9 @@ public interface MovieDao {
     @Query("SELECT * FROM movies")
     List<MovieEntity> getAllMoviesSync(); // Synchronous version
 
-    @Query("SELECT * FROM movies WHERE :categoryId IN (categoryIds)")
-    List<MovieEntity> getMoviesForCategorySync(String categoryId); // Synchronous
+//    @Query("SELECT * FROM movies WHERE :categoryId IN (categoryIds)")
+//    List<MovieEntity> getMoviesForCategorySync(String categoryId);
+
+    @Query("SELECT * FROM movies WHERE ',' || categoryIds || ',' LIKE '%,' || :categoryId || ',%'")
+    List<MovieEntity> getMoviesForCategorySync(String categoryId);
 }
