@@ -98,7 +98,7 @@ const VideoPlayer = () => {
                             <div className="video-info">
                                 <h1>{movie.title}</h1>
                                 {movie.description && <p>{movie.description}</p>}
-                                <div className="metadata">
+                                <div className="metadata-vp">
                                     <span>Duration: {duration}</span>
                                     <span>Movie ID: {id}</span>
                                 </div>

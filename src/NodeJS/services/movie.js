@@ -451,16 +451,16 @@ const getRecommendations = async (userId, movieId) =>
 							.split("\n\n")[1] // Extract IDs after the 200 OK line
 							.split(" ") // Split by space
 							.filter((id) => id.trim()); // Remove empty strings
+							// Fetch movies by their global IDs
+							const validMovies = await Movie.find({
+								id: { $in: movieIds },
+							}).lean();
+
+							resolve({ status: 200, result: validMovies });
 					} catch
 					{
 						resolve({ status: 404, result: "Recommendation not found" }); // In case no movies were returned, and second split fails
 					}
-					// Fetch movies by their global IDs
-					const validMovies = await Movie.find({
-						id: { $in: movieIds },
-					}).lean();
-
-					resolve({ status: 200, result: validMovies });
 				}
 
 				client.destroy(); // Close the connection
@@ -473,11 +473,6 @@ const getRecommendations = async (userId, movieId) =>
 						"Failed to connect to the recommendation server: " + err.message
 					)
 				);
-			});
-
-			client.on("close", () =>
-			{
-				console.log("Connection to recommendation server closed");
 			});
 		});
 	} catch (error)

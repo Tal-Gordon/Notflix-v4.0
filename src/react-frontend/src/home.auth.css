@@ -34,7 +34,7 @@
     }
 }
 
-.welcome-message-home {
+.welcome-message-home-auth {
     font-size: 2.5rem;
     color: var(--secondary-color);
     margin: 20px;
@@ -52,10 +52,12 @@
                                         #0d652d 100%
     );
     background-clip: text;
-    background-size: 400% 100%;
+    background-size: 200% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
+    text-align: left;
+    margin-left: 50px;
     letter-spacing: -0.5px;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1)
 }
@@ -105,23 +107,36 @@
     position: relative;
 }
 
+.movies-row-container:hover .scroll-button {
+    opacity: 1;
+}
+
 .scroll-button {
     position: absolute;
     top: 0;
     height: 100%;
     width: 50px;
-    background: rgba(0, 0, 0, 0.5);
-    background-color: transparent;
     color: white;
     border: none;
     cursor: pointer;
-    transition: opacity 0.2s, background-color 0.2s;
     z-index: 10;
     border-radius: 8px;
+    opacity: 0;
+    background-color: transparent;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+
+.scroll-button svg {
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
 }
 
 .scroll-button:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.scroll-button:hover svg {
+    opacity: 1;
 }
 
 .scroll-button.left {
@@ -148,8 +163,8 @@
     flex-shrink: 0;
     border-radius: 12px;
     font-size: 1rem;
-    height: 280px;
-    width: 480px;
+    height: 180px;
+    width: 300px;
     color: var(--text-light);
     border: none;
     cursor: pointer;
@@ -157,6 +172,25 @@
     overflow: hidden;
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform-style: preserve-3d;
+}
+
+.watched-item span {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 0;
+    right: 0;
+    padding: 0 2rem;
+    z-index: 2;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 400;
+    transform: translateZ(30px);
+    color: #fff;
+}
+
+.watched-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .movie-item {
@@ -183,9 +217,10 @@
     padding: 0 2rem;
     z-index: 2;
     text-align: left;
-    font-size: 1.4rem;
+    font-size: 1rem;
     font-weight: 600;
     transform: translateZ(30px);
+    color: #fff;
 }
 
 .movie-item:hover {
@@ -260,4 +295,36 @@
 .watched-movies-list::-webkit-scrollbar-thumb {
     background: var(--primary-color);
     border-radius: 4px;
+}
+
+.featured-video-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    background-color: #000;
+}
+
+.featured-video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    display: block;
+}
+
+.featured-video-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    pointer-events: none;
+}
+
+.featured-title {
+    color: white;
+    font-size: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
 }

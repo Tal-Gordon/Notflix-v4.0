@@ -4,3 +4,4 @@ src/*.gch
 src/*.out
 src/NodeJS/node_modules/
 src/NodeJS/config
+src/NodeJS/Media/Movies

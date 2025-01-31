@@ -1,6 +1,7 @@
 const movieService = require("../services/movie");
 const mongoose = require("mongoose");
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { getUserById } = require('../services/user')
 
 // Helper to validate an array of ObjectId strings
 const isValidArrayOfObjectIds = (arr) =>
@@ -307,22 +308,34 @@ const postMovieToServer = async (req, res) =>
             return res.status(400).json({ error: "Movie ID is missing" });
         }
 
+		const user = await getUserById(userId); // Find the user by ID
+
+		if (!user) {
+			return res.status(404).json({ error: "UserId in invalid" });
+		}
+
+		if(user.watchedMovies.some(watchedMovie => { return watchedMovie._id.equals(movieId); })) {
+			return res.status(204);
+		}
+
 		try {
-			// Verify and decode the token
+			const authHeader = req.headers.authorization;
+    
+			if (!authHeader || !authHeader.startsWith('Bearer ')) {
+				return res.status(401).json({ error: 'Unauthorized - Missing or invalid token' });
+			}
+
+			const token = authHeader.split(' ')[1];
 			const decoded = jwt.verify(token, process.env.JWT_SECRET);
 			
-			// Get user ID from decoded token
-			const userId = decoded.userId; // Assuming your token payload has 'userId'
+			const userId = decoded.userId;
 			
-			// Get movie ID from URL
 			const urlSegments = req.path.split('/');
 			const movieId = urlSegments[urlSegments.length - 2];
 		
 			if (!userId || !movieId) {
 				return res.status(400).json({ error: "Movie ID or user ID are missing" });
 			}
-		
-			// Continue with your logic...
 		} catch (err) {
 			return res.status(401).json({ error: "Invalid or expired token" });
 		}
