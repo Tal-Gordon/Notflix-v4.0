@@ -13,7 +13,7 @@ const isValidArrayOfObjectIds = (arr) => {
 
 // Create a new movie
 const createMovie = async (req, res) => {
-  const { title, categories, actors, description, directors } = req.body;
+  let { title, categories, actors, description, directors } = req.body;
   let picture = req.files?.picture?.[0];
   let video = req.files?.video?.[0];
   if (picture === undefined) {
@@ -26,33 +26,42 @@ const createMovie = async (req, res) => {
   if (!title || typeof title !== "string" || title.trim() === "") {
     return res.status(400).json({ error: "Invalid or missing title" });
   }
+  
+  if (categories && !Array.isArray(categories)) {
+    categories = [categories];
+  }
   if (categories && !isValidArrayOfObjectIds(categories)) {
     return res.status(400).json({ error: "Invalid categories format" });
   }
-  if (
-    actors &&
-    (!Array.isArray(actors) ||
-      !actors.every((item) => typeof item === "string"))
-  ) {
+  if (actors) {
+    actors = Array.isArray(req.body.actors) ? req.body.actors : [req.body.actors];
+  }
+  if (directors) {
+    directors = Array.isArray(req.body.directors) ? req.body.directors : [req.body.directors];
+  }
+  
+
+  if (actors && (
+    !Array.isArray(actors) || 
+    !actors.every(item => typeof item === "string")
+  )) {
     return res.status(400).json({ error: "Invalid actors format" });
   }
-  if (description && typeof description !== "string") {
-    return res.status(400).json({ error: "Invalid description format" });
-  }
-  if (
-    directors &&
-    (!Array.isArray(actors) ||
-      !actors.every((item) => typeof item === "string"))
-  ) {
+
+  if (directors && (
+    !Array.isArray(directors) ||
+    !directors.every(item => typeof item === "string")
+  )) {
     return res.status(400).json({ error: "Invalid directors format" });
   }
+
   try {
     const newMovie = await movieService.createMovie(
       title,
-      categories,
-      actors,
+      categories || [],
+      actors || [],
       description,
-      directors,
+      directors || [],
       picture,
       video
     );
@@ -118,7 +127,15 @@ const getMovie = async (req, res) => {
 // Update an existing movie
 const replaceMovie = async (req, res) => {
   const { id } = req.params;
-  const { title, categories } = req.body;
+  let { title, categories, actors, description, directors } = req.body;
+  let picture = req.files?.picture?.[0];
+  let video = req.files?.video?.[0];
+  if (picture === undefined) {
+    picture = '';
+  }
+  if (video === undefined) {
+    video = '';
+  }
 
   // Validate inputs
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -127,19 +144,52 @@ const replaceMovie = async (req, res) => {
   if (title && (typeof title !== "string" || title.trim() === "")) {
     return res.status(400).json({ error: "Invalid title" });
   }
+  if (categories && !Array.isArray(categories)) {
+    categories = [categories];
+  }
   if (categories && !isValidArrayOfObjectIds(categories)) {
     return res.status(400).json({ error: "Invalid categories format" });
   }
+  if (actors) {
+    actors = Array.isArray(req.body.actors) ? req.body.actors : [req.body.actors];
+  }
+  if (directors) {
+    directors = Array.isArray(req.body.directors) ? req.body.directors : [req.body.directors];
+  }
+  
 
-  // Warning if all fields are empty
-  if (!title && (!categories || categories.length === 0)) {
-    return res.status(400).json({
-      message: "No valid fields provided. No changes were made.",
-    });
+  if (actors && (
+    !Array.isArray(actors) || 
+    !actors.every(item => typeof item === "string")
+  )) {
+    return res.status(400).json({ error: "Invalid actors format" });
   }
 
+  if (directors && (
+    !Array.isArray(directors) ||
+    !directors.every(item => typeof item === "string")
+  )) {
+    return res.status(400).json({ error: "Invalid directors format" });
+  }
+
+  // Warning if all fields are empty
+  // if (!title && (!categories || categories.length === 0)) {
+  //   return res.status(400).json({
+  //     message: "No valid fields provided. No changes were made.",
+  //   });
+  // }
+
   try {
-    const updatedMovie = await movieService.replaceMovie(id, title, categories);
+    const updatedMovie = await movieService.replaceMovie(
+      id, 
+      title, 
+      categories, 
+      actors, 
+      description, 
+      directors,
+      picture,
+      video
+    );
 
     if (!updatedMovie) {
       return res.status(404).json({ error: "Movie not found" });

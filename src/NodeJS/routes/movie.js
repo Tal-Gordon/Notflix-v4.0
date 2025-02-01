@@ -21,6 +21,11 @@ router
   // Get a list of movies for a user
   .get(authMiddleware, movieController.getMoviesForUser);
 
+  router
+    .route("/all/")
+    // Get all movies
+    .get(adminAuthMiddleware, movieController.getAllMovies);
+
 router
   .route("/:id")
   // Get a movie by its ID
@@ -48,10 +53,5 @@ router
   .route("/search/:query")
   // Search for movies
   .get(authMiddleware, movieController.searchMovies);
-
-router
-  .route("/all/")
-  // Get all movies
-  .get(adminAuthMiddleware, movieController.getAllMovies);
 
 module.exports = router;

@@ -34,8 +34,9 @@ const createMovie = async (
       const uploadDir = "Media/Movies/Pictures";
       const fileExt = path.extname(picture.originalname);
       const fileName = `${movie._id}${fileExt}`;
-      const filePath = path.join(uploadDir, fileName);
-
+      const filePath = path.join(uploadDir, fileName).replace(/\\/g, '/');
+      
+      await fs.mkdir(uploadDir, { recursive: true });
       await fs.writeFile(filePath, picture.buffer);
       movie.picture = filePath;
     }
@@ -44,8 +45,9 @@ const createMovie = async (
       const videoDir = "Media/Movies/Videos";
       const videoExt = path.extname(video.originalname);
       const videoName = `${movie.id}${videoExt}`;
-      const videoPath = path.join(videoDir, videoName);
+      const videoPath = path.join(videoDir, videoName).replace(/\\/g, '/');
 
+      await fs.mkdir(videoDir, { recursive: true });
       await fs.writeFile(videoPath, video.buffer);
       movie.video = videoPath;
     }
@@ -150,7 +152,9 @@ const replaceMovie = async (
   categories,
   actors,
   description,
-  directors
+  directors,
+  picture,
+  video
 ) => {
   try {
     const existingMovie = await Movie.findById(id);
@@ -179,11 +183,34 @@ const replaceMovie = async (
       update.directors = directors;
     }
 
+    if (picture && picture !== '') {
+      const uploadDir = "Media/Movies/Pictures";
+      const fileExt = path.extname(picture.originalname);
+      const fileName = `${update._id}${fileExt}`;
+      const filePath = path.join(uploadDir, fileName).replace(/\\/g, '/');
+      
+      await fs.mkdir(uploadDir, { recursive: true });
+      await fs.writeFile(filePath, picture.buffer);
+      update.picture = filePath;
+    }
+
+    if (video && video !== '') {
+      const videoDir = "Media/Movies/Videos";
+      const videoExt = path.extname(video.originalname);
+      const videoName = `${update.id}${videoExt}`;
+      const videoPath = path.join(videoDir, videoName).replace(/\\/g, '/');
+
+      await fs.mkdir(videoDir, { recursive: true });
+      await fs.writeFile(videoPath, video.buffer);
+      update.video = videoPath;
+    }
+    
     const updatedMovie = await Movie.findByIdAndUpdate(
       id,
       { $set: update },
       { new: true, runValidators: true } // Return the updated movie, and validate
     );
+    
 
     if (!updatedMovie) {
       throw new Error("Movie not found");
@@ -406,7 +433,7 @@ const getRecommendations = async (userId, movieId) => {
 					});
 				} else if (response.startsWith("404"))
 				{
-					resolve({ status: 404, result: "Recommendation not found" });
+					resolve({ status: 404, result: "Nothing to recommend" });
 				} else if (response.startsWith("200"))
 				{
 					try
