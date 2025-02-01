@@ -1,5 +1,5 @@
 import "./admin.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Navbar, BUTTON_TYPES } from "./components/navbar";
 
 function Admin() {
@@ -24,18 +24,49 @@ function Admin() {
   const [showMovieModal, setShowMovieModal] = useState(false);
   const [movieError, setMovieError] = useState("");
 
+  const token = sessionStorage.getItem("token");
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!token) {
+          throw new Error(
+            "No authentication token found. Please log in again."
+          );
+        }
         const [categoriesRes, moviesRes] = await Promise.all([
-          fetch("/categories"),
-          fetch("/movies"),
+          fetch("/categories", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          fetch("/movies/all", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }),
         ]);
-
+        const response = await fetch("/movies", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // if (response.ok) {
+        //   const data = await response.json();
+        // }
+        const data = await response.json();
         const categoriesData = await categoriesRes.json();
         const moviesData = await moviesRes.json();
 
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        if (Array.isArray(moviesData) == []) {
+          console.log("no movies");
+        }
         setMovies(Array.isArray(moviesData) ? moviesData : []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -71,10 +102,12 @@ function Admin() {
         ? `/categories/${editingCategory._id}`
         : "/categories";
       const method = editingCategory ? "PATCH" : "POST";
-
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(categoryData),
       });
 
@@ -83,7 +116,13 @@ function Admin() {
         throw new Error(errorData.message || "Operation failed");
       }
 
-      const updatedResponse = await fetch("/categories");
+      const updatedResponse = await fetch("/categories", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setCategories(await updatedResponse.json());
 
       setName("");
@@ -99,10 +138,13 @@ function Admin() {
   const handleDelete = async (categoryId) => {
     if (!window.confirm("Are you sure you want to delete this category?"))
       return;
-
     try {
       const response = await fetch(`/categories/${categoryId}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) throw new Error("Delete failed");
@@ -132,7 +174,7 @@ function Admin() {
     event.preventDefault();
     setMovieError("");
 
-    if (!movieTitle.trim() || !movieId) {
+    if (!movieTitle.trim()) {
       setMovieError("Title is required.");
       return;
     }
@@ -155,9 +197,12 @@ function Admin() {
     try {
       const url = editingMovie ? `/movies/${editingMovie.id}` : "/movies";
       const method = editingMovie ? "PUT" : "POST";
-
       const response = await fetch(url, {
         method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 

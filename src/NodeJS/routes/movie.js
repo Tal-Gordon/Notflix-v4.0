@@ -26,7 +26,15 @@ router
   // Get a movie by its ID
   .get(authMiddleware, movieController.getMovie)
   // Update a movie by its ID
-  .put(authMiddleware, adminAuthMiddleware, movieController.replaceMovie)
+  .put(
+    authMiddleware,
+    adminAuthMiddleware,
+    upload.fields([
+      { name: "picture", maxCount: 1 },
+      { name: "video", maxCount: 1 },
+    ]),
+    movieController.replaceMovie
+  )
   // Delete a movie by its ID
   .delete(authMiddleware, adminAuthMiddleware, movieController.deleteMovie);
 
@@ -40,5 +48,10 @@ router
   .route("/search/:query")
   // Search for movies
   .get(authMiddleware, movieController.searchMovies);
+
+router
+  .route("/all/")
+  // Get all movies
+  .get(adminAuthMiddleware, movieController.getAllMovies);
 
 module.exports = router;

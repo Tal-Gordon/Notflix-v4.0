@@ -119,6 +119,17 @@ const getMoviesForUser = async (userId) => {
   }
 };
 
+// Get all movies
+const getAllMovies = async () => {
+  const movie = await Movie.find({}).lean();
+
+  if (!movie) {
+    return null;
+  }
+
+  return movie;
+};
+
 // Get a movie by its ID
 const getMovieById = async (id) => {
   const movie = await Movie.findById(id);
@@ -466,11 +477,6 @@ const searchMovies = async (query) => {
       directors: { $elemMatch: { $regex: query, $options: "i" } }, // Director contains query
     }).lean();
 
-    // Query by description (string), add if description contains query
-    const descriptionMatches = await Movie.find({
-      description: { $regex: query, $options: "i" }, // Description contains query
-    }).lean();
-
     // Query by MongoDB ID, add if exactly equal
     const mongoIdMatches = mongoose.isValidObjectId(query)
       ? [await Movie.findById(query).lean()].filter(Boolean)
@@ -492,6 +498,7 @@ const searchMovies = async (query) => {
 
 module.exports = {
   createMovie,
+  getAllMovies,
   getMovieById,
   replaceMovie,
   deleteMovie,
