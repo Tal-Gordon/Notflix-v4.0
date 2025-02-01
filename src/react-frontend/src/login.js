@@ -51,12 +51,14 @@ function Login() {
                         BUTTON_TYPES.HOME
                     ]}
                     rightButtons={[
-                        BUTTON_TYPES.LIGHTDARK,
                         BUTTON_TYPES.SIGNUP
                     ]}
                 />
                 <div className="login-form">
-                    <h1 className="login-title">Welcome back. <br/>You have been missed.</h1>
+                    <h1 className="login-title">
+                        Welcome back!<br/>
+                        We promise we didn't sell your data... yet 😇
+                    </h1>
                     <input
                         type="text"
                         className="login-input"

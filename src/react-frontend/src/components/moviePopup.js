@@ -4,18 +4,73 @@ import './moviePopup.css';
 
 const MoviePopup = ({ movie, onClose }) => {
     const [categories, setCategories] = useState([]);
-    const [error, setError] = useState(null);
+    const [recommendations, setRecommendations] = useState([]);
+    const [loadingRecs, setLoadingRecs] = useState(true);
+    const [categoriesError, setCategoriesError] = useState(null);
+    const [recommendationsError, setRecommendationsError] = useState(null);
+    const [darkMode, setDarkMode] = useState(() => {
+        const storedDarkMode = sessionStorage.getItem("darkMode");
+        return storedDarkMode === "true";
+    });
 
     const navigate = useNavigate();
-
     const token = sessionStorage.getItem('token');
 
+    useEffect(() => {
+        const handleDarkModeChange = (event) => {
+            setDarkMode(event.detail);            
+        };
+
+        window.addEventListener('darkModeChange', handleDarkModeChange);
+        return () => window.removeEventListener('darkModeChange', handleDarkModeChange);
+    }, [darkMode]);
+
+    useEffect(() => {
+        const fetchRecommendations = async () => {
+            try {
+                const response = await fetch(`/movies/${movie._id}/recommend`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status !== 404) {
+                        throw new Error('Failed to fetch recommendations');
+                    }
+                    setRecommendations([]);
+                    setRecommendations(null);
+                }
+
+                const data = await response.json();
+                setRecommendations(data);
+                setCategoriesError(null);
+            } catch (err) {
+                setRecommendationsError(err.message);
+            } finally {
+                setLoadingRecs(false);
+            }
+        };
+
+        if (movie?._id) {
+            fetchRecommendations();
+        }
+    }, [movie?._id, token]);
+
     const handleClick = () => {
+        fetch(`/movies/${movie._id}/recommend`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }).catch(err => console.error('Error fetching recommendations:', err));
+
         navigate(`/watch/${movie._id}`);
     };
 
     useEffect(() => {
-        // Since movie's categories are ids, we have to fetch the category names from the server
         const fetchCategoryNames = async () => {
             if (!movie?.categories) return;
 
@@ -31,7 +86,7 @@ const MoviePopup = ({ movie, onClose }) => {
                             'Authorization': `Bearer ${token}`
                         },
                     });
-                    
+
                     if (!response.ok) {
                         throw new Error(`Failed to fetch category ${categoryId}`);
                     }
@@ -42,18 +97,18 @@ const MoviePopup = ({ movie, onClose }) => {
                 const categoryNames = await Promise.all(categoryPromises);
                 setCategories(categoryNames);
             } catch (err) {
-                setError(err.message);
+                setCategoriesError(err.message);
                 setCategories([]);
             }
         };
 
         fetchCategoryNames();
-    }, [movie, token]); // Run effect whenever movie changes
+    }, [movie, token]);
 
     if (!movie) return null;
 
     return (
-        <div className="popup-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}> 
+        <div className={`popup-overlay ${darkMode ? 'dark-mode' : ''}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
             <div className="popup-content">
                 <button className="close-button" onClick={onClose}>×</button>
 
@@ -62,8 +117,8 @@ const MoviePopup = ({ movie, onClose }) => {
                     <div className="movie-info">
                         <h2>{movie.title}</h2>
                         <div className="metadata">
-                            <p><strong>Categories:</strong> 
-                                {error ? (
+                            <p><strong>Categories:</strong>
+                                {categoriesError ? (
                                     <span className="error">Error loading categories</span>
                                 ) : (
                                     categories.length > 0 ? categories.join(', ') : 'Loading...'
@@ -79,9 +134,37 @@ const MoviePopup = ({ movie, onClose }) => {
                     <p>{movie.description}</p>
                 </div>
 
-                <button onClick={handleClick} className="play-button">
-                    Play Movie
-                </button>
+                <div className="play-button-container">
+                    <button onClick={handleClick} className="play-button">
+                        Play Movie
+                    </button>
+                </div>
+                <div className="recommendations-section">
+                    <h3>Recommended Movies</h3>
+                    {loadingRecs ? (
+                        <div className="loading">Loading recommendations...</div>
+                    ) : recommendationsError ? (
+                        <div className="error">Error loading recommendations: {recommendationsError}</div>
+                    ) : (
+                        <div className="recommendations-list">
+                            {recommendations.map(rec => (
+                                <button 
+                                    key={rec._id} 
+                                    className="recommended-movie"
+                                    onClick={() => navigate(`/watch/${rec._id}`)}
+                                >
+                                    <img
+                                        src={`http://localhost:3001/${rec.picture}`}
+                                        alt={rec.title}
+                                        className="recommended-poster"
+                                    />
+                                    <div className="recommended-title">{rec.title}</div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
             </div>
         </div>
     );

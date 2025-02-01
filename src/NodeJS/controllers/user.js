@@ -106,9 +106,8 @@ const isUserRegistered = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found or incorrect credentials" });
         }
-
         const token = jwt.sign(
-            { userId: user._id, isAdmin: user.isAdmin },
+            { userId: user._id, isAdmin: user.isAdmin, picture: user.picture },
             process.env.JWT_SECRET
         );
 
