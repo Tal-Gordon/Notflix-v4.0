@@ -61,11 +61,12 @@ const createUser = async (req, res) => {
         process.env.JWT_SECRET
       );
 
-      return res.status(201).json({ data: token });
-    }
-  } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
-  }
+			return res.status(201).json({ token });
+		}
+	} catch (error)
+	{
+		return res.status(500).json({ error: "Internal server error" });
+	}
 };
 
 const getUser = async (req, res) => {
@@ -91,16 +92,13 @@ const isUserRegistered = async (req, res) => {
     }
     const user = await userService.getUserByCredentials(username, password);
 
-    if (!user) {
-      return res
-        .status(404)
-        .json({ error: "User not found or incorrect credentials" });
-    }
-
-    const token = jwt.sign(
-      { userId: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET
-    );
+        if (!user) {
+            return res.status(404).json({ error: "User not found or incorrect credentials" });
+        }
+        const token = jwt.sign(
+            { userId: user._id, isAdmin: user.isAdmin, picture: user.picture },
+            process.env.JWT_SECRET
+        );
 
     return res.status(200).json({ token });
   } catch (error) {

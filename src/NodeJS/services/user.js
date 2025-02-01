@@ -106,7 +106,7 @@ const adminAuthUserById = async (id) =>
 };
 
 const getUserByCredentials = async (username, password) => { 
-    return await User.findOne({ username, password }).select('_id isAdmin'); 
+    return await User.findOne({ username, password }); 
 }
 
 module.exports = {

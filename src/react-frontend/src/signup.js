@@ -44,7 +44,7 @@ function Signup() {
             if (postResponse.ok) {
                 // User is created
                 const data = await postResponse.json(); 
-                login(data.data);
+                login(data.token);
             } else {
                 // User is not created
                 const errorObject = JSON.parse(await postResponse.text());
@@ -112,17 +112,19 @@ function Signup() {
                     BUTTON_TYPES.HOME
                 ]}
                 rightButtons={[
-                    BUTTON_TYPES.LIGHTDARK,
                     BUTTON_TYPES.LOGIN
                 ]}
             />
             <div className="input-container">
                 <div className="signup-form">
-                    <h1 className="signup-title">Welcome to Notflix. The best is about to get better!</h1>
+                    <h1 className="signup-title">
+                        Join our 'exclusive' club<br/>
+                        of 12 active users (hi mom!) 🎉
+                    </h1>
                     <form onSubmit={handleSignup}>
                         <input
                             type="text"
-                            className={`input-field ${usernameError ? 'error-adjacent' : ''}`}
+                            className={`signup-input ${usernameError ? 'error-adjacent' : ''}`}
                             placeholder="Username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -132,7 +134,7 @@ function Signup() {
                         {usernameError && <div className="error-message">{usernameError}</div>}
                         <input
                             type="password"
-                            className={`input-field ${passwordError ? 'error-adjacent' : ''}`}
+                            className={`signup-input ${passwordError ? 'error-adjacent' : ''}`}
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -142,14 +144,14 @@ function Signup() {
                         {passwordError && <div className="error-message">{passwordError}</div>}
                         <input
                             type="text"
-                            className="input-field"
+                            className="signup-input"
                             placeholder="Name (optional)"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             />
                         <input
                             type="text"
-                            className="input-field"
+                            className="signup-input"
                             placeholder="Surname (optional)"
                             value={surname}
                             onChange={(e) => setSurname(e.target.value)}
@@ -176,13 +178,14 @@ function Signup() {
                                 />
                             <br /> <br />
                             {/* Button to remove the selected image */}
-                            <button onClick={() => setPicture(null)}>Remove</button>
+                            <button onClick={() => setPicture(null)} >Remove</button>
                             </div>
                         )}
                         {/* TODO: picture */}
                         <button className="signup-button" type="submit">
                             Sign Up
                         </button>
+                        <h6 className="disclaimer">By clicking, you agree to our non-existent terms of service</h6>
                         {/* TODO: need an account? */}
                         {errorMessage && <div className="error-message">{errorMessage}</div>}
                     </form>

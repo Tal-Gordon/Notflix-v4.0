@@ -396,48 +396,51 @@ const getRecommendations = async (userId, movieId) => {
       client.on("data", async (data) => {
         const response = data.toString().trim(); // Get the response as a string
 
-        if (response.startsWith("400")) {
-          resolve({
-            status: 400,
-            result: "Bad request to the recommendation server",
-          });
-        } else if (response.startsWith("404")) {
-          resolve({ status: 404, result: "Recommendation not found" });
-        } else if (response.startsWith("200")) {
-          try {
-            const movieIds = response
-              .split("\n\n")[1] // Extract IDs after the 200 OK line
-              .split(" ") // Split by space
-              .filter((id) => id.trim()); // Remove empty strings
-          } catch {
-            resolve({ status: 404, result: "Recommendation not found" }); // In case no movies were returned, and second split fails
-          }
-          // Fetch movies by their global IDs
-          const validMovies = await Movie.find({
-            id: { $in: movieIds },
-          }).lean();
+				if (response.startsWith("400"))
+				{
+					resolve({
+						status: 400,
+						result: "Bad request to the recommendation server",
+					});
+				} else if (response.startsWith("404"))
+				{
+					resolve({ status: 404, result: "Recommendation not found" });
+				} else if (response.startsWith("200"))
+				{
+					try
+					{
+						const movieIds = response
+							.split("\n\n")[1] // Extract IDs after the 200 OK line
+							.split(" ") // Split by space
+							.filter((id) => id.trim()); // Remove empty strings
+							// Fetch movies by their global IDs
+							const validMovies = await Movie.find({
+								id: { $in: movieIds },
+							}).lean();
 
-          resolve({ status: 200, result: validMovies });
-        }
+							resolve({ status: 200, result: validMovies });
+					} catch
+					{
+						resolve({ status: 404, result: "Recommendation not found" }); // In case no movies were returned, and second split fails
+					}
+				}
 
         client.destroy(); // Close the connection
       });
 
-      client.on("error", (err) => {
-        reject(
-          new Error(
-            "Failed to connect to the recommendation server: " + err.message
-          )
-        );
-      });
-
-      client.on("close", () => {
-        console.log("Connection to recommendation server closed");
-      });
-    });
-  } catch (error) {
-    throw new Error("Failed to fetch recommendation: " + error.message);
-  }
+			client.on("error", (err) =>
+			{
+				reject(
+					new Error(
+						"Failed to connect to the recommendation server: " + err.message
+					)
+				);
+			});
+		});
+	} catch (error)
+	{
+		throw new Error("Failed to fetch recommendation: " + error.message);
+	}
 };
 
 // Searches for movies

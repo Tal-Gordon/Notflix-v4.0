@@ -1,30 +1,15 @@
 .video-player-container {
     position: relative;
     min-height: 100vh;
-    background-color: #ffffff;
-    color: #333333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: var(--dark-text, #333333);
     padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #333333;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.back-button:hover {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.2);
+.video-player-container.dark-mode  {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    color: var(--light-text, #d0d0d0);
 }
 
 .video-wrapper {
@@ -51,22 +36,34 @@
 .video-info h1 {
     font-size: 2.2rem;
     margin-bottom: 1.2rem;
-    color: #2c3e50;
+    color: var(--light-heading, #2c3e50);
+}
+
+.dark-mode .video-info h1 {
+    color: var(--dark-heading, #ffffff);
 }
 
 .video-info p {
     font-size: 1.1rem;
     line-height: 1.6;
-    color: #4a4a4a;
+    color: var(--light-text, #4a4a4a);
     max-width: 800px;
 }
 
-.metadata {
+.dark-mode .video-info p {
+    color: var(--dark-text, #d0d0d0);
+}
+
+.metadata-vp {
     display: flex;
     gap: 20px;
-    color: #666666;
+    color: var(--light-meta, #666666);
     font-size: 0.95rem;
     margin-top: 1.5rem;
+}
+
+.dark-mode .metadata-vp {
+    color: var(--dark-meta, #b0b0b0);
 }
 
 .video-loading {
@@ -74,31 +71,14 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    color: #333333;
+    color: var(--light-text, #333333);
     font-size: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .video-wrapper {
-        margin-top: 40px;
-        border-radius: 8px;
-    }
-    
-    .video-info h1 {
-        font-size: 1.8rem;
-    }
-    
-    .video-info p {
-        font-size: 1rem;
-    }
-    
-    .metadata {
-        flex-direction: column;
-        gap: 10px;
-    }
+.dark-mode .video-loading {
+    color: var(--dark-text, #d0d0d0);
 }
 
-/* Error States */
 .error-container {
     display: flex;
     flex-direction: column;
@@ -112,45 +92,43 @@
 .error-message {
     max-width: 600px;
     padding: 40px;
-    background: #ffe6e6;
+    background: var(--light-error-bg, #ffe6e6);
     border-radius: 12px;
-    border: 1px solid #ffcccc;
+    border: 1px solid var(--light-error-border, #ffcccc);
     margin: 20px;
 }
 
+.dark-mode .error-message {
+    background: var(--dark-error-bg, #4a1a1a);
+    border: 1px solid var(--dark-error-border, #992222);
+}
+
 .error-message h2 {
-    color: #cc0000;
+    color: var(--light-error-text, #cc0000);
     margin-bottom: 1rem;
     font-size: 1.8rem;
 }
 
+.dark-mode .error-message h2 {
+    color: var(--dark-error-text, #ff6666);
+}
+
 .error-message p {
-    color: #666;
+    color: var(--light-text, #666);
     font-size: 1.1rem;
     line-height: 1.6;
     margin: 0.5rem 0;
 }
 
+.dark-mode .error-message p  {
+    color: var(--dark-text, #d0d0d0);
+}
+
 .error-message p:first-of-type {
-    color: #cc0000;
+    color: var(--light-error-primary, #cc0000);
     font-weight: 500;
 }
 
-/* Keep back button positioning */
-.error-container .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    margin: 0;
-}
-
-@media (max-width: 768px) {
-    .error-message {
-        padding: 20px;
-        margin: 20px;
-    }
-    
-    .error-message h2 {
-        font-size: 1.5rem;
-    }
+.dark-mode .error-message p:first-of-type {
+    color: var(--dark-error-primary, #ff6666);
 }
