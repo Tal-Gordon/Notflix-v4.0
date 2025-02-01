@@ -29,12 +29,12 @@ import com.example.notflix.data.AppDatabase;
 import com.example.notflix.ui.auth.AuthResult;
 import com.example.notflix.ui.auth.LoggedInUserView;
 import com.example.notflix.databinding.ActivitySignupBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 public class SignupActivity extends AppCompatActivity {
 
     private SignupViewModel signupViewModel;
     private ActivitySignupBinding binding;
-    AppDatabase db;
 
     EditText usernameEditText;
     EditText passwordEditText;
@@ -42,6 +42,8 @@ public class SignupActivity extends AppCompatActivity {
     EditText surnameEditText;
     Button signupButton;
     ProgressBar loadingProgressBar;
+    private Snackbar snackbar;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,6 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         Application application = getApplication();
-        db = AppDatabase.getInstance(application);
 
         signupViewModel = new ViewModelProvider(this, new SignupViewModelFactory(application))
                 .get(SignupViewModel.class);
@@ -130,22 +131,30 @@ public class SignupActivity extends AppCompatActivity {
                 updateUiWithUser(loginResult.getSuccess());
             }
             setResult(Activity.RESULT_OK);
-
-            //Complete and destroy login activity once successful
-            finish();
         });
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        db.userDao().getLoggedInUser()
-                .observe(this, userEntity -> {
-                    // to get username: model.getUsername();
-                    // to get token: userEntity.getToken();
-                    // TODO : initiate successful logged in experience
-                });
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
+
+//        Intent intent = new Intent(this, HomeActivity.class);
+//        intent.putExtra("USERNAME", model.getUsername());
+//        intent.putExtra("TOKEN", model.getToken());
+
+//         startActivity(intent);
+//         finish();
     }
 
     private void showSignupFailed(@StringRes Integer errorString) {
-        // TODO : initiate error
+        if (snackbar == null) {
+            snackbar = Snackbar.make(binding.getRoot(), getString(errorString), Snackbar.LENGTH_LONG);
+            snackbar.setAction("Dismiss", v -> snackbar.dismiss());
+        } else {
+            snackbar.setText(getString(errorString));
+        }
+
+        snackbar.show();
     }
 }

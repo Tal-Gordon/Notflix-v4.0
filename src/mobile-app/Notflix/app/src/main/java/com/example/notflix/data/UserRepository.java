@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.UserEntity;
 
+import java.io.IOException;
+
 /**
  * The {@code UserRepository} class acts as the single source of truth for handling user authentication
  * and session management. It serves as a bridge between the {@link UserDataSource}, which communicates
@@ -42,6 +44,7 @@ public class UserRepository {
                             loggedInUser.getUsername()
                     );
                     saveUser(userEntity);
+                    setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
             }
@@ -65,6 +68,7 @@ public class UserRepository {
                             loggedInUser.getUsername()
                     );
                     saveUser(userEntity);
+                    setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
             }
@@ -76,30 +80,15 @@ public class UserRepository {
         });
     }
 
-//    public void logout(UserDataSource.LogoutCallback callback) {
-//        new Thread(() -> {
-//            try {
-//                UserEntity user = userDao.getLoggedInUser().getValue();
-//
-//                if (user != null) {
-//                    user.invalidateToken();
-//                    userDao.updateUser(user);
-//
-//                    Result<Void> result = new Result.Success<>(null); // Indicate successful logout
-//                    callback.onSuccess(result);
-//
-//                } else {
-//                    // Handle the case where no logged-in user is found (maybe already logged out, or an error state).
-//                    Result<Void> result = new Result.Error(new IOException("No user found to log out.")); // Or a more appropriate error.
-//                    callback.onError(result);
-//                }
-//            } catch (Exception e) {
-//                Result<Void> result = new Result.Error(e); // Handle any database or other errors
-//                callback.onError(result);
-//            }
-//        }).start();
-//    }
+    public void logout() {
+        UserEntity user = getLoggedInUser().getValue();
 
+        if (user != null) {
+            user.invalidateToken();
+            userDao.updateUser(user);
+        }
+        setLoggedInUser(null);
+    }
 
     public LiveData<UserEntity> getLoggedInUser() {
         return userDao.getLoggedInUser();
@@ -109,15 +98,7 @@ public class UserRepository {
         AppDatabase.executor.execute(() -> userDao.insertUser(user));
     }
 
-//    private void clearLocalUserData(UserDataSource.LogoutCallback callback) {
-//        userDao.deleteUser();
-//
-//        callback.onSuccess();
-//    }
-
     private void setLoggedInUser(LoggedInUser user) {
         this.user = user;
-        // If user credentials will be cached in local storage, it is recommended it be encrypted
-        // @see https://developer.android.com/training/articles/keystore
     }
 }

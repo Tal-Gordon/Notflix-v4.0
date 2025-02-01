@@ -18,6 +18,8 @@ public class UserEntity {
 
     public String getToken() { return token; }
     public void invalidateToken() { token = null; }
+
+    public boolean isLoggedIn() { return token != null; }
     @NonNull
     public String getUsername() { return username; }
 
