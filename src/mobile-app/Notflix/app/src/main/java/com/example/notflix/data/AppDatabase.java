@@ -8,17 +8,17 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.example.notflix.data.model.CategoryEntity;
-import com.example.notflix.data.model.MovieEntity;
-import com.example.notflix.data.model.UserEntity;
+import com.example.notflix.data.model.Category;
+import com.example.notflix.data.model.Movie;
+import com.example.notflix.data.model.User;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Database(entities = {
-        UserEntity.class,
-        MovieEntity.class,
-        CategoryEntity.class
+        User.class,
+        Movie.class,
+        Category.class
 }, version = 3)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {

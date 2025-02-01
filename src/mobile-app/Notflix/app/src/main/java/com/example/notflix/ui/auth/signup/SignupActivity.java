@@ -16,11 +16,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.notflix.data.AppDatabase;
 import com.example.notflix.databinding.ActivitySignupBinding;
-import com.google.android.material.snackbar.Snackbar;
 import com.example.notflix.ui.auth.LoggedInUserView;
 import com.example.notflix.ui.home.HomeActivity;
+import com.google.android.material.snackbar.Snackbar;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -130,12 +129,12 @@ public class SignupActivity extends AppCompatActivity {
             snackbar.dismiss();
         }
 
-//        Intent intent = new Intent(this, HomeActivity.class);
-//        intent.putExtra("USERNAME", model.getUsername());
-//        intent.putExtra("TOKEN", model.getToken());
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("USERNAME", model.getUsername());
+        intent.putExtra("TOKEN", model.getToken());
 
-//         startActivity(intent);
-//         finish();
+         startActivity(intent);
+         finish();
     }
 
     private void showSignupFailed(@StringRes Integer errorString) {

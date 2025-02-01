@@ -5,13 +5,13 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
-public class UserEntity {
+public class User {
     private String token;
     @PrimaryKey
     @NonNull
     private final String username;
 
-    public UserEntity(String token, @NonNull String username) {
+    public User(String token, @NonNull String username) {
         this.token = token;
         this.username = username;
     }

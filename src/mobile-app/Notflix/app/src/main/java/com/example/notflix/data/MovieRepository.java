@@ -4,9 +4,11 @@ import android.app.Application;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.example.notflix.data.model.CategoryEntity;
+
+import com.example.notflix.data.model.Category;
 import com.example.notflix.data.model.HomeData;
-import com.example.notflix.data.model.MovieEntity;
+import com.example.notflix.data.model.Movie;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,20 +47,20 @@ public class MovieRepository {
                         clearAllData();
 
                         // Save all categories
-                        for (CategoryEntity category : data.getCategories()) {
+                        for (Category category : data.getCategories()) {
                             saveCategory(category);
                         }
 
                         // Save all movies with their updated category references
-                        List<MovieEntity> allMovies = new ArrayList<>();
-                        for (List<MovieEntity> movies : data.getMoviesByCategory().values()) {
+                        List<Movie> allMovies = new ArrayList<>();
+                        for (List<Movie> movies : data.getMoviesByCategory().values()) {
                             allMovies.addAll(movies);
                         }
 
                         // For recently watched movies, add category "0" to their category list
-                        List<MovieEntity> recentlyWatched = data.getMoviesByCategory().get("0");
+                        List<Movie> recentlyWatched = data.getMoviesByCategory().get("0");
                         if (recentlyWatched != null) {
-                            for (MovieEntity movie : recentlyWatched) {
+                            for (Movie movie : recentlyWatched) {
                                 List<String> categoryIds = new ArrayList<>(movie.getCategoryIds());
                                 if (!categoryIds.contains("0")) {
                                     categoryIds.add("0");
@@ -87,19 +89,19 @@ public class MovieRepository {
         });
     }
 
-    public LiveData<List<MovieEntity>> getAllMovies() {
+    public LiveData<List<Movie>> getAllMovies() {
         return movieDao.getAllMovies();
     }
 
-    public LiveData<MovieEntity> getMovieById(String movieId) {
+    public LiveData<Movie> getMovieById(String movieId) {
         return movieDao.getMovieById(movieId);
     }
 
-    public LiveData<List<CategoryEntity>> getAllCategories() {
+    public LiveData<List<Category>> getAllCategories() {
         return categoryDao.getAllCategories();
     }
 
-    public LiveData<List<MovieEntity>> getMoviesForCategory(String categoryId) {
+    public LiveData<List<Movie>> getMoviesForCategory(String categoryId) {
         return movieDao.getMoviesForCategory(categoryId);
     }
 
@@ -108,11 +110,11 @@ public class MovieRepository {
         categoryDao.deleteAllCategories();
     }
 
-    private void saveMovies(List<MovieEntity> movies) {
+    private void saveMovies(List<Movie> movies) {
         movieDao.insertMovies(movies);
     }
 
-    private void saveCategory(CategoryEntity category) {
+    private void saveCategory(Category category) {
         categoryDao.insertCategory(category);
     }
 }

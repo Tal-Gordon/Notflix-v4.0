@@ -5,26 +5,28 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import com.example.notflix.data.model.CategoryEntity;
+
+import com.example.notflix.data.model.Category;
+
 import java.util.List;
 
 @Dao
 public interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertCategory(CategoryEntity category);
+    void insertCategory(Category category);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertCategories(List<CategoryEntity> categories);
+    void insertCategories(List<Category> categories);
 
-    @Query("SELECT * FROM categories")
-    LiveData<List<CategoryEntity>> getAllCategories();
+    @Query("SELECT * FROM Categories")
+    LiveData<List<Category>> getAllCategories();
 
-    @Query("SELECT * FROM categories WHERE categoryId = :categoryId")
-    LiveData<CategoryEntity> getCategoryById(String categoryId);
+    @Query("SELECT * FROM Categories WHERE categoryId = :categoryId")
+    LiveData<Category> getCategoryById(String categoryId);
 
-    @Query("DELETE FROM categories")
+    @Query("DELETE FROM Categories")
     void deleteAllCategories();
 
-    @Query("SELECT * FROM categories")
-    List<CategoryEntity> getAllCategoriesSync(); // No LiveData wrapper
+    @Query("SELECT * FROM Categories")
+    List<Category> getAllCategoriesSync(); // No LiveData wrapper
 }

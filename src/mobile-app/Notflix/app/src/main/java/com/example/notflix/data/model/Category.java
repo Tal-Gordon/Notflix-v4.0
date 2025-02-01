@@ -1,4 +1,4 @@
-// CategoryEntity.java
+// Category.java
 package com.example.notflix.data.model;
 
 import androidx.annotation.NonNull;
@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 @Entity(tableName = "categories")
-public class CategoryEntity {
+public class Category {
     @PrimaryKey
     @SerializedName("_id")
     @NonNull private String categoryId;
@@ -22,10 +22,10 @@ public class CategoryEntity {
     @SerializedName("movie_list")
     private List<String> movieIds;
 
-    public CategoryEntity(@NonNull String categoryId,
-                          String name,
-                          boolean promoted,
-                          List<String> movieIds) {
+    public Category(@NonNull String categoryId,
+                    String name,
+                    boolean promoted,
+                    List<String> movieIds) {
         this.categoryId = categoryId;
         this.name = name;
         this.promoted = promoted;

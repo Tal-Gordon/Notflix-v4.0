@@ -12,15 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.notflix.R;
-import com.example.notflix.data.model.MovieEntity;
+import com.example.notflix.data.model.Movie;
 
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-    private final List<MovieEntity> movies;
+    private final List<Movie> movies;
     private final OnMovieClickListener clickListener;
 
-    public MovieAdapter(List<MovieEntity> movies, OnMovieClickListener listener) {
+    public MovieAdapter(List<Movie> movies, OnMovieClickListener listener) {
         this.movies = movies;
         this.clickListener = listener;
     }
@@ -35,7 +35,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-        MovieEntity movie = movies.get(position);
+        Movie movie = movies.get(position);
         holder.bind(movie, clickListener);
     }
 
@@ -54,7 +54,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             movieTitle = itemView.findViewById(R.id.movie_title);
         }
 
-        void bind(MovieEntity movie, OnMovieClickListener listener) {
+        void bind(Movie movie, OnMovieClickListener listener) {
             movieTitle.setText(movie.getTitle());
 
             // Load movie thumbnail
@@ -76,7 +76,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
     }
 
+    public void updateMovies(List<Movie> newMovies) {
+        this.movies.clear();
+        this.movies.addAll(newMovies);
+        notifyDataSetChanged();
+    }
+
     public interface OnMovieClickListener {
-        void onMovieClick(MovieEntity movie);
+        void onMovieClick(Movie movie);
     }
 }

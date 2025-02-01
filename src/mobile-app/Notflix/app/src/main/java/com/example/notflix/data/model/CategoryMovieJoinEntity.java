@@ -13,13 +13,13 @@ import androidx.room.Index;
         },
         foreignKeys = {
                 @ForeignKey(
-                        entity = CategoryEntity.class,
+                        entity = Category.class,
                         parentColumns = "categoryId",
                         childColumns = "categoryId",
                         onDelete = ForeignKey.CASCADE
                 ),
                 @ForeignKey(
-                        entity = MovieEntity.class,
+                        entity = Movie.class,
                         parentColumns = "movieId",
                         childColumns = "movieId",
                         onDelete = ForeignKey.CASCADE

@@ -1,4 +1,4 @@
-// MovieEntity.java
+// Movie.java
 package com.example.notflix.data.model;
 
 import androidx.annotation.NonNull;
@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 @Entity(tableName = "movies")
-public class MovieEntity {
+public class Movie {
     @PrimaryKey
     @SerializedName("_id")
     @NonNull private String movieId;
@@ -26,14 +26,14 @@ public class MovieEntity {
     @SerializedName("categories")
     private List<String> categoryIds;
 
-    public MovieEntity(@NonNull String movieId,
-                       @NonNull String title,
-                       String description,
-                       String picture,
-                       String video,
-                       List<String> actors,
-                       List<String> directors,
-                       List<String> categoryIds) {
+    public Movie(@NonNull String movieId,
+                 @NonNull String title,
+                 String description,
+                 String picture,
+                 String video,
+                 List<String> actors,
+                 List<String> directors,
+                 List<String> categoryIds) {
         this.movieId = movieId;
         this.title = title;
         this.description = description;

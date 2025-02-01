@@ -1,9 +1,9 @@
 package com.example.notflix.data;
 
-import com.example.notflix.data.model.CategoryEntity;
+import com.example.notflix.data.model.Category;
 import com.example.notflix.data.model.HomeData;
 import com.example.notflix.data.model.HomeMoviesResponse;
-import com.example.notflix.data.model.MovieEntity;
+import com.example.notflix.data.model.Movie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,27 +76,27 @@ public class MovieDataSource {
         fetchHomeData(token, new HomeMoviesCallback() {
             @Override
             public void onSuccess(HomeMoviesResponse response) {
-                List<CategoryEntity> categories = new ArrayList<>();
-                Map<String, List<MovieEntity>> moviesByCategory = new HashMap<>();
+                List<Category> categories = new ArrayList<>();
+                Map<String, List<Movie>> moviesByCategory = new HashMap<>();
 
                 // Process categories and movies from response
                 for (HomeMoviesResponse.CategoryMovies categoryMovies : response.getMoviesByCategory()) {
-                    CategoryEntity category = categoryMovies.getCategory();
-                    List<MovieEntity> movies = categoryMovies.getMovies();
+                    Category category = categoryMovies.getCategory();
+                    List<Movie> movies = categoryMovies.getMovies();
 
                     categories.add(category);
                     moviesByCategory.put(category.getCategoryId(), movies);
                 }
 
                 // Add recently watched as a special category
-                List<MovieEntity> recentlyWatched = response.getRecentlyWatched();
+                List<Movie> recentlyWatched = response.getRecentlyWatched();
                 if (recentlyWatched != null && !recentlyWatched.isEmpty()) {
                     List<String> recentlyWatchedIds = new ArrayList<>();
-                    for (MovieEntity movie : recentlyWatched) {
+                    for (Movie movie : recentlyWatched) {
                         recentlyWatchedIds.add(movie.getMovieId());
                     }
 
-                    CategoryEntity recentlyWatchedCategory = new CategoryEntity(
+                    Category recentlyWatchedCategory = new Category(
                             "0",
                             "Recently Watched",
                             true,
@@ -105,6 +105,12 @@ public class MovieDataSource {
 
                     categories.add(recentlyWatchedCategory);
                     moviesByCategory.put("0", recentlyWatched);
+
+                    for (Movie movie : recentlyWatched) {
+                        List<String> categoriesId = movie.getCategoryIds();
+                        categoriesId.add(recentlyWatchedCategory.getCategoryId());
+                        movie.setCategoryIds(categoriesId);
+                    }
                 }
 
                 callback.onSuccess(new HomeData(categories, moviesByCategory));

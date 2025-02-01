@@ -7,22 +7,22 @@ import java.util.List;
 
 public class CategoryWithMovies {
     @Embedded
-    public CategoryEntity category;
+    public Category category;
 
     @Relation(
             parentColumn = "categoryId",
             entityColumn = "movieId",
             associateBy = @Junction(CategoryMovieJoinEntity.class)
     )
-    public List<MovieEntity> movies;
+    public List<Movie> movies;
 
     // Optional constructor
-    public CategoryWithMovies(CategoryEntity category, List<MovieEntity> movies) {
+    public CategoryWithMovies(Category category, List<Movie> movies) {
         this.category = category;
         this.movies = movies;
     }
 
     // Getters
-    public CategoryEntity getCategory() { return category; }
-    public List<MovieEntity> getMovies() { return movies; }
+    public Category getCategory() { return category; }
+    public List<Movie> getMovies() { return movies; }
 }

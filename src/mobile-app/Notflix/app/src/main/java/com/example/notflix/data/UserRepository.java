@@ -1,14 +1,11 @@
 package com.example.notflix.data;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.example.notflix.data.model.LoggedInUser;
-import com.example.notflix.data.model.UserEntity;
-
-import java.io.IOException;
+import com.example.notflix.data.model.User;
 
 import java.util.concurrent.ExecutionException;
 
@@ -42,11 +39,11 @@ public class UserRepository {
                 // Save the user to Room
                 if (result instanceof Result.Success) {
                     LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
-                    UserEntity userEntity = new UserEntity(
+                    User user = new User(
                             loggedInUser.getToken(),
                             loggedInUser.getUsername()
                     );
-                    saveUser(userEntity);
+                    saveUser(user);
                     setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
@@ -66,11 +63,11 @@ public class UserRepository {
                 // Save the user to Room
                 if (result instanceof Result.Success) {
                     LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
-                    UserEntity userEntity = new UserEntity(
+                    User user = new User(
                             loggedInUser.getToken(),
                             loggedInUser.getUsername()
                     );
-                    saveUser(userEntity);
+                    saveUser(user);
                     setLoggedInUser(loggedInUser);
                     setLoggedInUser(loggedInUser);
                 }
@@ -85,7 +82,7 @@ public class UserRepository {
     }
 
     public void logout() {
-        UserEntity user = getLoggedInUser().getValue();
+        User user = getLoggedInUser().getValue();
 
         if (user != null) {
             user.invalidateToken();
@@ -94,11 +91,11 @@ public class UserRepository {
         setLoggedInUser(null);
     }
 
-    public LiveData<UserEntity> getLoggedInUser() {
+    public LiveData<User> getLoggedInUser() {
         return userDao.getLoggedInUser();
     }
 
-    public void saveUser(UserEntity user) {
+    public void saveUser(User user) {
         AppDatabase.executor.execute(() -> userDao.insertUser(user));
     }
 
@@ -109,7 +106,7 @@ public class UserRepository {
     public String getToken() {
         try {
             return AppDatabase.executor.submit(() -> {
-                UserEntity user = userDao.getLoggedInUserSync();
+                User user = userDao.getLoggedInUserSync();
                 return user != null ? user.getToken() : null;
             }).get(); // Blocks until result is available
         } catch (InterruptedException | ExecutionException e) {

@@ -8,16 +8,16 @@ import java.util.List;
 public class HomeMoviesResponse {
     public static class CategoryMovies {
         @SerializedName("category")
-        private CategoryEntity category;
+        private Category category;
 
         @SerializedName("movies")
-        private List<MovieEntity> movies;
+        private List<Movie> movies;
 
-        public CategoryEntity getCategory() { return category; }
-        public List<MovieEntity> getMovies() { return movies; }
+        public Category getCategory() { return category; }
+        public List<Movie> getMovies() { return movies; }
 
-        public void setCategory(CategoryEntity category) { this.category = category; }
-        public void setMovies(List<MovieEntity> movies) { this.movies = movies; }
+        public void setCategory(Category category) { this.category = category; }
+        public void setMovies(List<Movie> movies) { this.movies = movies; }
 
         @Override
         public String toString() {
@@ -32,10 +32,10 @@ public class HomeMoviesResponse {
     private List<CategoryMovies> moviesByCategory;
 
     @SerializedName("recentlyWatched")
-    private List<MovieEntity> recentlyWatched;
+    private List<Movie> recentlyWatched;
 
     public List<CategoryMovies> getMoviesByCategory() { return moviesByCategory; }
-    public List<MovieEntity> getRecentlyWatched() { return recentlyWatched; }
+    public List<Movie> getRecentlyWatched() { return recentlyWatched; }
 
     @Override
     public String toString() {
