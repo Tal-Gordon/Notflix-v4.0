@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './index.css';
@@ -7,6 +7,7 @@ import HomeUnauth from './home.unauth';
 import Login from './login';
 import Signup from './signup';
 import VideoPlayer from './videoPlayer';
+// import Admin from './admin'
 
 // Create a custom hook for authentication state
 const useAuth = () =>
@@ -15,11 +16,21 @@ const useAuth = () =>
 	const [isLoggedIn, setIsLoggedIn] = useState(() =>
 		!!sessionStorage.getItem('token')
 	);
+	const [isAdmin, setIsAdmin] = useState(() =>
+		!!sessionStorage.getItem('admin')
+	);
 
-	const login = useCallback((token) =>
-	{
+	useEffect(() => {
+		console.log("Updated admin:", isAdmin);
+	}, [isAdmin]);
+
+	const login = useCallback((token) => {
 		sessionStorage.setItem('token', token);
 		setIsLoggedIn(true);
+
+		const payload = JSON.parse(atob(token.split('.')[1]));
+		sessionStorage.setItem('admin', !!payload.isAdmin);
+		setIsAdmin(!!payload.isAdmin);
 	}, []);
 
 	const logout = useCallback(() =>
@@ -28,17 +39,23 @@ const useAuth = () =>
 		setIsLoggedIn(false);
 	}, []);
 
-	return { isLoggedIn, login, logout };
+	return { isLoggedIn, isAdmin, login, logout };
 };
 
-// Protected Route Component
+// Exclusive admin route 
+const AdminRoute = ({ children }) => {
+	const { isLoggedIn, isAdmin } = useAuth();
+	return isLoggedIn && isAdmin ? children : <Navigate replace to="/login" />;
+};
+
+// Protected route component
 const ProtectedRoute = ({ children }) =>
 {
 	const { isLoggedIn } = useAuth();
 	return isLoggedIn ? children : <Navigate replace to="/login" />;
 };
 
-// Public Route Component (for login/signup when already authenticated)
+// Public route component (for login/signup when already authenticated)
 const PublicRoute = ({ children }) =>
 {
 	const { isLoggedIn } = useAuth();
@@ -79,6 +96,14 @@ const App = () =>
 					<ProtectedRoute>
 						<VideoPlayer />
 					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/admin"
+				element={
+					<AdminRoute>
+						{/* <Admin /> */}
+					</AdminRoute>
 				}
 			/>
 			<Route
