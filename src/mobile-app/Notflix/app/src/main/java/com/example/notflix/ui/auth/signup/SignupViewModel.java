@@ -41,7 +41,7 @@ public class SignupViewModel extends ViewModel {
                 // Handle UI updates
                 if (result instanceof Result.Success) {
                     LoggedInUser user = ((Result.Success<LoggedInUser>) result).getData();
-                    signupResult.postValue(new AuthResult(new LoggedInUserView(user.getUsername())));
+                    signupResult.postValue(new AuthResult(new LoggedInUserView(user.getToken(), user.getUsername())));
                 }
             }
 
