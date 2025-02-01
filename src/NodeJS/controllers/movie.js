@@ -312,7 +312,7 @@ const postMovieToServer = async (req, res) =>
 			const decoded = jwt.verify(token, process.env.JWT_SECRET);
 			
 			// Get user ID from decoded token
-			const userId = decoded.userId; // Assuming your token payload has 'userId'
+			const userId = decoded.userId;
 			
 			// Get movie ID from URL
 			const urlSegments = req.path.split('/');
@@ -321,8 +321,7 @@ const postMovieToServer = async (req, res) =>
 			if (!userId || !movieId) {
 				return res.status(400).json({ error: "Movie ID or user ID are missing" });
 			}
-		
-			// Continue with your logic...
+
 		} catch (err) {
 			return res.status(401).json({ error: "Invalid or expired token" });
 		}

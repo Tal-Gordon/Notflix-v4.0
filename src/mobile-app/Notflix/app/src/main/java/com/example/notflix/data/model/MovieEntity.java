@@ -21,8 +21,8 @@ public class MovieEntity {
     private String description;
     private String picture;
     private String video;
-    private String actors;
-    private String directors;
+    private List<String> actors;
+    private List<String> directors;
     @SerializedName("categories")
     private List<String> categoryIds;
 
@@ -31,8 +31,8 @@ public class MovieEntity {
                        String description,
                        String picture,
                        String video,
-                       String actors,
-                       String directors,
+                       List<String> actors,
+                       List<String> directors,
                        List<String> categoryIds) {
         this.movieId = movieId;
         this.title = title;
@@ -50,8 +50,8 @@ public class MovieEntity {
     public String getDescription() { return description; }
     public String getPicture() { return picture; }
     public String getVideo() { return video; }
-    public String getActors() { return actors; }
-    public String getDirectors() { return directors; }
+    public List<String> getActors() { return actors; }
+    public List<String> getDirectors() { return directors; }
     public List<String> getCategoryIds() { return categoryIds; }
 
     // Setters (if needed for Room)
@@ -60,16 +60,16 @@ public class MovieEntity {
     public void setDescription(String description) { this.description = description; }
     public void setPicture(String picture) { this.picture = picture; }
     public void setVideo(String video) { this.video = video; }
-    public void setActors(String actors) { this.actors = actors; }
-    public void setDirectors(String directors) { this.directors = directors; }
+    public void setActors(List<String> actors) { this.actors = actors; }
+    public void setDirectors(List<String> directors) { this.directors = directors; }
     public void setCategoryIds(List<String> categoryIds) { this.categoryIds = categoryIds; }
 
     @NonNull
     public String toString() {
         return "Movie{" +
-                "id='" + movieId + '\'' +
+//                "id='" + movieId + '\'' +
                 ", title='" + title + '\'' +
-                ", categories=" + categoryIds +
+//                ", categories=" + categoryIds +
                 '}';
     }
 }

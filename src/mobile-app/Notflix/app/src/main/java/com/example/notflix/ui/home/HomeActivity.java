@@ -2,6 +2,7 @@ package com.example.notflix.ui.home;
 
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,12 +24,11 @@ public class HomeActivity extends AppCompatActivity {
         HomeViewModelFactory factory = new HomeViewModelFactory(getApplication());
         homeViewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
+        homeViewModel.refreshMovies();
         // Observe LiveData
         homeViewModel.getHomeData().observe(this, homeData -> {
+            Log.d("HomeActivity data", homeData.toString());
             // Update UI
         });
-
-        // Trigger data refresh
-        homeViewModel.refreshMovies();
     }
 }

@@ -2,7 +2,6 @@ package com.example.notflix.data;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -20,6 +19,9 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE token IS NOT NULL LIMIT 1")
     LiveData<UserEntity> getLoggedInUser();
+
+    @Query("SELECT * FROM users LIMIT 1")
+    UserEntity getLoggedInUserSync(); // Synchronous method
 
     @Query("DELETE FROM users WHERE username = :username")
     void deleteUser(String username);

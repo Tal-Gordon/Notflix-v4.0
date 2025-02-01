@@ -125,7 +125,6 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUiWithUser(LoggedInUserView model) {
         db.userDao().getLoggedInUser()
             .observe(this, userEntity -> {
-                Log.i("LoginAttempt", "ALLAH HU AKBAR");
                 startActivity(new Intent(this, HomeActivity.class));
                 // to get username: model.getUsername();
                 // to get token: userEntity.getToken();

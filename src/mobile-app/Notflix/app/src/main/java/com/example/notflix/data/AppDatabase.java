@@ -23,7 +23,6 @@ import java.util.concurrent.Executors;
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
     public static ExecutorService executor = Executors.newFixedThreadPool(4);
-
     // DAO declarations
     public abstract UserDao userDao();
     public abstract MovieDao movieDao();

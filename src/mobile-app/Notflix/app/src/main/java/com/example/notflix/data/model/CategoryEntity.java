@@ -14,8 +14,10 @@ public class CategoryEntity {
     @PrimaryKey
     @SerializedName("_id")
     @NonNull private String categoryId;
-
+    @SerializedName("name")
     private String name;
+    @SerializedName("promoted")
+
     private boolean promoted;
     @SerializedName("movie_list")
     private List<String> movieIds;
@@ -44,10 +46,10 @@ public class CategoryEntity {
     @NonNull
     public String toString() {
         return "Category{" +
-                "id='" + categoryId + '\'' +
+//                "id='" + categoryId + '\'' +
                 ", name='" + name + '\'' +
-                ", promoted=" + promoted +
-                ", movies=" + movieIds +
+//                ", promoted=" + promoted +
+//                ", movies=" + movieIds +
                 '}';
     }
 }

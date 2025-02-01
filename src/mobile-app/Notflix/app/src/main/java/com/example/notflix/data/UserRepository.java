@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData;
 import com.example.notflix.data.model.LoggedInUser;
 import com.example.notflix.data.model.UserEntity;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * The {@code UserRepository} class acts as the single source of truth for handling user authentication
  * and session management. It serves as a bridge between the {@link UserDataSource}, which communicates
@@ -122,4 +124,17 @@ public class UserRepository {
     private void setLoggedInUser(LoggedInUser user) {
         this.user = user;
     }
+
+    public String getToken() {
+        try {
+            return AppDatabase.executor.submit(() -> {
+                UserEntity user = userDao.getLoggedInUserSync();
+                return user != null ? user.getToken() : null;
+            }).get(); // Blocks until result is available
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Log the exception for debugging
+            return null; // Return null if an error occurs
+        }
+    }
+
 }
