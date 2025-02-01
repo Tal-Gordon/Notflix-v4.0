@@ -14,8 +14,14 @@ const isValidArrayOfObjectIds = (arr) => {
 // Create a new movie
 const createMovie = async (req, res) => {
   const { title, categories, actors, description, directors } = req.body;
-  const picture = req.files?.picture?.[0];
-  const video = req.files?.video?.[0];
+  let picture = req.files?.picture?.[0];
+  let video = req.files?.video?.[0];
+  if (picture === undefined) {
+    picture = '';
+  }
+  if (video === undefined) {
+    video = '';
+  }
   // Validate inputs
   if (!title || typeof title !== "string" || title.trim() === "") {
     return res.status(400).json({ error: "Invalid or missing title" });

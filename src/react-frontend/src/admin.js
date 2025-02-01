@@ -2,7 +2,8 @@ import "./admin.css";
 import { useState, useEffect } from "react";
 import { Navbar, BUTTON_TYPES } from "./components/navbar";
 
-function Admin() {
+function Admin()
+{
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [promoted, setPromoted] = useState(false);
@@ -25,10 +26,14 @@ function Admin() {
   const [movieError, setMovieError] = useState("");
 
   const token = sessionStorage.getItem("token");
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!token) {
+  useEffect(() =>
+  {
+    const fetchData = async () =>
+    {
+      try
+      {
+        if (!token)
+        {
           throw new Error(
             "No authentication token found. Please log in again."
           );
@@ -49,39 +54,28 @@ function Admin() {
             },
           }),
         ]);
-        const response = await fetch("/movies", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        // if (response.ok) {
-        //   const data = await response.json();
-        // }
-        const data = await response.json();
         const categoriesData = await categoriesRes.json();
         const moviesData = await moviesRes.json();
 
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
-        if (Array.isArray(moviesData) == []) {
-          console.log("no movies");
-        }
         setMovies(Array.isArray(moviesData) ? moviesData : []);
-      } catch (error) {
+      } catch (error)
+      {
         console.error("Error fetching data:", error);
         setErrorMessage("Failed to load data");
-        setMovies([]); // Ensure movies is always an array
+        setMovies([]);
       }
     };
     fetchData();
   }, []);
 
-  const handleSubmit = async (event) => {
+  const handleCategorySubmit = async (event) =>
+  {
     event.preventDefault();
     setErrorMessage("");
 
-    if (!name.trim()) {
+    if (!name.trim())
+    {
       setErrorMessage("Name is required.");
       return;
     }
@@ -97,7 +91,8 @@ function Admin() {
       movie_list: movieIds,
     };
 
-    try {
+    try
+    {
       const url = editingCategory
         ? `/categories/${editingCategory._id}`
         : "/categories";
@@ -111,7 +106,8 @@ function Admin() {
         body: JSON.stringify(categoryData),
       });
 
-      if (!response.ok) {
+      if (!response.ok)
+      {
         const errorData = await response.json();
         throw new Error(errorData.message || "Operation failed");
       }
@@ -130,15 +126,18 @@ function Admin() {
       setMovieList("");
       setEditingCategory(null);
       setShowModal(false);
-    } catch (error) {
+    } catch (error)
+    {
       setErrorMessage(error.message || "An error occurred");
     }
   };
 
-  const handleDelete = async (categoryId) => {
+  const handleDelete = async (categoryId) =>
+  {
     if (!window.confirm("Are you sure you want to delete this category?"))
       return;
-    try {
+    try
+    {
       const response = await fetch(`/categories/${categoryId}`, {
         method: "DELETE",
         headers: {
@@ -149,12 +148,14 @@ function Admin() {
 
       if (!response.ok) throw new Error("Delete failed");
       setCategories(categories.filter((c) => c._id !== categoryId));
-    } catch (error) {
+    } catch (error)
+    {
       setErrorMessage(error.message || "Delete failed");
     }
   };
 
-  const handleEdit = (category) => {
+  const handleEdit = (category) =>
+  {
     setEditingCategory(category);
     setName(category.name);
     setPromoted(category.promoted);
@@ -162,7 +163,8 @@ function Admin() {
     setShowModal(true);
   };
 
-  const handleCreate = () => {
+  const handleCreate = () =>
+  {
     setEditingCategory(null);
     setName("");
     setPromoted(false);
@@ -170,18 +172,20 @@ function Admin() {
     setShowModal(true);
   };
 
-  const handleMovieSubmit = async (event) => {
+  const handleMovieSubmit = async (event) =>
+  {
     event.preventDefault();
     setMovieError("");
 
-    if (!movieTitle.trim()) {
+    if (!movieTitle.trim())
+    {
       setMovieError("Title is required.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", movieTitle.trim());
-    formData.append("categories", JSON.stringify(movieCategories));
+    formData.append("categories", movieCategories);
     formData.append(
       "actors",
       movieActors.split(",").map((actor) => actor.trim())
@@ -194,19 +198,20 @@ function Admin() {
     if (moviePicture) formData.append("picture", moviePicture);
     if (movieVideo) formData.append("video", movieVideo);
 
-    try {
+    try
+    {
       const url = editingMovie ? `/movies/${editingMovie.id}` : "/movies";
       const method = editingMovie ? "PUT" : "POST";
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      if (!response.ok) {
+      if (!response.ok)
+      {
         const errorData = await response.json();
         throw new Error(errorData.message || "Operation failed");
       }
@@ -216,27 +221,32 @@ function Admin() {
 
       resetMovieForm();
       setShowMovieModal(false);
-    } catch (error) {
+    } catch (error)
+    {
       setMovieError(error.message || "An error occurred");
     }
   };
 
-  const handleDeleteMovie = async (movieId) => {
+  const handleDeleteMovie = async (movieId) =>
+  {
     if (!window.confirm("Are you sure you want to delete this movie?")) return;
 
-    try {
+    try
+    {
       const response = await fetch(`/movies/${movieId}`, {
         method: "DELETE",
       });
 
       if (!response.ok) throw new Error("Delete failed");
       setMovies(movies.filter((m) => m.id !== movieId));
-    } catch (error) {
+    } catch (error)
+    {
       setMovieError(error.message || "Delete failed");
     }
   };
 
-  const handleEditMovie = (movie) => {
+  const handleEditMovie = (movie) =>
+  {
     setEditingMovie(movie);
     setMovieTitle(movie.title);
     setMovieCategories(movie.categories);
@@ -246,12 +256,14 @@ function Admin() {
     setShowMovieModal(true);
   };
 
-  const handleCreateMovie = () => {
+  const handleCreateMovie = () =>
+  {
     resetMovieForm();
     setShowMovieModal(true);
   };
 
-  const resetMovieForm = () => {
+  const resetMovieForm = () =>
+  {
     setEditingMovie(null);
     setMovieId("");
     setMovieTitle("");
@@ -280,23 +292,23 @@ function Admin() {
             <h2>Existing Categories</h2>
             <div className="categories-container">
               {categories.map((category) => (
-                <div key={category._id} className="category-item">
-                  <h3>{category.name}</h3>
-                  <p>Promoted: {category.promoted ? "Yes" : "No"}</p>
-                  <p>Movies: {category.movie_list.length} IDs</p>
-                  <div className="category-actions">
-                    <button
-                      className="edit-button"
-                      onClick={() => handleEdit(category)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDelete(category._id)}
-                    >
-                      Delete
-                    </button>
+                <div key={category._id} className="category-item-admin">
+                  <div className="category-header">
+                    <h3>{category.name}</h3>
+                    <span className={`promoted-tag ${category.promoted ? 'active' : ''}`}>
+                      {category.promoted ? "Promoted" : "Regular"}
+                    </span>
+                  </div>
+                  <div className="category-details">
+                    <p>Contains {category.movie_list.length} movies</p>
+                    <div className="category-actions">
+                      <button className="button edit-button" onClick={() => handleEdit(category)}>
+                        Edit
+                      </button>
+                      <button className="button delete-button" onClick={() => handleDelete(category._id)}>
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -314,7 +326,8 @@ function Admin() {
             <h2>Existing Movies</h2>
             <div className="movies-container">
               {movies.map((movie) => (
-                <div key={movie.id} className="movie-item">
+                <div className="movie-item-admin">
+                <div className="movie-media">
                   {movie.picture && (
                     <img
                       src={movie.picture}
@@ -322,25 +335,29 @@ function Admin() {
                       className="movie-thumbnail"
                     />
                   )}
+                </div>
+                <div className="movie-info">
                   <h3>{movie.title}</h3>
-                  <p>ID: {movie.id}</p>
-                  <p>Categories: {movie.categories.length}</p>
-                  <p>Actors: {movie.actors.length}</p>
+                  <div className="movie-stats">
+                    <div className="stat-item">
+                      <span className="stat-label">Categories</span>
+                      <span className="stat-value">{movie.categories.length}</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">Actors</span>
+                      <span className="stat-value">{movie.actors.length}</span>
+                    </div>
+                  </div>
                   <div className="movie-actions">
-                    <button
-                      className="edit-button"
-                      onClick={() => handleEditMovie(movie)}
-                    >
+                    <button className="button edit-button" onClick={() => handleEditMovie(movie)}>
                       Edit
                     </button>
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDeleteMovie(movie.id)}
-                    >
+                    <button className="button delete-button" onClick={() => handleDeleteMovie(movie.id)}>
                       Delete
                     </button>
                   </div>
                 </div>
+              </div>
               ))}
             </div>
           </div>
@@ -349,8 +366,10 @@ function Admin() {
         {showMovieModal && (
           <div
             className="modal-overlay"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
+            onClick={(e) =>
+            {
+              if (e.target === e.currentTarget)
+              {
                 setShowMovieModal(false);
                 resetMovieForm();
               }
@@ -443,7 +462,8 @@ function Admin() {
                 <button
                   type="button"
                   className="movie-button cancel"
-                  onClick={() => {
+                  onClick={() =>
+                  {
                     setShowMovieModal(false);
                     resetMovieForm();
                   }}
@@ -458,8 +478,10 @@ function Admin() {
         {showModal && (
           <div
             className="modal-overlay"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
+            onClick={(e) =>
+            {
+              if (e.target === e.currentTarget)
+              {
                 setShowModal(false);
                 setEditingCategory(null);
                 setName("");
@@ -472,7 +494,7 @@ function Admin() {
               <h1 className="category-title">
                 {editingCategory ? "Edit Category" : "Create New Category"}
               </h1>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleCategorySubmit}>
                 <input
                   type="text"
                   className="input-field"
@@ -511,7 +533,8 @@ function Admin() {
                 <button
                   type="button"
                   className="category-button cancel"
-                  onClick={() => {
+                  onClick={() =>
+                  {
                     setShowModal(false);
                     setEditingCategory(null);
                     setName("");

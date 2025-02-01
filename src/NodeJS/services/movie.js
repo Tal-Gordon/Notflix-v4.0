@@ -13,7 +13,9 @@ const createMovie = async (
   categories,
   actors,
   description,
-  directors
+  directors,
+  picture,
+  video
 ) => {
   try {
     // Create the new movie
@@ -28,7 +30,7 @@ const createMovie = async (
     // Generate global movie ID
     movie.id = await IdService.generateId();
 
-    if (picture) {
+    if (picture && picture !== '') {
       const uploadDir = "Media/Movies/Pictures";
       const fileExt = path.extname(picture.originalname);
       const fileName = `${movie._id}${fileExt}`;
@@ -38,7 +40,7 @@ const createMovie = async (
       movie.picture = filePath;
     }
 
-    if (video) {
+    if (video && video !== '') {
       const videoDir = "Media/Movies/Videos";
       const videoExt = path.extname(video.originalname);
       const videoName = `${movie.id}${videoExt}`;

@@ -103,7 +103,7 @@ const App = () =>
 				path="/admin"
 				element={
 					<AdminRoute>
-						{/* <Admin /> */}
+						<Admin />
 					</AdminRoute>
 				}
 			/>
