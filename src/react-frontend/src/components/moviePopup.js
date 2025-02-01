@@ -6,10 +6,24 @@ const MoviePopup = ({ movie, onClose }) => {
     const [categories, setCategories] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
     const [loadingRecs, setLoadingRecs] = useState(true);
-    const [error, setError] = useState(null);
+    const [categoriesError, setCategoriesError] = useState(null);
+    const [recommendationsError, setRecommendationsError] = useState(null);
+    const [darkMode, setDarkMode] = useState(() => {
+        const storedDarkMode = sessionStorage.getItem("darkMode");
+        return storedDarkMode === "true";
+    });
 
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
+
+    useEffect(() => {
+        const handleDarkModeChange = (event) => {
+            setDarkMode(event.detail);            
+        };
+
+        window.addEventListener('darkModeChange', handleDarkModeChange);
+        return () => window.removeEventListener('darkModeChange', handleDarkModeChange);
+    }, [darkMode]);
 
     useEffect(() => {
         const fetchRecommendations = async () => {
@@ -22,21 +36,18 @@ const MoviePopup = ({ movie, onClose }) => {
                 });
 
                 if (!response.ok) {
-                    if (response.status === 404) {
-                        setRecommendations([]);
-                        setError(null);
-                        return;
+                    if (response.status !== 404) {
+                        throw new Error('Failed to fetch recommendations');
                     }
-                    throw new Error('Failed to fetch recommendations');
+                    setRecommendations([]);
+                    setRecommendations(null);
                 }
 
                 const data = await response.json();
                 setRecommendations(data);
-                setError(null);
+                setCategoriesError(null);
             } catch (err) {
-                if (err.message !== 'Failed to fetch recommendations') {
-                    setError(err.message);
-                }
+                setRecommendationsError(err.message);
             } finally {
                 setLoadingRecs(false);
             }
@@ -86,7 +97,7 @@ const MoviePopup = ({ movie, onClose }) => {
                 const categoryNames = await Promise.all(categoryPromises);
                 setCategories(categoryNames);
             } catch (err) {
-                setError(err.message);
+                setCategoriesError(err.message);
                 setCategories([]);
             }
         };
@@ -97,7 +108,7 @@ const MoviePopup = ({ movie, onClose }) => {
     if (!movie) return null;
 
     return (
-        <div className="popup-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+        <div className={`popup-overlay ${darkMode ? 'dark-mode' : ''}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
             <div className="popup-content">
                 <button className="close-button" onClick={onClose}>×</button>
 
@@ -107,7 +118,7 @@ const MoviePopup = ({ movie, onClose }) => {
                         <h2>{movie.title}</h2>
                         <div className="metadata">
                             <p><strong>Categories:</strong>
-                                {error ? (
+                                {categoriesError ? (
                                     <span className="error">Error loading categories</span>
                                 ) : (
                                     categories.length > 0 ? categories.join(', ') : 'Loading...'
@@ -132,8 +143,8 @@ const MoviePopup = ({ movie, onClose }) => {
                     <h3>Recommended Movies</h3>
                     {loadingRecs ? (
                         <div className="loading">Loading recommendations...</div>
-                    ) : error ? (
-                        <div className="error">Error loading recommendations: {error}</div>
+                    ) : recommendationsError ? (
+                        <div className="error">Error loading recommendations: {recommendationsError}</div>
                     ) : (
                         <div className="recommendations-list">
                             {recommendations.map(rec => (

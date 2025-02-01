@@ -23,6 +23,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
     const injectLeftRef = useRef(null);
     const injectRightRef = useRef(null);
 
+    
     useEffect(() => {
         const parseToken = () => {
             const token = sessionStorage.getItem('token');
@@ -73,7 +74,12 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
         },
         [BUTTON_TYPES.LIGHTDARK]: {
             label: isDarkMode ? '🌙' : '🌞',
-            action: () => setIsDarkMode(!isDarkMode)
+            action: () => {
+                const newDarkMode = !isDarkMode;
+                setIsDarkMode(newDarkMode);
+                sessionStorage.setItem("darkMode", newDarkMode.toString());
+                window.dispatchEvent(new CustomEvent('darkModeChange', { detail: newDarkMode }));
+            }
         }
     };
 
@@ -94,31 +100,31 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
             .filter(Boolean);
     };
 
-    // useEffect(() => {
-    //     if (injectLeftRef.current) {
-    //         const el = injectLeftRef.current;
-    //         el.addEventListener('mouseover', () => {
-    //             el.style.backgroundColor = '#e0e0e0';
-    //             el.style.transform = 'translateY(-1px)';
-    //         });
-    //         el.addEventListener('mouseout', () => {
-    //             el.style.backgroundColor = '#f0f0f0';
-    //             el.style.transform = 'translateY(0px)';
-    //         });
-    //     }
-    //     if (injectRightRef.current) {
-    //         const el = injectRightRef.current;
-    //         el.addEventListener('mouseover', () => {
-    //             el.style.borderRadius = "8px";
-    //             el.style.backgroundColor = '#e0e0e0';
-    //             el.style.transform = 'translateY(-1px)';
-    //         });
-    //         el.addEventListener('mouseout', () => {
-    //             el.style.backgroundColor = '#f0f0f0';
-    //             el.style.transform = 'translateY(0px)';
-    //         });
-    //     }
-    // }, []);
+    useEffect(() => {
+        if (injectLeftRef.current) {
+            const el = injectLeftRef.current;
+            el.addEventListener('mouseover', () => {
+                el.style.backgroundColor = '#e0e0e0';
+                el.style.transform = 'translateY(-1px)';
+            });
+            el.addEventListener('mouseout', () => {
+                el.style.backgroundColor = '#f0f0f0';
+                el.style.transform = 'translateY(0px)';
+            });
+        }
+        if (injectRightRef.current) {
+            const el = injectRightRef.current;
+            el.addEventListener('mouseover', () => {
+                el.style.borderRadius = "8px";
+                el.style.backgroundColor = '#e0e0e0';
+                el.style.transform = 'translateY(-1px)';
+            });
+            el.addEventListener('mouseout', () => {
+                el.style.backgroundColor = '#f0f0f0';
+                el.style.transform = 'translateY(0px)';
+            });
+        }
+    }, []);
 
     const resolvedLeft = resolveButtons(leftButtons, 'left');
     const resolvedRight = resolveButtons(rightButtons, 'right');
@@ -128,17 +134,27 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
             <div className="buttonGroup">
                 {resolvedLeft.map((btn) => (
                     <button
-                        key={btn.key}
-                        onClick={btn.action}
-                        className="navButton"
-                    >
+                    key={btn.key}
+                    onClick={btn.action}
+                    className="navButton"
+                    style={btn.type === BUTTON_TYPES.ACCOUNT ? {
+                        padding: 0,
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    } : {}}
+                >
                         {btn.label}
                     </button>
                 ))}
-                {injectLeft && <div ref={injectLeftRef}>{injectLeft}</div>}
+                {injectLeft && <div>{injectLeft}</div>}
             </div>
             <div className="buttonGroup">
-                {injectRight && <div ref={injectRightRef}>{injectRight}</div>}
+                {injectRight && <div>{injectRight}</div>}
                 {resolvedRight.map((btn) => (
                     <button
                         key={btn.key}

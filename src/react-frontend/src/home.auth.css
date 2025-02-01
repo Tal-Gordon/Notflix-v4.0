@@ -3,8 +3,15 @@
     --secondary-color: #2c3e50;
     --accent-color: #e74c3c;
     --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --text-dark: #2c3e50;
+    --text-dark: #81afda;
     --text-light: #ecf0f1;
+
+    --dark-primary-color: #2980b9;
+    --dark-secondary-color: #34495e;
+    --dark-accent-color: #c0392b;
+    --dark-background-gradient: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    --dark-text-dark: #ecf0f1;
+    --dark-text-light: #2c3e50;
 }
 
 .home-container {
@@ -13,6 +20,7 @@
     padding: 6rem 20px 20px;
     background: var(--background-gradient);
     min-height: 100vh;
+    color: #c5c5c5;
 }
 
 .welcome-header {
@@ -73,7 +81,7 @@
 
 .category-section {
     margin-bottom: 3rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--background-gradient);
     padding: 1.5rem;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -230,7 +238,7 @@
 
 .watched-section {
     margin-top: 3rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--background-gradient);
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -256,7 +264,7 @@
     color: var(--text-dark);
     padding: 2rem;
     font-size: 1.4rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--background-gradient);
     border-radius: 12px;
     margin: 2rem 0;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -299,9 +307,9 @@
 
 .featured-video-container {
     position: relative;
-    width: 100%;
+    width: 60%;
     max-width: 1200px;
-    margin: 0 auto 2rem;
+    margin: 0 auto;
     background-color: #000;
 }
 
@@ -327,4 +335,55 @@
     font-size: 2rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     margin: 0;
+}
+
+.home-container.dark-mode {
+    background: var(--dark-background-gradient);
+}
+
+.category-section.dark-mode {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.category-title.dark-mode {
+    color: var(--text-dark);
+}
+
+.category-title.dark-mode::before {
+    background: var(--primary-color);
+}
+
+.watched-section.dark-mode {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.watched-title.dark-mode {
+    color: var(--accent-color);
+}
+
+.no-results-message.dark-mode {
+    color: var(--text-dark);
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.movies-row.dark-mode::-webkit-scrollbar-track,
+.watched-movies-list.dark-mode::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.movies-row.dark-mode::-webkit-scrollbar-thumb,
+.watched-movies-list.dark-mode::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+}
+
+.welcome-message-home-auth.dark-mode {
+    color: var(--text-dark);
+}
+
+.scroll-button.dark-mode {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.scroll-button.dark-mode:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }

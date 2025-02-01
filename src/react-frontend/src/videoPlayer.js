@@ -10,6 +10,10 @@ const VideoPlayer = () => {
     const [duration, setDuration] = useState('00:00');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [darkMode, setDarkMode] = useState(() => {
+        const storedDarkMode = sessionStorage.getItem("darkMode");
+        return storedDarkMode === "true";
+    });
 
     const token = sessionStorage.getItem('token');
 
@@ -23,6 +27,15 @@ const VideoPlayer = () => {
             setDuration(`${minutes}:${seconds.toString().padStart(2, '0')}`);
         }
     };
+
+    useEffect(() => {
+            const handleDarkModeChange = (event) => {
+                setDarkMode(event.detail);            
+            };
+    
+            window.addEventListener('darkModeChange', handleDarkModeChange);
+            return () => window.removeEventListener('darkModeChange', handleDarkModeChange);
+    }, [darkMode]);
 
     useEffect(() => {
         const fetchMovie = async () => {
@@ -56,7 +69,7 @@ const VideoPlayer = () => {
     }, [id, token]);
 
     if (loading) {
-        return <div className="video-loading">Loading...</div>;
+        return <div className={`video-loading ${darkMode ? 'dark-mode' : ''}`}>Loading...</div>;
     }
 
     return (
@@ -70,11 +83,11 @@ const VideoPlayer = () => {
                     BUTTON_TYPES.LOGOUT
                 ]}
             />
-            <div className="video-player-container">
+            <div className={`video-player-container ${darkMode ? 'dark-mode' : ''}`}>
 
                 {error ? (
                     <div className="error-container">
-                        <div className="error-message">
+                        <div className={`error-message ${darkMode ? 'dark-mode' : ''}`}>
                             <h2>⚠️ Error Loading Movie</h2>
                             <p>{error}</p>
                             <p>Please check the movie ID and try again.</p>
@@ -95,10 +108,10 @@ const VideoPlayer = () => {
                                 </video>
                             </div>
 
-                            <div className="video-info">
+                            <div className={`video-info ${darkMode ? 'dark-mode' : ''}`}>
                                 <h1>{movie.title}</h1>
                                 {movie.description && <p>{movie.description}</p>}
-                                <div className="metadata-vp">
+                                <div className={`metadata-vp ${darkMode ? 'dark-mode' : ''}`}>
                                     <span>Duration: {duration}</span>
                                     <span>Movie ID: {id}</span>
                                 </div>

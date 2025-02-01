@@ -12,8 +12,21 @@ function HomeAuth() {
     const [isSearching, setIsSearching] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [featuredMovie, setFeaturedMovie] = useState(null);
+    const [darkMode, setDarkMode] = useState(() => {
+        const storedDarkMode = sessionStorage.getItem("darkMode");
+        return storedDarkMode === "true";
+    });
     
     const token = sessionStorage.getItem('token');
+
+    useEffect(() => {
+            const handleDarkModeChange = (event) => {
+                setDarkMode(event.detail);            
+            };
+    
+            window.addEventListener('darkModeChange', handleDarkModeChange);
+            return () => window.removeEventListener('darkModeChange', handleDarkModeChange);
+        }, [darkMode]);
 
     useEffect(() => {
 
@@ -131,35 +144,15 @@ function HomeAuth() {
                     />
                 }
             /> 
-            <div className="home-container">
+            <div className={`home-container ${darkMode ? 'dark-mode' : ''}`}>
                 {/* <div className="welcome-header">
                     <h1 className="welcome-message-home-auth">
                         <span className="brand-highlight">Back so soon?</span><br/>
                         We didn't even clean up the popcorn crumbs!
                     </h1>
                 </div> */}
-                {featuredMovie && (
-                <div className="featured-video-container">
-                    <video 
-                        key={featuredMovie.video}
-                        autoPlay 
-                        controls
-                        loop
-                        className="featured-video"
-                    >
-                        <source 
-                            src={`http://localhost:3001/${featuredMovie.video}`} 
-                            type="video/mp4" 
-                        />
-                        Your browser does not support the video tag.
-                    </video>
-                    <div className="featured-video-overlay">
-                        <h2 className="featured-title">{featuredMovie.title}</h2>
-                    </div>
-                </div>
-                )}
                 {error ? (
-                    <div className="no-results-message">
+                    <div className={`no-results-message ${darkMode ? 'dark-mode' : ''}`}>
                         No movies were found
                         {isSearching && <span style={{marginLeft: '10px'}}>🔍 Searching...</span>}
                     </div>  
@@ -169,9 +162,9 @@ function HomeAuth() {
                             <>
                                 <h2>Search Results</h2>
                                 <div className="movies-row-container">
-                                    <ul className="movies-row">
+                                    <ul className={`movies-row ${darkMode ? 'dark-mode' : ''}`}>
                                         <button 
-                                            className="scroll-button left"
+                                            className={`scroll-button ${darkMode ? 'dark-mode' : ''} left`}
                                             onClick={() => {
                                                 const container = document.querySelector('.movies-row');
                                                 container.scrollBy({ left: -container.clientWidth * 0.8, behavior: 'smooth' });
@@ -224,13 +217,33 @@ function HomeAuth() {
                             </>
                         ) : (
                             <>
+                                {featuredMovie && (
+                                <div className="featured-video-container">
+                                    <video 
+                                        key={featuredMovie.video}
+                                        autoPlay 
+                                        controls
+                                        loop
+                                        className="featured-video"
+                                    >
+                                        <source 
+                                            src={`http://localhost:3001/${featuredMovie.video}`} 
+                                            type="video/mp4" 
+                                        />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div className="featured-video-overlay">
+                                        <h2 className="featured-title">{featuredMovie.title}</h2>
+                                    </div>
+                                </div>
+                                )}
                                 {/* Render Categories */}
                                 {categories.length === 0 ? (
                                     <p>Loading categories...</p>
                                 ) : (
                                     categories.map((category, index) => (
-                                        <div key={index} className="category-section">
-                                            <h3 className="category-title">{category.name}</h3>
+                                        <div key={index} className={`category-section ${darkMode ? 'dark-mode' : ''}`}>
+                                            <h3 className={`category-title ${darkMode ? 'dark-mode' : ''}`}>{category.name}</h3>
                                             <div className="movies-row-container">
                                                 <ul className="movies-row">
                                                     <button 
@@ -288,12 +301,12 @@ function HomeAuth() {
                                 )}
 
                                 {/* Render Watched Movies */}
-                                <div className="watched-section">
-                                    <h2 className="watched-title">Recently Watched Movies</h2>
+                                <div className={`watched-section ${darkMode ? 'dark-mode' : ''}`}>
+                                    <h2 className={`watched-title ${darkMode ? 'dark-mode' : ''}`}>Recently Watched Movies</h2>
                                     {recentlyWatched.length === 0 ? (
                                         <p>No recently watched movies</p>
                                     ) : (
-                                        <ul className="watched-movies-list">
+                                        <ul className={`watched-movies-list ${darkMode ? 'dark-mode' : ''}`}>
                                             {recentlyWatched.map((movie, index) => (
                                                 <li key={index}>
                                                     <button 
