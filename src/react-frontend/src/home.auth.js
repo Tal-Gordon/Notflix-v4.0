@@ -131,7 +131,8 @@ function HomeAuth() {
         <div>
             <Navbar 
                 leftButtons={[
-                    BUTTON_TYPES.HOME
+                    BUTTON_TYPES.HOME,
+                    sessionStorage.getItem('admin') === 'true' && BUTTON_TYPES.ADMIN
                 ]}
                 rightButtons={[
                     BUTTON_TYPES.LIGHTDARK,

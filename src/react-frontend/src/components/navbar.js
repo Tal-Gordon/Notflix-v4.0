@@ -10,7 +10,8 @@ const BUTTON_TYPES = {
     LOGOUT: 'LOGOUT',
     SIGNUP: 'SIGNUP',
     ACCOUNT: 'ACCOUNT',
-    LIGHTDARK: 'LIGHTDARK'
+    LIGHTDARK: 'LIGHTDARK',
+    ADMIN: 'ADMIN'
 };
 
 const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }) => {
@@ -80,7 +81,11 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                 sessionStorage.setItem("darkMode", newDarkMode.toString());
                 window.dispatchEvent(new CustomEvent('darkModeChange', { detail: newDarkMode }));
             }
-        }
+        },
+        [BUTTON_TYPES.ADMIN]: {
+            label: 'Admin',
+            action: () => navigate('/admin'),
+        },
     };
 
     const resolveButtons = (buttonTypes, side) => {

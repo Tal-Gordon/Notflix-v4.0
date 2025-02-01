@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './index.css';
@@ -17,12 +17,8 @@ const useAuth = () =>
 		!!sessionStorage.getItem('token')
 	);
 	const [isAdmin, setIsAdmin] = useState(() =>
-		!!sessionStorage.getItem('admin')
+		sessionStorage.getItem('admin') === 'true'
 	);
-
-	useEffect(() => {
-		console.log("Updated admin:", isAdmin);
-	}, [isAdmin]);
 
 	const login = useCallback((token) => {
 		sessionStorage.setItem('token', token);
@@ -30,7 +26,7 @@ const useAuth = () =>
 
 		const payload = JSON.parse(atob(token.split('.')[1]));
 		sessionStorage.setItem('admin', !!payload.isAdmin);
-		setIsAdmin(!!payload.isAdmin);
+		setIsAdmin(payload.isAdmin);
 	}, []);
 
 	const logout = useCallback(() =>
