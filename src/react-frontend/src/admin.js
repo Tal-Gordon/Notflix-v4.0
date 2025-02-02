@@ -32,7 +32,24 @@ const Admin = () =>
     modalType: null,
   });
 
+  const [darkMode, setDarkMode] = useState(() =>
+  {
+    const storedDarkMode = sessionStorage.getItem("darkMode");
+    return storedDarkMode === "true";
+  });
+
   const token = sessionStorage.getItem("token");
+
+  useEffect(() =>
+  {
+    const handleDarkModeChange = (event) =>
+    {
+      setDarkMode(event.detail);
+    };
+
+    window.addEventListener('darkModeChange', handleDarkModeChange);
+    return () => window.removeEventListener('darkModeChange', handleDarkModeChange);
+  }, [darkMode]);
 
   const fetchData = useCallback(async (abortController) =>
   {
@@ -238,41 +255,43 @@ const Admin = () =>
         leftButtons={[BUTTON_TYPES.HOME]}
         rightButtons={[BUTTON_TYPES.LIGHTDARK, BUTTON_TYPES.LOGOUT]}
       />
-      <div className="split-screen">
-        <div className="left-panel">
+      <div className={`split-screen ${darkMode ? 'dark-mode' : ''}`}>
+        <div className={`left-panel ${darkMode ? 'dark-mode' : ''}`}>
           <h1>Categories</h1>
-          <button className="create-button" onClick={() => handleModal('category')}>
+          <button className={`create-button ${darkMode ? 'dark-mode' : ''}`} onClick={() => handleModal('category')}>
             Create New Category
           </button>
-          <div className="categories-list">
-            <h2>Existing Categories</h2>
-            <div className="categories-container">
+          <div className={`categories-list ${darkMode ? 'dark-mode' : ''}`}>
+            <h2 className={darkMode ? 'dark-mode' : ''}>Existing Categories</h2>
+            <div className={`categories-container ${darkMode ? 'dark-mode' : ''}`}>
               {state.categories.map(category => (
                 <CategoryItem
                   key={category._id}
                   category={category}
                   onEdit={() => handleModal('category', category)}
                   onDelete={() => handleDelete('category', category._id)}
+                  darkMode={darkMode}
                 />
               ))}
             </div>
           </div>
         </div>
 
-        <div className="right-panel">
-          <h1>Movies</h1>
-          <button className="create-button" onClick={() => handleModal('movie')}>
+        <div className={`right-panel ${darkMode ? 'dark-mode' : ''}`}>
+          <h1 className={darkMode ? 'dark-mode' : ''}>Movies</h1>
+          <button className={`create-button ${darkMode ? 'dark-mode' : ''}`} onClick={() => handleModal('movie')}>
             Create New Movie
           </button>
-          <div className="movies-list-admin">
-            <h2>Existing Movies</h2>
-            <div className="movies-container-admin">
+          <div className={`movies-list-admin ${darkMode ? 'dark-mode' : ''}`}>
+            <h2 className={darkMode ? 'dark-mode' : ''}>Existing Movies</h2>
+            <div className={`movies-container-admin ${darkMode ? 'dark-mode' : ''}`}>
               {state.movies.map(movie => (
                 <MovieItem
                   key={movie._id}
                   movie={movie}
                   onEdit={() => handleModal('movie', movie)}
                   onDelete={() => handleDelete('movie', movie._id)}
+                  darkMode={darkMode}
                 />
               ))}
             </div>
@@ -294,21 +313,21 @@ const Admin = () =>
   );
 };
 
-const CategoryItem = memo(({ category, onEdit, onDelete }) => (
-  <div className="category-item-admin">
-    <div className="category-header">
-      <h3>{category.name}</h3>
-      <span className={`promoted-tag ${category.promoted ? 'active' : ''}`}>
+const CategoryItem = memo(({ category, onEdit, onDelete, darkMode }) => (
+  <div className={`category-item-admin ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`category-header ${darkMode ? 'dark-mode' : ''}`}>
+      <h3 className={darkMode ? 'dark-mode' : ''}>{category.name}</h3>
+      <span className={`promoted-tag ${category.promoted ? 'active' : ''} ${darkMode ? 'dark-mode' : ''}`}>
         {category.promoted ? "Promoted" : "Regular"}
       </span>
     </div>
-    <div className="category-details">
-      <p>Contains {category.movie_list.length} movies</p>
+    <div className={`category-details ${darkMode ? 'dark-mode' : ''}`}>
+      <p className={darkMode ? 'dark-mode' : ''}>Contains {category.movie_list.length} movies</p>
       <div className="category-actions">
-        <button className="button edit-button" onClick={onEdit}>
+        <button className={`button edit-button ${darkMode ? 'dark-mode' : ''}`} onClick={onEdit}>
           Edit
         </button>
-        <button className="button delete-button" onClick={onDelete}>
+        <button className={`button delete-button ${darkMode ? 'dark-mode' : ''}`} onClick={onDelete}>
           Delete
         </button>
       </div>
@@ -316,7 +335,7 @@ const CategoryItem = memo(({ category, onEdit, onDelete }) => (
   </div>
 ));
 
-const MovieItem = memo(({ movie, onEdit, onDelete }) =>
+const MovieItem = memo(({ movie, onEdit, onDelete, darkMode }) =>
 {
   const [categoryNames, setCategoryNames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -359,18 +378,18 @@ const MovieItem = memo(({ movie, onEdit, onDelete }) =>
   }, [movie?.categories, token]);
 
   return (
-    <div className="movie-item-admin">
-      <div className="movie-media">
+    <div className={`movie-item-admin ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={`movie-media ${darkMode ? 'dark-mode' : ''}`}>
         {movie.picture && (
           <img
             src={`http://localhost:3001/${movie.picture}`}
             alt={movie.title}
-            className="movie-thumbnail"
+            className={`movie-thumbnail ${darkMode ? 'dark-mode' : ''}`}
           />
         )}
       </div>
-      <div className="movie-info">
-        <h3>{movie.title}</h3>
+      <div className={`movie-info ${darkMode ? 'dark-mode' : ''}`}>
+        <h3 className={darkMode ? 'dark-mode' : ''}>{movie.title}</h3>
         <div className="movie-stats">
           <div className="stat-item">
             <span className="stat-label">Categories:</span>
@@ -386,10 +405,10 @@ const MovieItem = memo(({ movie, onEdit, onDelete }) =>
           </div>
         </div>
         <div className="movie-actions">
-          <button className="button edit-button" onClick={onEdit}>
+          <button className={`button edit-button ${darkMode ? 'dark-mode' : ''}`} onClick={onEdit}>
             Edit
           </button>
-          <button className="button delete-button" onClick={onDelete}>
+          <button className={`button delete-button ${darkMode ? 'dark-mode' : ''}`} onClick={onDelete}>
             Delete
           </button>
         </div>
@@ -448,7 +467,7 @@ const MovieIdList = ({ ids }) =>
   );
 };
 
-const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
+const Modal = ({ type, formState, state, onClose, onSubmit, setFormState, darkMode }) =>
 {
 
   const [currentIds, setCurrentIds] = useState([]);
@@ -480,9 +499,9 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
   };
 
   return (
-    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content">
-        <h1 className="modal-title">
+    <div className={`modal-overlay ${darkMode ? 'dark-mode' : ''}`} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={`modal-content ${darkMode ? 'dark-mode' : ''}`}>
+        <h1 className={`modal-title ${darkMode ? 'dark-mode' : ''}`}>
           {formState.editingId ? `Edit ${type}` : `Create New ${type}`}
         </h1>
         <form onSubmit={onSubmit}>
@@ -490,7 +509,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
             <>
               <input
                 type="text"
-                className="input-field"
+                className={`input-field ${darkMode ? 'dark-mode' : ''}`}
                 placeholder="Category Name *"
                 value={formState.category.name}
                 onChange={e => setFormState(prev => ({
@@ -514,7 +533,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
               </div>
               <input
                 type="text"
-                className="input-field"
+                className={`input-field ${darkMode ? 'dark-mode' : ''}`}
                 placeholder="Movie IDs (comma-separated)"
                 value={formState.category.movieList}
                 onChange={handleMovieIdsInput}
@@ -530,7 +549,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
             <>
               <input
                 type="text"
-                className="input-field"
+                className={`input-field ${darkMode ? 'dark-mode' : ''}`}
                 placeholder="Movie Title *"
                 value={formState.movie.title}
                 onChange={e => setFormState(prev => ({
@@ -539,7 +558,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
                 }))}
                 required
               />
-              <div className="category-checkboxes">
+              <div className={`checkbox-container ${darkMode ? 'dark-mode' : ''}`}>
                 {state.categories.map(category => (
                   <label key={category._id} className="checkbox-label">
                     <input
@@ -563,7 +582,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
               </div>
               <input
                 type="text"
-                className="input-field"
+                className={`input-field ${darkMode ? 'dark-mode' : ''}`}
                 placeholder="Actors (comma-separated)"
                 value={formState.movie.actors}
                 onChange={e => setFormState(prev => ({
@@ -573,7 +592,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
               />
               <input
                 type="text"
-                className="input-field"
+                className={`input-field ${darkMode ? 'dark-mode' : ''}`}
                 placeholder="Directors (comma-separated)"
                 value={formState.movie.directors}
                 onChange={e => setFormState(prev => ({
@@ -582,7 +601,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
                 }))}
               />
               <textarea
-                className="input-field"
+                className={`input-field ${darkMode ? 'dark-mode' : ''}`}
                 placeholder="Description"
                 value={formState.movie.description}
                 onChange={e => setFormState(prev => ({
@@ -617,11 +636,11 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
               {state.movieError && <div className="error-message">{state.movieError}</div>}
             </>
           )}
-          <div className="modal-buttons">
-            <button className="modal-button" type="submit">
+          <div className={`modal-buttons ${darkMode ? 'dark-mode' : ''}`}>
+            <button className={`modal-button ${darkMode ? 'dark-mode' : ''}`} type="submit">
               {formState.editingId ? "Update" : "Create"}
             </button>
-            <button className="modal-button cancel" type="button" onClick={onClose}>
+            <button className={`modal-button cancel ${darkMode ? 'dark-mode' : ''}`} type="button" onClick={onClose}>
               Cancel
             </button>
           </div>

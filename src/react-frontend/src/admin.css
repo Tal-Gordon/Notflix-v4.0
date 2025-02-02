@@ -4,7 +4,7 @@
   --success: #22c55e;
   --danger: #ef4444;
   --danger-hover: #dc2626;
-  --background: #f8fafc;
+  --background: #fff;
   --text: #1e293b;
   --text-light: #64748b;
   --shadow: 0 1px 3px rgba(0,0,0,0.12);
@@ -21,11 +21,11 @@
 
 .dark-mode {
   --background: var(--dark-bg);
+  --background-color: var(--dark-bg);
   --text: var(--dark-text);
   --text-light: #94a3b8;
 }
 
-/* Base Layout */
 .split-screen {
   display: flex;
   gap: 2rem;
@@ -33,7 +33,8 @@
   min-height: calc(100vh - 80px);
   max-width: 1600px;
   margin: 20px auto;
-  margin-top: 80px;
+  margin-top: 60px;
+  background: var(--background);
 }
 
 .left-panel,
@@ -74,7 +75,6 @@
   color: var(--dark-text);
 }
 
-/* Grid Containers */
 .categories-container,
 .movies-container-admin {
   display: grid;
@@ -84,7 +84,6 @@
   gap: 2rem !important;
 }
 
-/* Card Items */
 .category-item-admin,
 .movie-item-admin {
   display: flex;
@@ -137,7 +136,6 @@
   font-weight: 100;
 }
 
-/* Typography */
 h1, h2, h3 {
   color: var(--text);
   margin-bottom: 1.5rem;
@@ -147,7 +145,6 @@ h1 { font-size: 2rem; font-weight: 700; }
 h2 { font-size: 1.5rem; font-weight: 600; }
 h3 { font-size: 1.25rem; font-weight: 600; }
 
-/* Promoted Tag */
 .promoted-tag {
   font-size: 0.75rem;
   padding: 0.25rem 0.75rem;
@@ -164,7 +161,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   color: white;
 }
 
-/* Buttons */
 .button {
   border-radius: var(--radius-sm);
   font-weight: 500;
@@ -214,7 +210,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   transform: translateY(-1px);
 }
 
-/* Modal Styles */
 .modal-overlay {
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(4px);
@@ -227,8 +222,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
   max-width: 600px;
 }
-
-/* Form Elements */
 
 .file-input-group {
   display: flex;
@@ -245,7 +238,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   margin-right: 10px;
 }
 
-/* Error Messages */
 .error-message {
   background: #fee2e2;
   color: #b91c1c;
@@ -255,7 +247,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   border-left: 4px solid #ef4444;
 }
 
-/* Checkboxes */
 .checkbox-label {
   padding: 0.5rem;
   border-radius: var(--radius-sm);
@@ -284,12 +275,12 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 
 .movie-thumbnail {
   width: 100%;
-  height: 180px; /* Reduced from 150px to 180px for better proportion */
+  height: 180px;
   object-fit: cover;
   transition: var(--transition);
   display: block;
   margin: 0 auto;
-  max-width: 300px; /* Added max-width constraint */
+  max-width: 300px;
 }
 
 .movie-item-admin {
@@ -314,7 +305,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   pointer-events: none;
 }
 
-/* Modal Overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -385,7 +375,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   background: #e2e8f0;
 }
 
-/* Form Elements in Modal */
 .modal-content form {
   display: flex;
   flex-direction: column;
@@ -406,7 +395,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-/* File Inputs in Modal */
 .file-input-group input[type="file"] {
   margin-top: 0.5rem;
   padding: 0.5rem;
@@ -415,7 +403,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   width: 100%;
 }
 
-/* Checkboxes in Modal */
 .category-checkboxes {
   display: grid;
   gap: 0.25rem;
@@ -438,7 +425,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   margin-top: 0.25rem;
 }
 
-/* Dark mode adjustments */
 .dark-mode .movie-title {
   color: var(--dark-text);
 }
@@ -447,7 +433,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   color: #94a3b8;
 }
 
-/* Movie ID validation styles */
 .movie-id-validation {
   margin-top: 1rem;
   max-height: 200px;
@@ -477,7 +462,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   padding: 0.5rem;
 }
 
-/* Dark mode support */
 .dark-mode .movie-id-result {
   background: #334155;
 }
@@ -487,7 +471,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   color: #fecaca;
 }
 
-/* Scrollbar styling */
 .movie-id-validation::-webkit-scrollbar {
   width: 8px;
 }
