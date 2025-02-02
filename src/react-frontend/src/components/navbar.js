@@ -18,12 +18,21 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
     const logout = useLogout();
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const storedDarkMode = sessionStorage.getItem("darkMode");
+        return storedDarkMode === "true";
+    });
     const [picture, setPicture] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [showAccountInfo, setShowAccountInfo] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
 
     const injectLeftRef = useRef(null);
     const injectRightRef = useRef(null);
-
+    const accountButtonRef = useRef(null);
     
     useEffect(() => {
         const parseToken = () => {
@@ -32,16 +41,93 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                 try {
                     const payload = JSON.parse(atob(token.split('.')[1]));
                     setPicture(payload.picture || null);
+                    setUserId(payload.userId);
+                    console.log("hey dude! " + payload.userId)
                 } catch (error) {
                     console.error('Error parsing token:', error);
                     setPicture(null);
+                    setUserId(null);
                 }
             } else {
                 setPicture(null);
+                setUserId(null);
             }
         };
         parseToken();
     }, [isLoggedIn]);
+
+    useEffect(() => {
+        if (showAccountInfo && accountButtonRef.current) {
+            const buttonRect = accountButtonRef.current.getBoundingClientRect();
+            const popupWidth = 200; // Match your popup's width
+            const viewportWidth = window.innerWidth;
+            const scrollY = window.scrollY;
+    
+            // Calculate horizontal position with boundary check
+            let left = buttonRect.left + (buttonRect.width / 2);
+            const leftSpace = left - popupWidth/2;
+            const rightSpace = viewportWidth - (left + popupWidth/2);
+    
+            // Adjust for left boundary
+            if (leftSpace < 10) { // 10px buffer
+                left = popupWidth/2 + 10;
+            }
+            // Adjust for right boundary
+            else if (rightSpace < 10) { // 10px buffer
+                left = viewportWidth - popupWidth/2 - 10;
+            }
+    
+            // Calculate vertical position with boundary check
+            const popupHeight = 200; // Approximate popup height
+            const spaceBelow = window.innerHeight - buttonRect.bottom;
+            const top = spaceBelow > popupHeight + 10 ? // 10px buffer
+                buttonRect.bottom + scrollY + 10 : 
+                buttonRect.top + scrollY - popupHeight - 10;
+    
+            setPopupPosition({
+                top,
+                left: Math.max(popupWidth/2 + 10, Math.min(left, viewportWidth - popupWidth/2 - 10)),
+                positionVertical: spaceBelow > popupHeight + 10 ? 'below' : 'above'
+            });
+        }
+    }, [showAccountInfo]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showAccountInfo && accountButtonRef.current && 
+                !accountButtonRef.current.contains(event.target) && 
+                !event.target.closest('.account-popup')) {
+                setShowAccountInfo(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showAccountInfo]);
+
+    useEffect(() => {
+        if (showAccountInfo && userId) {
+            const fetchUserData = async () => {
+                setLoading(true);
+                try {
+                    const response = await fetch(`users/${userId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                        }
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch user data');
+                    const data = await response.json();
+                    setUserData(data);
+                    setError(null);
+                } catch (err) {
+                    setError(err.message);
+                    setUserData(null);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchUserData();
+        }
+    }, [showAccountInfo, userId]);
 
     const BUTTON_CONFIG = {
         [BUTTON_TYPES.HOME]: {
@@ -71,7 +157,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                     backgroundColor: '#cccccc',
                 }} />
             ),
-            action: () => {},
+            action: () => setShowAccountInfo(prev => !prev),
         },
         [BUTTON_TYPES.LIGHTDARK]: {
             label: isDarkMode ? '🌙' : '🌞',
@@ -140,6 +226,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                 {resolvedLeft.map((btn) => (
                     <button
                     key={btn.key}
+                    ref={btn.type === BUTTON_TYPES.ACCOUNT ? accountButtonRef : null}
                     onClick={btn.action}
                     className="navButton"
                     style={btn.type === BUTTON_TYPES.ACCOUNT ? {
@@ -163,6 +250,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                 {resolvedRight.map((btn) => (
                     <button
                         key={btn.key}
+                        ref={btn.type === BUTTON_TYPES.ACCOUNT ? accountButtonRef : null}
                         onClick={btn.action}
                         className="navButton"
                         style={btn.type === BUTTON_TYPES.ACCOUNT ? {
@@ -179,6 +267,41 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                         {btn.label}
                     </button>
                 ))}
+                {showAccountInfo && (
+                <div 
+                    className="account-popup"
+                    style={{
+                        top: popupPosition.top,
+                        left: popupPosition.left,
+                        transform: 'translateX(-50%)'
+                    }}
+                >
+                    <div 
+                        className="account-popup-arrow" 
+                        style={{
+                            marginLeft: '60px'
+                        }} />
+                    <div className="account-popup-content">
+                        {loading ? (
+                            <div>Loading...</div>
+                        ) : error ? (
+                            <div>Error: {error}</div>
+                        ) : userData ? (
+                            <>
+                                <img 
+                                    src={`http://localhost:3001/${userData.picture}`} 
+                                    alt="Profile"
+                                    className="account-popup-image"
+                                />
+                                <div>Username: {userData.username}</div>
+                                {userData.isAdmin ? <div>User type: Admin</div> : <div>User type: User</div>}
+                                {userData.name && <div>Name: {userData.name}</div>}
+                                {userData.surname && <div>Surname: {userData.surname}</div>}
+                            </>
+                        ) : null}
+                    </div>
+                </div>
+            )}
             </div>
         </nav>
     );

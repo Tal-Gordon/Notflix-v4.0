@@ -380,7 +380,7 @@ const MovieItem = memo(({ movie, onEdit, onDelete, darkMode }) =>
   return (
     <div className={`movie-item-admin ${darkMode ? 'dark-mode' : ''}`}>
       <div className={`movie-media ${darkMode ? 'dark-mode' : ''}`}>
-        {movie.picture && (
+        {(
           <img
             src={`http://localhost:3001/${movie.picture}`}
             alt={movie.title}
@@ -560,7 +560,7 @@ const Modal = ({ type, formState, state, onClose, onSubmit, setFormState, darkMo
               />
               <div className={`checkbox-container ${darkMode ? 'dark-mode' : ''}`}>
                 {state.categories.map(category => (
-                  <label key={category._id} className="checkbox-label">
+                  <label key={category._id} className={`checkbox-label ${darkMode ? 'dark-mode' : ''}`}>
                     <input
                       type="checkbox"
                       value={category._id}

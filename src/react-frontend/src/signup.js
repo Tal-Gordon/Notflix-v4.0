@@ -6,6 +6,7 @@ import { Navbar, BUTTON_TYPES } from './components/navbar';
 function Signup() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [picture, setPicture] = useState(null);
@@ -13,12 +14,13 @@ function Signup() {
     const [errorMessage, setErrorMessage] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
     const login = useLogin();
 
     const handleSignup = async (event) => {
         event.preventDefault(); 
-        if (!validateForm(username, password)) {
+        if (!validateForm()) {
             return; // Prevent form submission if validation fails
         }
 
@@ -49,15 +51,11 @@ function Signup() {
                 // User is not created
                 const errorObject = JSON.parse(await postResponse.text());
                 try {
-                    let serverErrorMessage = "An unknown error occurred."; // Default message
-
-                    // TODO: fix this atrocity, ain't no way we leave it as is
+                    let serverErrorMessage = "An unknown error occurred.";
                     if (errorObject && errorObject.errors && errorObject.errors.length > 0) {
-                        // Access the first error in the errors array
                         const firstError = errorObject.errors[0];
                         serverErrorMessage = firstError.details || firstError.error || serverErrorMessage;
                     } else if (errorObject && (errorObject.message || errorObject.error || errorObject.description || errorObject.details)) {
-                        // Handle cases where the error is not in an 'errors' array
                         serverErrorMessage = errorObject.message || errorObject.error || errorObject.description || errorObject.details || serverErrorMessage;
                     }
                 
@@ -73,7 +71,7 @@ function Signup() {
                 }
             }
         } catch(error) {
-            setErrorMessage(error.message || 'An error occurred during signup.'); // TODO: proper error managing
+            setErrorMessage(error.message || 'An error occurred during signup.');
         };
     };
 
@@ -81,19 +79,26 @@ function Signup() {
         let isValid = true;
         setUsernameError('');
         setPasswordError('');
+        setConfirmPasswordError('');
         setErrorMessage('');
     
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            setConfirmPasswordError('Passwords do not match');
+            isValid = false;
+        }
+
+        // Check password length
         if (password.length < 8) {
             setPasswordError('Password must be at least 8 characters');
             isValid = false;
-            return isValid;
-        }
-    
-        // I loooooove regex :')
-        const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\da-zA-Z]).{8,}$/;
-        if (!regex.test(password)) {
-            setPasswordError('Password must contain lowercase, uppercase, number, and special character');
-            isValid = false;
+        } else {
+            // Check password complexity
+            const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\da-zA-Z]).{8,}$/;
+            if (!regex.test(password)) {
+                setPasswordError('Password must contain lowercase, uppercase, number, and special character');
+                isValid = false;
+            }
         }
         
         return isValid;
@@ -140,22 +145,32 @@ function Signup() {
                             onChange={(e) => setPassword(e.target.value)}
                             onKeyDown={handleKeyDown}
                             required
-                            />
+                        />
                         {passwordError && <div className="error-message">{passwordError}</div>}
+                        <input
+                            type="password"
+                            className={`signup-input ${confirmPasswordError ? 'error-adjacent' : ''}`}
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            required
+                        />
+                        {confirmPasswordError && <div className="error-message">{confirmPasswordError}</div>}
                         <input
                             type="text"
                             className="signup-input"
                             placeholder="Name (optional)"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            />
+                        />
                         <input
                             type="text"
                             className="signup-input"
                             placeholder="Surname (optional)"
                             value={surname}
                             onChange={(e) => setSurname(e.target.value)}
-                            />
+                        />
                         <input
                             type="file"
                             name="myImage"
@@ -167,26 +182,22 @@ function Signup() {
                                     alert("Please upload an image file.");
                                 }
                             }}
-                            />
+                        />
                         {picture && (
                             <div>
-                            {/* Display the selected image */}
-                            <img
-                                alt="not found"
-                                width={"250px"}
-                                src={URL.createObjectURL(picture)}
+                                <img
+                                    alt="not found"
+                                    width={"250px"}
+                                    src={URL.createObjectURL(picture)}
                                 />
-                            <br /> <br />
-                            {/* Button to remove the selected image */}
-                            <button onClick={() => setPicture(null)} >Remove</button>
+                                <br /><br />
+                                <button onClick={() => setPicture(null)}>Remove</button>
                             </div>
                         )}
-                        {/* TODO: picture */}
                         <button className="signup-button" type="submit">
                             Sign Up
                         </button>
                         <h6 className="disclaimer">By clicking, you agree to our non-existent terms of service</h6>
-                        {/* TODO: need an account? */}
                         {errorMessage && <div className="error-message">{errorMessage}</div>}
                     </form>
                 </div>
