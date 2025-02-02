@@ -2,7 +2,6 @@ package com.example.notflix;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -12,8 +11,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.notflix.databinding.ActivityMainBinding;
-import com.example.notflix.ui.auth.login.LoginActivity;
-import com.example.notflix.ui.auth.signup.SignupActivity;
+import com.example.notflix.activities.LoginActivity;
+import com.example.notflix.activities.SignupActivity;
 
 public class MainActivity extends AppCompatActivity {
 
