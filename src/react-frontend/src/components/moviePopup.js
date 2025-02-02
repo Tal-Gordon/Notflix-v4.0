@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './moviePopup.css';
 
-const MoviePopup = ({ movie, onClose }) => {
+const MoviePopup = ({ movie, onClose }) =>
+{
     const [categories, setCategories] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
     const [loadingRecs, setLoadingRecs] = useState(true);
     const [categoriesError, setCategoriesError] = useState(null);
     const [recommendationsError, setRecommendationsError] = useState(null);
-    const [darkMode, setDarkMode] = useState(() => {
+    const [darkMode, setDarkMode] = useState(() =>
+    {
         const storedDarkMode = sessionStorage.getItem("darkMode");
         return storedDarkMode === "true";
     });
@@ -16,18 +18,23 @@ const MoviePopup = ({ movie, onClose }) => {
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
 
-    useEffect(() => {
-        const handleDarkModeChange = (event) => {
-            setDarkMode(event.detail);            
+    useEffect(() =>
+    {
+        const handleDarkModeChange = (event) =>
+        {
+            setDarkMode(event.detail);
         };
 
         window.addEventListener('darkModeChange', handleDarkModeChange);
         return () => window.removeEventListener('darkModeChange', handleDarkModeChange);
     }, [darkMode]);
 
-    useEffect(() => {
-        const fetchRecommendations = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchRecommendations = async () =>
+        {
+            try
+            {
                 const response = await fetch(`/movies/${movie._id}/recommend`, {
                     method: 'GET',
                     headers: {
@@ -35,30 +42,47 @@ const MoviePopup = ({ movie, onClose }) => {
                     }
                 });
 
-                if (!response.ok) {
-                    if (response.status !== 404) {
+                if (!response.ok)
+                {
+                    if (response.status !== 404)
+                    {
                         throw new Error('Failed to fetch recommendations');
                     }
                     setRecommendations([]);
-                    setRecommendations(null);
+                    setRecommendationsError(null);
                 }
 
                 const data = await response.json();
-                setRecommendations(data);
+                if (data.error)
+                {
+                    setRecommendations([]);
+                    setRecommendationsError(data.error);
+                } else if (Array.isArray(data))
+                {
+                    setRecommendations(data);
+                } else
+                {
+                    throw new Error("Unexpected recommendations format");
+                }
                 setCategoriesError(null);
-            } catch (err) {
+            } catch (err)
+            {
+                setRecommendations([]);
                 setRecommendationsError(err.message);
-            } finally {
+            } finally
+            {
                 setLoadingRecs(false);
             }
         };
 
-        if (movie?._id) {
+        if (movie?._id)
+        {
             fetchRecommendations();
         }
     }, [movie?._id, token]);
 
-    const handleClick = () => {
+    const handleClick = () =>
+    {
         fetch(`/movies/${movie._id}/recommend`, {
             method: 'POST',
             headers: {
@@ -70,15 +94,20 @@ const MoviePopup = ({ movie, onClose }) => {
         navigate(`/watch/${movie._id}`);
     };
 
-    useEffect(() => {
-        const fetchCategoryNames = async () => {
+    useEffect(() =>
+    {
+        const fetchCategoryNames = async () =>
+        {
             if (!movie?.categories) return;
 
-            try {
-                if (!token) {
+            try
+            {
+                if (!token)
+                {
                     throw new Error('No authentication token found. Please log in again.');
                 }
-                const categoryPromises = movie.categories.map(async (categoryId) => {
+                const categoryPromises = movie.categories.map(async (categoryId) =>
+                {
                     const response = await fetch(`/categories/${categoryId}`, {
                         method: 'GET',
                         headers: {
@@ -87,7 +116,8 @@ const MoviePopup = ({ movie, onClose }) => {
                         },
                     });
 
-                    if (!response.ok) {
+                    if (!response.ok)
+                    {
                         throw new Error(`Failed to fetch category ${categoryId}`);
                     }
                     const data = await response.json();
@@ -96,7 +126,8 @@ const MoviePopup = ({ movie, onClose }) => {
 
                 const categoryNames = await Promise.all(categoryPromises);
                 setCategories(categoryNames);
-            } catch (err) {
+            } catch (err)
+            {
                 setCategoriesError(err.message);
                 setCategories([]);
             }
@@ -148,8 +179,8 @@ const MoviePopup = ({ movie, onClose }) => {
                     ) : (
                         <div className="recommendations-list">
                             {recommendations.map(rec => (
-                                <button 
-                                    key={rec._id} 
+                                <button
+                                    key={rec._id}
                                     className="recommended-movie"
                                     onClick={() => navigate(`/watch/${rec._id}`)}
                                 >
