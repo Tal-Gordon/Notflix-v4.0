@@ -1,6 +1,7 @@
 // MovieAdapter.java
 package com.example.notflix.ui.home;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +60,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
             // Load movie thumbnail
             if (movie.getPicture() != null && !movie.getPicture().isEmpty()) {
+                Log.d("image path", "image path: " + "http://localhost:3001/" + movie.getPicture());
                 Glide.with(itemView)
-                        .load("http://localhost:3001/" + movie.getPicture()) // need to change for the correct file path
+                        .load("http://10.0.2.2:3001/" + movie.getPicture()) // need to change for the correct file path
                         .placeholder(R.drawable.movie_placeholder) // Create a placeholder drawable
                         .error(R.drawable.movie_error) // Create an error drawable
                         .into(movieImage);

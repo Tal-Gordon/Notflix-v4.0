@@ -33,7 +33,6 @@ function HomeAuth() {
 
         const fetchMovies = async () => {
             try {
-                console.log(token);
                 if (!token) {
                     throw new Error('No authentication token found. Please log in again.');
                 }
