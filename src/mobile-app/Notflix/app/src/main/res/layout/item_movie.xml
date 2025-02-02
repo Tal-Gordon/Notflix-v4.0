@@ -30,7 +30,8 @@
             android:maxLines="2"
             android:padding="8dp"
             android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="@color/secondary"
+            android:background="@color/gray"
+            android:textColor="@color/black"
             tools:text="Movie Title" />
 
     </LinearLayout>
