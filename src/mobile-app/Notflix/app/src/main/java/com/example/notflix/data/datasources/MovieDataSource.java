@@ -1,10 +1,12 @@
 package com.example.notflix.data.datasources;
 
+import android.util.Log;
+
 import com.example.notflix.Entities.Category;
+import com.example.notflix.Entities.Movie;
 import com.example.notflix.data.database.ApiService;
 import com.example.notflix.data.model.processeddata.HomeData;
 import com.example.notflix.data.model.response.HomeMoviesResponse;
-import com.example.notflix.Entities.Movie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +40,11 @@ public class MovieDataSource {
 
     public interface HomeDataCallback {
         void onSuccess(HomeData data);
+        void onError(String errorMessage);
+    }
+
+    public interface MovieCallback {
+        void onSuccess(Movie response);
         void onError(String errorMessage);
     }
 
@@ -124,55 +131,21 @@ public class MovieDataSource {
         });
     }
 
+    public void fetchMovieById(String token, String movieId, MovieCallback callback) {
+        apiService.getMovieById("Bearer " + token, movieId).enqueue(new Callback<Movie>() { // Ensure ID is passed
+            @Override
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "The API returned: " + response.body().toString());
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to fetch movie: " + response.code());
+                }
+            }
 
-
-
-//    public void fetchHomeData(String token, HomeCallback callback) {
-//        String authHeader = "Bearer " + token; // Fixed variable name
-//        Log.d(TAG, authHeader);
-//        apiService.getHomeMovies(authHeader).enqueue(new Callback<HomeMoviesResponse>() {
-//            @Override
-//            public void onResponse(Call<HomeMoviesResponse> call, Response<HomeMoviesResponse> response) {
-//                Log.d(TAG, "Raw API response: " + new Gson().toJson(response.body()));
-//                if (response.isSuccessful() && response.body() != null) {
-//                    HomeMoviesResponse data = response.body();
-//                    Log.d(TAG, "The actual data: " + data);
-//
-//                    Log.d(TAG, "Received data: " + new Gson().toJson(data));
-//                    if (data.getMoviesByCategory() != null) {
-//                        Log.d(TAG, "Received categories: " + data.getMoviesByCategory().size());
-//                    }
-//                    if (data.getRecentlyWatched() != null) {
-//                        Log.d(TAG, "Received recent movies: " + data.getRecentlyWatched().size());
-//                    }
-//
-//                    // Process and store data
-//                    AppDatabase.executor.execute(() -> {
-//                        if (response.isSuccessful() && response.body() != null) {
-//                            callback.onSuccess(new Result.Success<>(data));
-//                        } else {
-//                            try {
-//                                Gson gson = new Gson();
-//                                ErrorResponse errorResponse = gson.fromJson(
-//                                        response.errorBody().charStream(),
-//                                        ErrorResponse.class
-//                                );
-//                                String errorMessage = errorResponse.getError();
-//                                callback.onError(new Result.Error(new IOException(errorMessage)));
-//                            } catch (Exception e) {
-//                                callback.onError(new Result.Error(new IOException("Login failed")));
-//                            }
-//                        }
-//                    });
-//                } else {
-//                    Log.d(TAG, "the response was null: " + response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<HomeMoviesResponse> call, Throwable t) {
-//                callback.onError(new Result.Error(new IOException("Network error: " + t.getMessage())));
-//            }
-//        });
-//    }
-}
+            @Override
+            public void onFailure(Call<Movie> call, Throwable throwable) {
+                callback.onError("Network error: " + throwable.getMessage());
+            }
+        });
+    }}

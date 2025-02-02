@@ -1,7 +1,7 @@
 package com.example.notflix.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.notflix.R;
-import com.example.notflix.adapters.MovieRowAdapter;
-import com.example.notflix.adapters.MovieAdapter;
 import com.example.notflix.Entities.Movie;
+import com.example.notflix.R;
+import com.example.notflix.adapters.MovieAdapter;
+import com.example.notflix.adapters.MovieRowAdapter;
 import com.example.notflix.viewmodels.HomeViewModel;
 import com.example.notflix.viewmodels.HomeViewModelFactory;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -99,8 +99,14 @@ public class HomeActivity extends AppCompatActivity implements MovieAdapter.OnMo
 
     @Override
     public void onMovieClick(Movie movie) {
-        // Simple click handling for now
-        Log.d("MovieClick", "Clicked on: " + movie.getTitle());
-        Toast.makeText(this, "Clicked: " + movie.getTitle(), Toast.LENGTH_SHORT).show();
+        String token = getIntent().getStringExtra("TOKEN");
+        if (token != null) {
+            Intent intent = new Intent(this, WatchActivity.class);
+            intent.putExtra("TOKEN", token);
+            intent.putExtra("MOVIE_ID", movie.getMovieId());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
+        }
     }
 }

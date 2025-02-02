@@ -16,7 +16,9 @@
         android:theme="@style/Theme.Notflix"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-<!--        TODO - swap between MainActivity and HomeActivity-->
+        <activity
+            android:name=".activities.WatchActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.HomeActivity"
             android:exported="false" />

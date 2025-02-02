@@ -1,8 +1,9 @@
 package com.example.notflix.data.database;
 
+import com.example.notflix.Entities.Movie;
+import com.example.notflix.data.model.request.LoginRequest;
 import com.example.notflix.data.model.response.AuthResponse;
 import com.example.notflix.data.model.response.HomeMoviesResponse;
-import com.example.notflix.data.model.request.LoginRequest;
 
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PartMap;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
@@ -27,4 +29,7 @@ public interface ApiService {
     // Fetch movies with userId in the headers
     @GET("api/movies")
     Call<HomeMoviesResponse> getHomeMovies(@Header("Authorization") String token);
+
+    @GET("api/movies/{id}")
+    Call<Movie> getMovieById(@Header("Authorization") String authToken, @Path("id") String movieId);
 }

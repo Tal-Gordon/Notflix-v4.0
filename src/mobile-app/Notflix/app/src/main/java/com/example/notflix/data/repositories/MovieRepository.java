@@ -2,16 +2,17 @@ package com.example.notflix.data.repositories;
 
 import android.app.Application;
 import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.notflix.Entities.Category;
-import com.example.notflix.data.database.AppDatabase;
+import com.example.notflix.Entities.Movie;
 import com.example.notflix.data.daos.CategoryDao;
 import com.example.notflix.data.daos.MovieDao;
+import com.example.notflix.data.database.AppDatabase;
 import com.example.notflix.data.datasources.MovieDataSource;
 import com.example.notflix.data.model.processeddata.HomeData;
-import com.example.notflix.Entities.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,25 @@ public class MovieRepository {
         });
     }
 
+    public interface MovieCallback {
+        void onSuccess(Movie result);
+        void onError(String errorMessage);
+    }
+
+    public void fetchMovieById(String token, String movieId, MovieCallback callback) {
+        movieDataSource.fetchMovieById(token, movieId, new MovieDataSource.MovieCallback() {
+            @Override
+            public void onSuccess(Movie response) {
+                Log.d(TAG, "The movie was: " + response.toString());
+                callback.onSuccess(response);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                callback.onError(errorMessage);
+            }
+        });
+    }
     public LiveData<List<Movie>> getAllMovies() {
         return movieDao.getAllMovies();
     }
