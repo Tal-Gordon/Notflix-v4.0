@@ -420,3 +420,92 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   display: grid;
   gap: 0.25rem;
 }
+
+.movie-id-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.movie-id {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 0.25rem;
+}
+
+/* Dark mode adjustments */
+.dark-mode .movie-title {
+  color: var(--dark-text);
+}
+
+.dark-mode .movie-id {
+  color: #94a3b8;
+}
+
+/* Movie ID validation styles */
+.movie-id-validation {
+  margin-top: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+}
+
+.movie-id-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+}
+
+.movie-id-result {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+}
+
+.movie-id-result.error {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+}
+
+/* Dark mode support */
+.dark-mode .movie-id-result {
+  background: #334155;
+}
+
+.dark-mode .movie-id-result.error {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+/* Scrollbar styling */
+.movie-id-validation::-webkit-scrollbar {
+  width: 8px;
+}
+
+.movie-id-validation::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: var(--radius-md);
+}
+
+.movie-id-validation::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: var(--radius-md);
+}
+
+.dark-mode .movie-id-validation::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark-mode .movie-id-validation::-webkit-scrollbar-thumb {
+  background: #475569;
+}

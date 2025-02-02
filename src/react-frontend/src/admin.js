@@ -126,7 +126,23 @@ const Admin = () =>
         }),
       });
 
-      const result = await response.json();
+      if (!response.ok)
+      {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to update category');
+      }
+
+      const contentType = response.headers.get('content-type');
+      let result;
+      if (contentType && contentType.includes('application/json'))
+      {
+        result = await response.json();
+      } else
+      {
+        result = formState.editingId
+          ? { _id: formState.editingId, name, promoted, movie_list: movieList.split(",").map(id => id.trim()) }
+          : { _id: Date.now().toString(), name, promoted, movie_list: [] };
+      }
 
       setState(prev => ({
         ...prev,
@@ -139,6 +155,7 @@ const Admin = () =>
     } catch (error)
     {
       setState(prev => ({ ...prev, error: error.message }));
+      console.log(error.message)
     }
   };
 
@@ -381,153 +398,237 @@ const MovieItem = memo(({ movie, onEdit, onDelete }) =>
   );
 });
 
-const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) => (
-  <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-    <div className="modal-content">
-      <h1 className="modal-title">
-        {formState.editingId ? `Edit ${type}` : `Create New ${type}`}
-      </h1>
-      <form onSubmit={onSubmit}>
-        {type === 'category' ? (
-          <>
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Category Name *"
-              value={formState.category.name}
-              onChange={e => setFormState(prev => ({
-                ...prev,
-                category: { ...prev.category, name: e.target.value }
-              }))}
-              required
-            />
-            <div className="checkbox-container left-align">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formState.category.promoted}
-                  onChange={e => setFormState(prev => ({
-                    ...prev,
-                    category: { ...prev.category, promoted: e.target.checked }
-                  }))}
-                />
-                Promoted
-              </label>
+const MovieIdList = ({ ids }) =>
+{
+  const [movies, setMovies] = useState([]);
+  const token = sessionStorage.getItem("token");
+
+  useEffect(() =>
+  {
+    const fetchMovies = async () =>
+    {
+      const results = await Promise.all(
+        ids.map(async (id) =>
+        {
+          try
+          {
+            const response = await fetch(`/movies/${id.trim()}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Movie not found');
+            const data = await response.json();
+            return { id, name: data.title, error: false };
+          } catch (error)
+          {
+            return { id, name: null, error: true };
+          }
+        })
+      );
+      setMovies(results);
+    };
+
+    if (ids.length > 0) fetchMovies();
+  }, [ids, token]);
+
+  return (
+    <div className="movie-id-results">
+      {movies.map((movie) => (
+        <div key={movie.id} className={`movie-id-result ${movie.error ? 'error' : ''}`}>
+          {movie.error ? (
+            <span>Invalid ID: {movie.id}</span>
+          ) : (
+            <div className="movie-id-info">
+              <div className="movie-title">{movie.name}</div>
+              <span className="movie-id">ID: {movie.id}</span>
             </div>
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Movie IDs (comma-separated)"
-              value={formState.category.movieList}
-              onChange={e => setFormState(prev => ({
-                ...prev,
-                category: { ...prev.category, movieList: e.target.value }
-              }))}
-            />
-            {state.error && <div className="error-message">{state.error}</div>}
-          </>
-        ) : (
-          <>
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Movie Title *"
-              value={formState.movie.title}
-              onChange={e => setFormState(prev => ({
-                ...prev,
-                movie: { ...prev.movie, title: e.target.value }
-              }))}
-              required
-            />
-            <div className="category-checkboxes">
-              {state.categories.map(category => (
-                <label key={category._id} className="checkbox-label">
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) =>
+{
+
+  const [currentIds, setCurrentIds] = useState([]);
+
+  useEffect(() =>
+  {
+    if (formState.modalType === 'category')
+    {
+      const initialIds = formState.category.movieList
+        .split(',')
+        .map(id => id.trim())
+        .filter(Boolean);
+      setCurrentIds(initialIds);
+    }
+  }, [formState.modalType, formState.category.movieList]);
+
+  const handleMovieIdsInput = (e) =>
+  {
+    const value = e.target.value;
+    setFormState(prev => ({
+      ...prev,
+      category: { ...prev.category, movieList: value }
+    }));
+
+    const newIds = value.split(',')
+      .map(id => id.trim())
+      .filter(Boolean);
+    setCurrentIds(newIds);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-content">
+        <h1 className="modal-title">
+          {formState.editingId ? `Edit ${type}` : `Create New ${type}`}
+        </h1>
+        <form onSubmit={onSubmit}>
+          {type === 'category' ? (
+            <>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Category Name *"
+                value={formState.category.name}
+                onChange={e => setFormState(prev => ({
+                  ...prev,
+                  category: { ...prev.category, name: e.target.value }
+                }))}
+                required
+              />
+              <div className="checkbox-container left-align">
+                <label>
                   <input
                     type="checkbox"
-                    value={category._id}
-                    checked={formState.movie.categories.includes(category._id)}
+                    checked={formState.category.promoted}
                     onChange={e => setFormState(prev => ({
                       ...prev,
-                      movie: {
-                        ...prev.movie,
-                        categories: e.target.checked
-                          ? [...prev.movie.categories, category._id]
-                          : prev.movie.categories.filter(id => id !== category._id)
-                      }
+                      category: { ...prev.category, promoted: e.target.checked }
                     }))}
                   />
-                  <span className="checkmark"></span>
-                  {category.name}
+                  Promoted
                 </label>
-              ))}
-            </div>
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Actors (comma-separated)"
-              value={formState.movie.actors}
-              onChange={e => setFormState(prev => ({
-                ...prev,
-                movie: { ...prev.movie, actors: e.target.value }
-              }))}
-            />
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Directors (comma-separated)"
-              value={formState.movie.directors}
-              onChange={e => setFormState(prev => ({
-                ...prev,
-                movie: { ...prev.movie, directors: e.target.value }
-              }))}
-            />
-            <textarea
-              className="input-field"
-              placeholder="Description"
-              value={formState.movie.description}
-              onChange={e => setFormState(prev => ({
-                ...prev,
-                movie: { ...prev.movie, description: e.target.value }
-              }))}
-            />
-            <div className="file-inputs">
-              <div className="file-input-group">
-                <label>Picture:</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={e => setFormState(prev => ({
-                    ...prev,
-                    movie: { ...prev.movie, picture: e.target.files[0] }
-                  }))}
-                />
               </div>
-              <div className="file-input-group">
-                <label>Video:</label>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={e => setFormState(prev => ({
-                    ...prev,
-                    movie: { ...prev.movie, video: e.target.files[0] }
-                  }))}
-                />
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Movie IDs (comma-separated)"
+                value={formState.category.movieList}
+                onChange={handleMovieIdsInput}
+              />
+              {currentIds.length > 0 && (
+                <div className="movie-id-validation">
+                  <MovieIdList ids={currentIds} />
+                </div>
+              )}
+              {state.error && <div className="error-message">{state.error}</div>}
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Movie Title *"
+                value={formState.movie.title}
+                onChange={e => setFormState(prev => ({
+                  ...prev,
+                  movie: { ...prev.movie, title: e.target.value }
+                }))}
+                required
+              />
+              <div className="category-checkboxes">
+                {state.categories.map(category => (
+                  <label key={category._id} className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      value={category._id}
+                      checked={formState.movie.categories.includes(category._id)}
+                      onChange={e => setFormState(prev => ({
+                        ...prev,
+                        movie: {
+                          ...prev.movie,
+                          categories: e.target.checked
+                            ? [...prev.movie.categories, category._id]
+                            : prev.movie.categories.filter(id => id !== category._id)
+                        }
+                      }))}
+                    />
+                    <span className="checkmark"></span>
+                    {category.name}
+                  </label>
+                ))}
               </div>
-            </div>
-            {state.movieError && <div className="error-message">{state.movieError}</div>}
-          </>
-        )}
-        <div className="modal-buttons">
-          <button className="modal-button" type="submit">
-            {formState.editingId ? "Update" : "Create"}
-          </button>
-          <button className="modal-button cancel" type="button" onClick={onClose}>
-            Cancel
-          </button>
-        </div>
-      </form>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Actors (comma-separated)"
+                value={formState.movie.actors}
+                onChange={e => setFormState(prev => ({
+                  ...prev,
+                  movie: { ...prev.movie, actors: e.target.value }
+                }))}
+              />
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Directors (comma-separated)"
+                value={formState.movie.directors}
+                onChange={e => setFormState(prev => ({
+                  ...prev,
+                  movie: { ...prev.movie, directors: e.target.value }
+                }))}
+              />
+              <textarea
+                className="input-field"
+                placeholder="Description"
+                value={formState.movie.description}
+                onChange={e => setFormState(prev => ({
+                  ...prev,
+                  movie: { ...prev.movie, description: e.target.value }
+                }))}
+              />
+              <div className="file-inputs">
+                <div className="file-input-group">
+                  <label>Picture:</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => setFormState(prev => ({
+                      ...prev,
+                      movie: { ...prev.movie, picture: e.target.files[0] }
+                    }))}
+                  />
+                </div>
+                <div className="file-input-group">
+                  <label>Video:</label>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={e => setFormState(prev => ({
+                      ...prev,
+                      movie: { ...prev.movie, video: e.target.files[0] }
+                    }))}
+                  />
+                </div>
+              </div>
+              {state.movieError && <div className="error-message">{state.movieError}</div>}
+            </>
+          )}
+          <div className="modal-buttons">
+            <button className="modal-button" type="submit">
+              {formState.editingId ? "Update" : "Create"}
+            </button>
+            <button className="modal-button cancel" type="button" onClick={onClose}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Admin;

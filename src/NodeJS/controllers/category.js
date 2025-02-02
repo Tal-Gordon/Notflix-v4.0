@@ -113,7 +113,7 @@ const patchCategory = async (req, res) =>
 			return res.status(404).json({ error: "Category not found" });
 		}
 
-		res.status(204).json();
+		res.status(204).json(updatedCategory);
 	} catch (error)
 	{
 		res.status(500).json({ error: "Internal Server Error" });

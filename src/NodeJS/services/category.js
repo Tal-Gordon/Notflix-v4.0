@@ -87,7 +87,7 @@ async function deleteCategory(id)
 	if (!category) throw new Error("Category not found");
 
 	const oldMovieIds = new Set(category.movie_list || []);
-
+f
 	// Remove the category id from the associated movies
 	if (oldMovieIds.size > 0)
 	{
