@@ -152,7 +152,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                     height: '32px',
                     borderRadius: '100%',
                     backgroundSize: 'cover',
-                    backgroundImage: picture ? `url(${process.env.REACT_APP_API_URL}/${picture})` : 'none',
+                    backgroundImage: picture ? `url(${process.env.REACT_APP_MEDIA_URL}/${picture})` : 'none',
                     backgroundColor: '#cccccc',
                 }} />
             ),
@@ -288,7 +288,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                         ) : userData ? (
                             <>
                                 <img 
-                                    src={`${process.env.REACT_APP_API_URL}/${userData.picture}`} 
+                                    src={`${process.env.REACT_APP_MEDIA_URL}/${userData.picture}`} 
                                     alt="Profile"
                                     className="account-popup-image"
                                 />
