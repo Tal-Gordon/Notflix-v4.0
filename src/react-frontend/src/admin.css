@@ -12,6 +12,17 @@
   --radius-md: 8px;
   --radius-sm: 4px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  --dark-bg: #0f172a;
+  --dark-text: #f8fafc;
+  --dark-surface: #1e293b;
+  --dark-border: #334155;
+}
+
+.dark-mode {
+  --background: var(--dark-bg);
+  --text: var(--dark-text);
+  --text-light: #94a3b8;
 }
 
 /* Base Layout */
@@ -22,6 +33,7 @@
   min-height: calc(100vh - 80px);
   max-width: 1600px;
   margin: 20px auto;
+  margin-top: 80px;
 }
 
 .left-panel,
@@ -40,13 +52,36 @@
   background: rgba(248, 250, 252, 0.9);
 }
 
+.dark-mode .left-panel,
+.dark-mode .right-panel {
+  background: var(--dark-surface);
+  border-color: var(--dark-border);
+}
+
+.dark-mode .category-item-admin,
+.dark-mode .movie-item-admin {
+  background: var(--dark-surface);
+  color: var(--dark-text);
+}
+
+.dark-mode .modal-content {
+  background: var(--dark-surface);
+  color: var(--dark-text);
+}
+
+.dark-mode .modal-button.cancel {
+  background: #334155;
+  color: var(--dark-text);
+}
+
 /* Grid Containers */
 .categories-container,
-.movies-container {
+.movies-container-admin {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   padding: 1rem 0;
+  gap: 2rem !important;
 }
 
 /* Card Items */
@@ -65,13 +100,13 @@
 
 .category-item-admin:hover,
 .movie-item-admin:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  transform: none;
+  box-shadow: var(--shadow);
 }
 
 .category-item-admin::after,
 .movie-item-admin::after {
-  content: "";
+  content: none;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -85,6 +120,21 @@
 .category-item-admin:hover::after,
 .movie-item-admin:hover::after {
   opacity: 1;
+}
+
+.movie-stats {
+  display: block;
+  white-space: initial;
+  max-width: 250px;
+  line-height: 1.4;
+}
+
+.stat-label {
+  margin-right: 5px;
+}
+
+.stat-value {
+  font-weight: 100;
 }
 
 /* Typography */
@@ -116,19 +166,21 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 
 /* Buttons */
 .button {
-  padding: 0.625rem 1.25rem;
   border-radius: var(--radius-sm);
   font-weight: 500;
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  border: none;
+  padding: 8px 16px;
 }
 
 .edit-button { 
-  background: var(--primary);
-  color: white;
   cursor: pointer;
+  background: #4f46e5;
+  color: white;
+  margin-right: 5px;
 }
 
 .edit-button:hover {
@@ -136,7 +188,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 
 .delete-button {
-  background: var(--danger);
+  background: #dc2626;
   color: white;
   cursor: pointer;
 }
@@ -146,12 +198,12 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 
 .create-button {
-  background: var(--primary);
+  background: #4338ca;
+  font-weight: 600;
   color: white;
   width: 100%;
   padding: 1rem;
   border-radius: var(--radius-md);
-  font-weight: 500;
   margin-bottom: 1.5rem;
   transition: var(--transition);
   cursor: pointer;

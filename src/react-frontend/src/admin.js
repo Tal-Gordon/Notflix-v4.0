@@ -7,7 +7,8 @@ const API_ENDPOINTS = {
   MOVIES: "/movies/all",
 };
 
-const Admin = () => {
+const Admin = () =>
+{
   const [state, setState] = useState({
     categories: [],
     movies: [],
@@ -33,8 +34,10 @@ const Admin = () => {
 
   const token = sessionStorage.getItem("token");
 
-  const fetchData = useCallback(async (abortController) => {
-    try {
+  const fetchData = useCallback(async (abortController) =>
+  {
+    try
+    {
       const [categoriesRes, moviesRes] = await Promise.all([
         fetch(API_ENDPOINTS.CATEGORIES, {
           headers: { Authorization: `Bearer ${token}` },
@@ -56,19 +59,22 @@ const Admin = () => {
         categories: Array.isArray(categoriesData) ? categoriesData : [],
         movies: Array.isArray(moviesData) ? moviesData : [],
       }));
-    } catch (error) {
+    } catch (error)
+    {
       if (error.name === 'AbortError') return;
       setState(prev => ({ ...prev, error: "Failed to load data" }));
     }
   }, [token]);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     const abortController = new AbortController();
     if (token) fetchData(abortController);
     return () => abortController.abort();
   }, [token, fetchData]);
 
-  const handleModal = (type, item = null) => {
+  const handleModal = (type, item = null) =>
+  {
     setFormState(prev => ({
       ...prev,
       modalType: type,
@@ -90,17 +96,20 @@ const Admin = () => {
     }));
   };
 
-  const handleCategory = async (e) => {
+  const handleCategory = async (e) =>
+  {
     e.preventDefault();
     const { name, promoted, movieList } = formState.category;
-    
-    if (!name.trim()) {
+
+    if (!name.trim())
+    {
       setState(prev => ({ ...prev, error: "Name required" }));
       return;
     }
 
-    try {
-      const url = formState.editingId 
+    try
+    {
+      const url = formState.editingId
         ? `${API_ENDPOINTS.CATEGORIES}/${formState.editingId}`
         : API_ENDPOINTS.CATEGORIES;
 
@@ -118,7 +127,7 @@ const Admin = () => {
       });
 
       const result = await response.json();
-      
+
       setState(prev => ({
         ...prev,
         categories: formState.editingId
@@ -127,16 +136,19 @@ const Admin = () => {
       }));
 
       handleModal(null);
-    } catch (error) {
+    } catch (error)
+    {
       setState(prev => ({ ...prev, error: error.message }));
     }
   };
 
-  const handleMovie = async (e) => {
+  const handleMovie = async (e) =>
+  {
     e.preventDefault();
     const { movie } = formState;
-    
-    if (!movie.title.trim()) {
+
+    if (!movie.title.trim())
+    {
       setState(prev => ({ ...prev, movieError: "Title required" }));
       return;
     }
@@ -150,8 +162,9 @@ const Admin = () => {
     if (movie.picture) formData.append("picture", movie.picture);
     if (movie.video) formData.append("video", movie.video);
 
-    try {
-      const url = formState.editingId 
+    try
+    {
+      const url = formState.editingId
         ? `/movies/${formState.editingId}`
         : "/movies";
 
@@ -162,7 +175,7 @@ const Admin = () => {
       });
 
       const result = await response.json();
-      
+
       setState(prev => ({
         ...prev,
         movies: formState.editingId
@@ -171,15 +184,18 @@ const Admin = () => {
       }));
 
       handleModal(null);
-    } catch (error) {
+    } catch (error)
+    {
       setState(prev => ({ ...prev, movieError: error.message }));
     }
   };
 
-  const handleDelete = async (type, id) => {
+  const handleDelete = async (type, id) =>
+  {
     if (!window.confirm(`Delete this ${type}?`)) return;
-    
-    try {
+
+    try
+    {
       await fetch(`/${type}s/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -187,13 +203,14 @@ const Admin = () => {
 
       setState(prev => ({
         ...prev,
-        [type === 'category' ? 'categories' : 'movies']: 
+        [type === 'category' ? 'categories' : 'movies']:
           prev[type === 'category' ? 'categories' : 'movies'].filter(i => i._id !== id)
       }));
-    } catch (error) {
-      setState(prev => ({ 
-        ...prev, 
-        [type === 'category' ? 'error' : 'movieError']: error.message 
+    } catch (error)
+    {
+      setState(prev => ({
+        ...prev,
+        [type === 'category' ? 'error' : 'movieError']: error.message
       }));
     }
   };
@@ -214,7 +231,7 @@ const Admin = () => {
             <h2>Existing Categories</h2>
             <div className="categories-container">
               {state.categories.map(category => (
-                <CategoryItem 
+                <CategoryItem
                   key={category._id}
                   category={category}
                   onEdit={() => handleModal('category', category)}
@@ -282,40 +299,87 @@ const CategoryItem = memo(({ category, onEdit, onDelete }) => (
   </div>
 ));
 
-const MovieItem = memo(({ movie, onEdit, onDelete }) => (
-  <div className="movie-item-admin">
-    <div className="movie-media">
-      {movie.picture && (
-        <img
-          src={`http://localhost:3001/${movie.picture}`}
-          alt={movie.title}
-          className="movie-thumbnail"
-        />
-      )}
-    </div>
-    <div className="movie-info">
-      <h3>{movie.title}</h3>
-      <div className="movie-stats">
-        <div className="stat-item">
-          <span className="stat-label">Categories</span>
-          <span className="stat-value">{movie.categories.length}</span>
+const MovieItem = memo(({ movie, onEdit, onDelete }) =>
+{
+  const [categoryNames, setCategoryNames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = sessionStorage.getItem("token");
+
+  useEffect(() =>
+  {
+    const fetchCategoryNames = async () =>
+    {
+      if (!movie?.categories?.length)
+      {
+        setLoading(false);
+        return;
+      }
+
+      try
+      {
+        const names = await Promise.all(
+          movie.categories.map(async (categoryId) =>
+          {
+            const response = await fetch(`/categories/${categoryId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            return data.name;
+          })
+        );
+        setCategoryNames(names);
+      } catch (error)
+      {
+        console.error("Error fetching categories:", error);
+        setCategoryNames(["Error loading categories"]);
+      } finally
+      {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryNames();
+  }, [movie?.categories, token]);
+
+  return (
+    <div className="movie-item-admin">
+      <div className="movie-media">
+        {movie.picture && (
+          <img
+            src={`http://localhost:3001/${movie.picture}`}
+            alt={movie.title}
+            className="movie-thumbnail"
+          />
+        )}
+      </div>
+      <div className="movie-info">
+        <h3>{movie.title}</h3>
+        <div className="movie-stats">
+          <div className="stat-item">
+            <span className="stat-label">Categories:</span>
+            <span className="stat-value">
+              {loading ? "Loading..." : categoryNames.join(", ")}
+            </span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Actors:</span>
+            <span className="stat-value">
+              {Array.isArray(movie.actors) ? movie.actors.join(", ") : ""}
+            </span>
+          </div>
         </div>
-        <div className="stat-item">
-          <span className="stat-label">Actors</span>
-          <span className="stat-value">{movie.actors.length}</span>
+        <div className="movie-actions">
+          <button className="button edit-button" onClick={onEdit}>
+            Edit
+          </button>
+          <button className="button delete-button" onClick={onDelete}>
+            Delete
+          </button>
         </div>
       </div>
-      <div className="movie-actions">
-        <button className="button edit-button" onClick={onEdit}>
-          Edit
-        </button>
-        <button className="button delete-button" onClick={onDelete}>
-          Delete
-        </button>
-      </div>
     </div>
-  </div>
-));
+  );
+});
 
 const Modal = ({ type, formState, state, onClose, onSubmit, setFormState }) => (
   <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
