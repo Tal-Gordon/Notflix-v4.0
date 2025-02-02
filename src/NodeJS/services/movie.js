@@ -225,15 +225,14 @@ const replaceMovie = async (
 // Delete a movie by its ID
 const deleteMovie = async (movieId) => {
   try {
+    const objectId = new mongoose.Types.ObjectId(movieId);
     // Find movie that got passed and all users who watched it
-    const movie = await Movie.findById(movieId);
+    const movie = await Movie.findById(objectId);
     if (!movie) {
       return { status: 404, result: "Movie not found" };
     }
 
-    const usersWithMovie = await User.find({
-      watchedMovies: { $elemMatch: { $eq: movieId } },
-    }).lean();
+    const usersWithMovie = await User.find({ watchedMovies: objectId }).lean();
 
     // Construct DELETE command for each user
     const deleteCommands = usersWithMovie.map(
@@ -288,14 +287,14 @@ const deleteMovie = async (movieId) => {
 
     // Delete references in every user who watched this movie and every category that has that movie, and the movie itself
     await User.updateMany(
-      { watchedMovies: { $elemMatch: { $eq: movieId } } },
-      { $pull: { watchedMovies: movieId } }
+      { watchedMovies: objectId },
+      { $pull: { watchedMovies: objectId } }
     );
     await Category.updateMany(
-      { movie_list: { $elemMatch: { $eq: movieId } } },
-      { $pull: { movie_list: movieId } }
+      { movie_list: objectId },
+      { $pull: { movie_list: objectId } }
     );
-    await Movie.findByIdAndDelete(movie._id);
+    await Movie.findByIdAndDelete(objectId);
 
     if (errors.some((error) => error.startsWith("400"))) {
       // At least one error starts with "400"
@@ -520,7 +519,6 @@ const searchMovies = async (query) => {
       ...categoryMatches,
       ...actorMatches,
       ...directorMatches,
-      ...descriptionMatches,
       ...mongoIdMatches,
     ];
   } catch (error) {

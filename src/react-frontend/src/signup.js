@@ -39,7 +39,7 @@ function Signup() {
         }
 
         try {
-            const postResponse = await fetch('/users', {
+            const postResponse = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
                 method: 'POST',
                 body: formData,
             })

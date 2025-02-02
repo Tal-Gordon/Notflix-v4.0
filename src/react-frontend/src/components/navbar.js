@@ -42,7 +42,6 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                     const payload = JSON.parse(atob(token.split('.')[1]));
                     setPicture(payload.picture || null);
                     setUserId(payload.userId);
-                    console.log("hey dude! " + payload.userId)
                 } catch (error) {
                     console.error('Error parsing token:', error);
                     setPicture(null);
@@ -109,7 +108,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
             const fetchUserData = async () => {
                 setLoading(true);
                 try {
-                    const response = await fetch(`users/${userId}`, {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${userId}`, {
                         headers: {
                             'Authorization': `Bearer ${sessionStorage.getItem('token')}`
                         }
@@ -153,7 +152,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                     height: '32px',
                     borderRadius: '100%',
                     backgroundSize: 'cover',
-                    backgroundImage: picture ? `url(http://localhost:3001/${picture})` : 'none',
+                    backgroundImage: picture ? `url(${process.env.REACT_APP_API_URL}/${picture})` : 'none',
                     backgroundColor: '#cccccc',
                 }} />
             ),
@@ -289,7 +288,7 @@ const Navbar = ({ leftButtons = [], rightButtons = [], injectLeft, injectRight }
                         ) : userData ? (
                             <>
                                 <img 
-                                    src={`http://localhost:3001/${userData.picture}`} 
+                                    src={`${process.env.REACT_APP_API_URL}/${userData.picture}`} 
                                     alt="Profile"
                                     className="account-popup-image"
                                 />

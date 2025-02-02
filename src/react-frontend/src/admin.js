@@ -56,11 +56,11 @@ const Admin = () =>
     try
     {
       const [categoriesRes, moviesRes] = await Promise.all([
-        fetch(API_ENDPOINTS.CATEGORIES, {
+        fetch(`${process.env.REACT_APP_API_URL}${API_ENDPOINTS.CATEGORIES}`, {
           headers: { Authorization: `Bearer ${token}` },
           signal: abortController.signal,
         }),
-        fetch(API_ENDPOINTS.MOVIES, {
+        fetch(`${process.env.REACT_APP_API_URL}${API_ENDPOINTS.MOVIES}`, {
           headers: { Authorization: `Bearer ${token}` },
           signal: abortController.signal,
         }),
@@ -130,7 +130,7 @@ const Admin = () =>
         ? `${API_ENDPOINTS.CATEGORIES}/${formState.editingId}`
         : API_ENDPOINTS.CATEGORIES;
 
-      const response = await fetch(url, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}${url}`, {
         method: formState.editingId ? "PATCH" : "POST",
         headers: {
           "Content-Type": "application/json",
@@ -202,7 +202,7 @@ const Admin = () =>
         ? `/movies/${formState.editingId}`
         : "/movies";
 
-      const response = await fetch(url, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}${url}`, {
         method: formState.editingId ? "PUT" : "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -224,27 +224,39 @@ const Admin = () =>
     }
   };
 
-  const handleDelete = async (type, id) =>
-  {
+  const handleDelete = async (type, id) => {
     if (!window.confirm(`Delete this ${type}?`)) return;
-
-    try
-    {
-      await fetch(`/${type}s/${id}`, {
+  
+    const endpointType = type === 'category' ? 'categories' : 'movies';
+    try {
+      await fetch(`${process.env.REACT_APP_API_URL}/${endpointType}/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
+      setState(prev => {
+        if (endpointType === 'movies') {
+          // Remove the movie and update categories' movie_list
+          return {
+            ...prev,
+            movies: prev.movies.filter(m => m._id !== id),
+            categories: prev.categories.map(category => ({
+              ...category,
+              movie_list: category.movie_list.filter(movieId => movieId !== id)
+            }))
+          };
+        } else {
+          // Remove the category
+          return {
+            ...prev,
+            categories: prev.categories.filter(c => c._id !== id)
+          };
+        }
+      });
+    } catch (error) {
       setState(prev => ({
         ...prev,
-        [type === 'category' ? 'categories' : 'movies']:
-          prev[type === 'category' ? 'categories' : 'movies'].filter(i => i._id !== id)
-      }));
-    } catch (error)
-    {
-      setState(prev => ({
-        ...prev,
-        [type === 'category' ? 'error' : 'movieError']: error.message
+        [endpointType === 'categories' ? 'error' : 'movieError']: error.message
       }));
     }
   };
@@ -253,7 +265,7 @@ const Admin = () =>
     <div>
       <Navbar
         leftButtons={[BUTTON_TYPES.HOME]}
-        rightButtons={[BUTTON_TYPES.LIGHTDARK, BUTTON_TYPES.LOGOUT]}
+        rightButtons={[BUTTON_TYPES.LIGHTDARK, BUTTON_TYPES.LOGOUT, BUTTON_TYPES.ACCOUNT]}
       />
       <div className={`split-screen ${darkMode ? 'dark-mode' : ''}`}>
         <div className={`left-panel ${darkMode ? 'dark-mode' : ''}`}>
@@ -356,7 +368,7 @@ const MovieItem = memo(({ movie, onEdit, onDelete, darkMode }) =>
         const names = await Promise.all(
           movie.categories.map(async (categoryId) =>
           {
-            const response = await fetch(`/categories/${categoryId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/categories/${categoryId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
@@ -382,7 +394,7 @@ const MovieItem = memo(({ movie, onEdit, onDelete, darkMode }) =>
       <div className={`movie-media ${darkMode ? 'dark-mode' : ''}`}>
         {(
           <img
-            src={`http://localhost:3001/${movie.picture}`}
+            src={`${process.env.REACT_APP_MEDIA_URL}/${movie.picture}`}
             alt={movie.title}
             className={`movie-thumbnail ${darkMode ? 'dark-mode' : ''}`}
           />
@@ -391,6 +403,10 @@ const MovieItem = memo(({ movie, onEdit, onDelete, darkMode }) =>
       <div className={`movie-info ${darkMode ? 'dark-mode' : ''}`}>
         <h3 className={darkMode ? 'dark-mode' : ''}>{movie.title}</h3>
         <div className="movie-stats">
+          <div className="stat-item">
+            <span className="stat-label">Movie ID:</span>
+            <span className="stat-value">{movie._id}</span>
+          </div>
           <div className="stat-item">
             <span className="stat-label">Categories:</span>
             <span className="stat-value">
@@ -431,7 +447,7 @@ const MovieIdList = ({ ids }) =>
         {
           try
           {
-            const response = await fetch(`/movies/${id.trim()}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/movies/${id.trim()}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) throw new Error('Movie not found');

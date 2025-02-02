@@ -35,7 +35,7 @@ const MoviePopup = ({ movie, onClose }) =>
         {
             try
             {
-                const response = await fetch(`/movies/${movie._id}/recommend`, {
+                const response = await fetch(`${process.env.REACT_APP_MEDIA_URL}/movies/${movie._id}/recommend`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -83,7 +83,7 @@ const MoviePopup = ({ movie, onClose }) =>
 
     const handleClick = () =>
     {
-        fetch(`/movies/${movie._id}/recommend`, {
+        fetch(`${process.env.REACT_APP_API_URL}/movies/${movie._id}/recommend`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const MoviePopup = ({ movie, onClose }) =>
                 }
                 const categoryPromises = movie.categories.map(async (categoryId) =>
                 {
-                    const response = await fetch(`/categories/${categoryId}`, {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/categories/${categoryId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const MoviePopup = ({ movie, onClose }) =>
                 <button className="close-button" onClick={onClose}>×</button>
 
                 <div className="movie-header">
-                    <img src={`http://localhost:3001/${movie.picture}`} alt={movie.title} className="movie-poster" />
+                    <img src={`${process.env.REACT_APP_MEDIA_URL}/${movie.picture}`} alt={movie.title} className="movie-poster" />
                     <div className="movie-info">
                         <h2>{movie.title}</h2>
                         <div className="metadata">
@@ -185,7 +185,7 @@ const MoviePopup = ({ movie, onClose }) =>
                                     onClick={() => navigate(`/watch/${rec._id}`)}
                                 >
                                     <img
-                                        src={`http://localhost:3001/${rec.picture}`}
+                                        src={`${process.env.REACT_APP_MEDIA_URL}/${rec.picture}`}
                                         alt={rec.title}
                                         className="recommended-poster"
                                     />
