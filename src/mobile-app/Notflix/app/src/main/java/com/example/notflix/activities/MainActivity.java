@@ -1,4 +1,4 @@
-package com.example.notflix;
+package com.example.notflix.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,8 +11,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.notflix.databinding.ActivityMainBinding;
-import com.example.notflix.activities.LoginActivity;
-import com.example.notflix.activities.SignupActivity;
 
 public class MainActivity extends AppCompatActivity {
 
