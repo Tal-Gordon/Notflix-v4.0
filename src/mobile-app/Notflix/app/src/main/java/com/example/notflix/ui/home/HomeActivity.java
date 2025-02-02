@@ -2,6 +2,8 @@ package com.example.notflix.ui.home;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.notflix.R;
 import com.example.notflix.data.model.Movie;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +31,10 @@ public class HomeActivity extends AppCompatActivity implements MovieAdapter.OnMo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Initialize Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Initialize Views
         RecyclerView categoriesRecyclerView = findViewById(R.id.categories_recycler_view);
@@ -61,6 +68,29 @@ public class HomeActivity extends AppCompatActivity implements MovieAdapter.OnMo
 
         // Initial load
         homeViewModel.refreshMovies();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.home_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_logout) {
+            homeViewModel.logout();
+            navigateToLogin();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateToLogin() {
+        // Replace with your login activity navigation
+        finish(); // Close current activity
+        // Add any login navigation logic here
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
     }
 
     @Override

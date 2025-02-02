@@ -22,5 +22,4 @@ public class User {
     public boolean isLoggedIn() { return token != null; }
     @NonNull
     public String getUsername() { return username; }
-
 }

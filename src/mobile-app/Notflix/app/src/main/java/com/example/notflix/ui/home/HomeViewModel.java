@@ -44,6 +44,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void logout() {
-        // Implement this in UserRepository if needed
+        Log.d("HomeViewModel", "you got to logout");
+        userRepository.logout();
     }
 }

@@ -9,31 +9,39 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
+        <!-- Movie Image -->
         <ImageView
             android:id="@+id/movie_image"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic" />
 
+        <!-- Gradient Overlay -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/gradient_overlay" />
+
+        <!-- Movie Title -->
         <TextView
             android:id="@+id/movie_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:ellipsize="end"
             android:maxLines="2"
-            android:padding="8dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
             android:textAppearance="?attr/textAppearanceBody2"
-            android:background="@color/gray"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             tools:text="Movie Title" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

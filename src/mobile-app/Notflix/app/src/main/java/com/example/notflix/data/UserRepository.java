@@ -1,6 +1,9 @@
 package com.example.notflix.data;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -82,13 +85,17 @@ public class UserRepository {
     }
 
     public void logout() {
-        User user = getLoggedInUser().getValue();
-
-        if (user != null) {
-            user.invalidateToken();
-            userDao.updateUser(user);
-        }
-        setLoggedInUser(null);
+        AppDatabase.executor.execute(() -> {
+            try {
+                userDao.fullLogout();
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    setLoggedInUser(null);
+                    Log.d("Logout", "Successfully logged out");
+                });
+            } catch (Exception e) {
+                Log.e("Logout", "Error during logout", e);
+            }
+        });
     }
 
     public LiveData<User> getLoggedInUser() {
