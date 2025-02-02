@@ -1,13 +1,124 @@
 .home-container {
+    min-height: calc(100vh - 50px);
+    margin-top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-grow: 1;
+    background: #ffffff;
+    padding: 2rem;
+    color: #333;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    text-align: center;
+    animation: fadeInUp 1s ease-out;
 }
 
 .welcome-message-home-unauth {
-    font-size: 2.5rem;
-    margin: 20px;
-    color: #242323;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3)
+    font-size: 3rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+    background: -webkit-linear-gradient(
+                                        16deg,
+                                        #34a853 0%,
+                                        #00bfa5 9%,
+                                        #fbbc04 20%,
+                                        #fbbc04 24%,
+                                        #00bfa5 35%,
+                                        #34a853 44%,
+                                        #00bfa5 50%,
+                                        #fbbc04 56%,
+                                        #0d652d 75%,
+                                        #0d652d 100%
+    );
+    background-clip: text;
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand-highlight {
+    color: #e63946;
+    font-style: italic;
+}
+
+.notflix-highlight {
+    color: #2a9d8f;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.feature-text h3 {
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-top: 0;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.selling-points {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.selling-points p {
+    margin: 0.8rem 0;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.cta-section {
+    margin-top: 2rem;
+}
+
+.cta-button {
+    background: #2a9d8f;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.cta-button:hover {
+    background: #21867a;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
+}
+
+.disclaimer {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: #777;
+    opacity: 0;
+    animation: fadeIn 1s ease-out 1s forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 0.8;
+    }
 }

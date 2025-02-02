@@ -9,15 +9,6 @@
   text-align: center;
 }
 
-/* this is just a placeholder, since the homepage for connected users is a different page */
-.welcome-message {
-  font-size: 2.5rem;
-  margin: 20px;
-  color: #242323;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* The whole box where login elements are located */
 .login-form {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 20px 20px;
@@ -37,7 +28,7 @@
 .login-input {
   width: 100%;
   padding: 10px 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 1rem;
@@ -45,26 +36,40 @@
 }
 
 .login-button {
-  width: 100%;
-  padding: 10px 10px;
-  background-color: #2575fc;
+  background: #2a9d8f;
   color: white;
   border: none;
-  border-radius: 3px;
-  font-size: 1rem;
-  font-weight: bold;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  width: 100%;
+  transition: all 0.3s ease;
 }
 
 .login-button:hover {
-  background-color: #1a5fb4;
+  background: #21867a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
 }
 
 .error-message {
-  color: #cc0000;
-  padding: 10px;
-  font-size: 0.9rem;
+  color: #e63946;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.disclaimer {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #777;
+  opacity: 0.7;
   text-align: center;
-  display: block;
+}
+
+.login-input::placeholder{
+  color: #666;
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
