@@ -1,13 +1,19 @@
-import React, { useCallback, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import './index.css';
-import HomeAuth from './home.auth';
-import HomeUnauth from './home.unauth';
-import Login from './login';
-import Signup from './signup';
-import VideoPlayer from './videoPlayer';
-// import Admin from './admin'
+import React, { useCallback, useState } from "react";
+import ReactDOM from "react-dom/client";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import "./index.css";
+import HomeAuth from "./home.auth";
+import HomeUnauth from "./home.unauth";
+import Login from "./login";
+import Signup from "./signup";
+import VideoPlayer from "./videoPlayer";
+import Admin from "./admin";
 
 // Create a custom hook for authentication state
 const useAuth = () =>
@@ -29,11 +35,10 @@ const useAuth = () =>
 		setIsAdmin(payload.isAdmin);
 	}, []);
 
-	const logout = useCallback(() =>
-	{
-		sessionStorage.removeItem('token');
-		setIsLoggedIn(false);
-	}, []);
+  const logout = useCallback(() => {
+    sessionStorage.removeItem("token");
+    setIsLoggedIn(false);
+  }, []);
 
 	return { isLoggedIn, isAdmin, login, logout };
 };
@@ -98,7 +103,7 @@ const App = () =>
 				path="/admin"
 				element={
 					<AdminRoute>
-						{/* <Admin /> */}
+						<Admin />
 					</AdminRoute>
 				}
 			/>
@@ -115,38 +120,34 @@ const App = () =>
 };
 
 // Login function (to be used in components)
-export const useLogin = () =>
-{
-	const navigate = useNavigate();
-	const { login } = useAuth();
+export const useLogin = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-	return (token) =>
-	{
-		login(token);
-		navigate('/browse');
-	};
+  return (token) => {
+    login(token);
+    navigate("/browse");
+  };
 };
 
 // Logout function (to be used in components)
-export const useLogout = () =>
-{
-	const navigate = useNavigate();
-	const { logout } = useAuth();
+export const useLogout = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
-	return () =>
-	{
-		logout();
-		navigate('/');
-	};
+  return () => {
+    logout();
+    navigate("/");
+  };
 };
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<App />
-		</BrowserRouter>
-	</React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 export { useAuth };

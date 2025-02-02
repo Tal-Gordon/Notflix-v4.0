@@ -1,5 +1,6 @@
 const CategoryModel = require("../models/category");
 const MovieModel = require("../models/movie");
+const mongoose = require('mongoose');
 
 async function getCategories()
 {
@@ -53,21 +54,21 @@ async function patchCategory(id, name, promoted, movie_list)
 		const moviesToRemove = [...oldMovieIds].filter(
 			(id) => !newMovieIds.has(id)
 		);
-		if (moviesToAdd.size > 0)
-		{
-			await MovieModel.updateMany(
-				{ _id: { $in: moviesToAdd } },
-				{ $addToSet: { categories: id } }
-			);
-		}
+		if (moviesToAdd.length > 0) {
+            const moviesToAddObjectIds = moviesToAdd.map(id => new mongoose.Types.ObjectId(id));
+            await MovieModel.updateMany(
+                { _id: { $in: moviesToAddObjectIds } },
+                { $addToSet: { categories: id } }
+            );
+        }
 
-		if (moviesToRemove.size > 0)
-		{
-			await MovieModel.updateMany(
-				{ _id: { $in: moviesToRemove } },
-				{ $pull: { categories: id } }
-			);
-		}
+        if (moviesToRemove.length > 0) {
+            const moviesToRemoveObjectIds = moviesToRemove.map(id => new mongoose.Types.ObjectId(id));
+            await MovieModel.updateMany(
+                { _id: { $in: moviesToRemoveObjectIds } },
+                { $pull: { categories: id } }
+            );
+        }
 	}
 
 	const updatedCategory = await CategoryModel.findByIdAndUpdate(
@@ -86,9 +87,9 @@ async function deleteCategory(id)
 	if (!category) throw new Error("Category not found");
 
 	const oldMovieIds = new Set(category.movie_list || []);
-
+f
 	// Remove the category id from the associated movies
-	if (oldMovieIds.length > 0)
+	if (oldMovieIds.size > 0)
 	{
 		await MovieModel.updateMany(
 			{ _id: { $in: [...oldMovieIds] } },
