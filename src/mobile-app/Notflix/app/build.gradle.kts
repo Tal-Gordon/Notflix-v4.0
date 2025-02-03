@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.glide)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.exoplayer)
+    implementation(libs.exoplayer.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
