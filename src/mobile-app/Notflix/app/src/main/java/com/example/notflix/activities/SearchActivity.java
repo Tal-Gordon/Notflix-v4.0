@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,17 +31,15 @@ public class SearchActivity extends AppCompatActivity implements MovieAdapter.On
     private TextView noResultsText;
     private TextInputEditText searchInput;
     private String token;
-    private View rootView; // Add this line to store the root view
+    private View rootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // Get the root view of the activity
-        rootView = findViewById(android.R.id.content); // Initialize rootView
+        rootView = findViewById(android.R.id.content);
 
-        // Get token from intent
         token = getIntent().getStringExtra("TOKEN");
         if (token == null) {
             showSnackbar("Authentication error");
@@ -79,12 +76,12 @@ public class SearchActivity extends AppCompatActivity implements MovieAdapter.On
     }
 
     private void setupSearchInput() {
-        Log.d("Started searching", "LETS GO WE STARTED SEARCHING");
         searchInput.addTextChangedListener(new TextWatcher() {
             private Runnable searchRunnable;
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -97,7 +94,7 @@ public class SearchActivity extends AppCompatActivity implements MovieAdapter.On
             public void afterTextChanged(Editable s) {
                 if (s.length() > 0) {
                     searchRunnable = () -> searchViewModel.performSearch(token, s.toString());
-                    searchInput.postDelayed(searchRunnable, 300); // Debounce for 300ms
+                    searchInput.postDelayed(searchRunnable, 300);
                 } else {
                     movieAdapter.updateMovies(new ArrayList<>());
                     updateNoResultsVisibility(true);
@@ -120,12 +117,6 @@ public class SearchActivity extends AppCompatActivity implements MovieAdapter.On
                 noResultsText.setVisibility(View.GONE);
             }
         });
-
-//        searchViewModel.getError().observe(this, error -> {
-//            if (error != null) {
-//                showSnackbar(error);
-//            }
-//        });
     }
 
     private void updateNoResultsVisibility(boolean shouldShow) {

@@ -25,7 +25,6 @@ public class WatchViewModel extends AndroidViewModel {
         movieRepository.fetchMovieById(token, movieId, new MovieRepository.MovieCallback() {
             @Override
             public void onSuccess(Movie result) {
-//                Log.d("WatchViewModel", "the movie we got: " + Objects.requireNonNull(movie.getValue()).toString());
                 isLoading.postValue(false);
                 movie.postValue(result);
             }

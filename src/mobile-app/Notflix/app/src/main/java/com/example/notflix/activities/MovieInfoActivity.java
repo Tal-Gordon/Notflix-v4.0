@@ -40,7 +40,7 @@ public class MovieInfoActivity extends AppCompatActivity implements MovieAdapter
         binding = ActivityMovieInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        categoryRepository = new CategoryRepository(getApplication()); // Initialize CategoryRepository
+        categoryRepository = new CategoryRepository(getApplication());
 
         setupViewModel();
         setupObservers();
@@ -120,7 +120,7 @@ public class MovieInfoActivity extends AppCompatActivity implements MovieAdapter
                 categoryRepository.getCategoryById(categoryId).observe(this, category -> {
                     if (category != null) {
                         categoryNames.add(category.getName());
-                        if (categoryNames.size() == categoryIds.size()) { // All categories fetched
+                        if (categoryNames.size() == categoryIds.size()) {
                             binding.movieCategories.setText(getString(R.string.categories_format,
                                     formatList(categoryNames, "No categories")));
                         }

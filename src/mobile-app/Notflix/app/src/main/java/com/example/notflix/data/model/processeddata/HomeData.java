@@ -34,7 +34,7 @@ public class HomeData {
         sb.append("  categories=[\n");
         if (categories != null) {
             for (Category category : categories) {
-                sb.append("    ").append(category.toString().replace("\n", "\n    ")).append("\n"); // Indent category toString
+                sb.append("    ").append(category.toString().replace("\n", "\n    ")).append("\n");
             }
         }
         sb.append("  ],\n");
@@ -46,10 +46,10 @@ public class HomeData {
                 String categoryName = entry.getKey();
                 List<Movie> movies = entry.getValue();
 
-                sb.append("    ").append(categoryName).append("=[\n");  // Category Name
+                sb.append("    ").append(categoryName).append("=[\n");
                 if (movies != null) {
                     for (Movie movie : movies) {
-                        sb.append("      ").append(movie.toString().replace("\n", "\n      ")).append("\n"); // Indent movie toString
+                        sb.append("      ").append(movie.toString().replace("\n", "\n      ")).append("\n");
                     }
                 }
                 sb.append("    ],\n");

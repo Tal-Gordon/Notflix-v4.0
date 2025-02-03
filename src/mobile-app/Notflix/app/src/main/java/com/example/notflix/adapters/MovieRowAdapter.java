@@ -53,7 +53,7 @@ public class MovieRowAdapter extends RecyclerView.Adapter<MovieRowAdapter.Catego
             holder.itemView.getLayoutParams().height = 0;
             return;
         } else {
-            // Make sure category is visible (in case of recycled view)
+            // Make sure category is visible
             holder.itemView.setVisibility(View.VISIBLE);
             holder.itemView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
             holder.itemView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;

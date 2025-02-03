@@ -51,7 +51,7 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- RecyclerView for search results -->
+        <!-- RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_results_recycler_view"
             android:layout_width="0dp"

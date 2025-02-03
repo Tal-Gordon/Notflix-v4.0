@@ -20,7 +20,7 @@
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic" />
 
-        <!-- Gradient Overlay (create a drawable-night version if needed) -->
+        <!-- Gradient Overlay -->
         <View
             android:layout_width="match_parent"
             android:layout_height="64dp"

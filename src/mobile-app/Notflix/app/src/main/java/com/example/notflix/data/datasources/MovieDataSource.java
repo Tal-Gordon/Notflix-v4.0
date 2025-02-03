@@ -1,7 +1,5 @@
 package com.example.notflix.data.datasources;
 
-import android.util.Log;
-
 import com.example.notflix.Entities.Category;
 import com.example.notflix.Entities.Movie;
 import com.example.notflix.data.database.ApiService;
@@ -31,8 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * <p>Base URL for the API requests is: {@code http://10.0.2.2:3001/}, which routes to the PC's localhost.
  */
 public class MovieDataSource {
-    private static final String TAG = "MovieDataSource";
-    private static final String BASE_URL = "http://10.0.2.2:3001/"; // Routes to PC's localhost
+    private static final String BASE_URL = "http://10.0.2.2:3001/";
     private final ApiService apiService;
 
     public interface HomeMoviesCallback {
@@ -137,11 +134,10 @@ public class MovieDataSource {
     }
 
     public void fetchMovieById(String token, String movieId, MovieCallback callback) {
-        apiService.getMovieById("Bearer " + token, movieId).enqueue(new Callback<Movie>() { // Ensure ID is passed
+        apiService.getMovieById("Bearer " + token, movieId).enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "The API returned: " + response.body().toString());
                     callback.onSuccess(response.body());
                 } else {
                     callback.onError("Failed to fetch movie: " + response.code());

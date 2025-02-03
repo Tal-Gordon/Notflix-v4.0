@@ -59,7 +59,6 @@ public class MovieInfoViewModel extends AndroidViewModel {
         });
     }
 
-    // LiveData exposers
     public LiveData<Movie> getMovie() { return movie; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<String> getError() { return error; }

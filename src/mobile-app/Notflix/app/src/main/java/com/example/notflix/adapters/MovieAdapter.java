@@ -60,7 +60,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
             // Load movie thumbnail
             if (movie.getPicture() != null && !movie.getPicture().isEmpty()) {
-                Log.d("image path", "image path: " + "http://localhost:3001/" + movie.getPicture());
                 Glide.with(itemView)
                         .load("http://10.0.2.2:3001/" + movie.getPicture()) // need to change for the correct file path
                         .placeholder(R.drawable.movie_placeholder) // Create a placeholder drawable

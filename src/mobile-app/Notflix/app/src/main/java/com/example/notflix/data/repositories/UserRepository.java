@@ -94,7 +94,6 @@ public class UserRepository {
                 userDao.fullLogout();
                 new Handler(Looper.getMainLooper()).post(() -> {
                     setLoggedInUser(null);
-                    Log.d("Logout", "Successfully logged out");
                 });
             } catch (Exception e) {
                 Log.e("Logout", "Error during logout", e);
@@ -119,10 +118,10 @@ public class UserRepository {
             return AppDatabase.executor.submit(() -> {
                 User user = userDao.getLoggedInUserSync();
                 return user != null ? user.getToken() : null;
-            }).get(); // Blocks until result is available
+            }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace(); // Log the exception for debugging
-            return null; // Return null if an error occurs
+            e.printStackTrace();
+            return null;
         }
     }
 

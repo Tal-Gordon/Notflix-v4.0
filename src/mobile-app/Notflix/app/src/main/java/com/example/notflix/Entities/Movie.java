@@ -1,4 +1,3 @@
-// Movie.java
 package com.example.notflix.Entities;
 
 import androidx.annotation.NonNull;
@@ -44,7 +43,6 @@ public class Movie {
         this.categoryIds = categoryIds;
     }
 
-    // Getters
     @NonNull public String getMovieId() { return movieId; }
     @NonNull public String getTitle() { return title; }
     public String getDescription() { return description; }
@@ -54,7 +52,6 @@ public class Movie {
     public List<String> getDirectors() { return directors; }
     public List<String> getCategoryIds() { return categoryIds; }
 
-    // Setters (if needed for Room)
     public void setMovieId(@NonNull String movieId) { this.movieId = movieId; }
     public void setTitle(@NonNull String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
@@ -67,9 +64,9 @@ public class Movie {
     @NonNull
     public String toString() {
         return "Movie{" +
-//                "id='" + movieId + '\'' +
+                "id='" + movieId + '\'' +
                 ", title='" + title + '\'' +
-//                ", categories=" + categoryIds +
+                ", categories=" + categoryIds +
                 '}';
     }
 }

@@ -112,7 +112,6 @@ public class MovieRepository {
         movieDataSource.fetchMovieById(token, movieId, new MovieDataSource.MovieCallback() {
             @Override
             public void onSuccess(Movie response) {
-                Log.d(TAG, "The movie was: " + response.toString());
                 callback.onSuccess(response);
             }
 

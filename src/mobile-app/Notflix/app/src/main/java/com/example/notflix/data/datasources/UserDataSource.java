@@ -126,35 +126,4 @@ public class UserDataSource {
             }
         });
     }
-
-//    public void logout(String token, LogoutCallback callback) {
-//
-//        // Should we have a logout function in the backend that invalidates tokens?
-//        apiService.logout(token).enqueue(new Callback<Void>() {
-//            @Override
-//            public void onResponse(Call<Void> call, Response<Void> response) {
-//                if (response.isSuccessful()) {
-//                    clearLocalUserData(callback);
-//                } else {
-//                    // Handle logout error on the server-side
-//                    try {
-//                        Gson gson = new Gson();
-//                        ErrorResponse errorResponse = gson.fromJson(
-//                                response.errorBody().charStream(),
-//                                ErrorResponse.class
-//                        );
-//                        String errorMessage = errorResponse.getError();
-//                        callback.onError(new Result.Error(new IOException(errorMessage)));
-//                    } catch (Exception e) {
-//                        callback.onError(new Result.Error(new IOException("Logout failed on server")));
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Void> call, Throwable t) {
-//                callback.onError(new Result.Error(new IOException("Network error during logout: " + t.getMessage())));
-//            }
-//        });
-//    }
 }

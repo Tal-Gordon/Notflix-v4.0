@@ -27,7 +27,6 @@ public class SearchViewModel extends AndroidViewModel {
 
     public void performSearch(String token, String query) {
         if (query == null || query.trim().isEmpty()) {
-            Log.d(TAG, "Empty search query");
             return;
         }
 
@@ -49,7 +48,6 @@ public class SearchViewModel extends AndroidViewModel {
         });
     }
 
-    // LiveData exposers
     public LiveData<List<Movie>> getSearchResults() {
         return searchResults;
     }

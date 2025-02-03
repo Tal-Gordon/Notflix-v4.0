@@ -13,7 +13,7 @@ public class Converters {
     @TypeConverter
     public static List<String> fromString(String value) {
         if (value == null || value.isEmpty()) {
-            return new ArrayList<>(); // Avoid null issues
+            return new ArrayList<>();
         }
         Type listType = new TypeToken<List<String>>() {}.getType();
         return new Gson().fromJson(value, listType);

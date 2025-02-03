@@ -42,7 +42,6 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     "notflix-db"
                             )
-                            .fallbackToDestructiveMigration() // Temporary for development.  REMOVE IN PRODUCTION
                             .build();
                 }
             }

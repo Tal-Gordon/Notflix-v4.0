@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -19,9 +18,9 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.notflix.auth.LoggedInUserView;
 import com.example.notflix.data.repositories.UserRepository;
 import com.example.notflix.databinding.ActivityLoginBinding;
-import com.example.notflix.auth.LoggedInUserView;
 import com.example.notflix.viewmodels.LoginViewModel;
 import com.example.notflix.viewmodels.LoginViewModelFactory;
 import com.google.android.material.snackbar.Snackbar;
@@ -131,7 +130,6 @@ public class LoginActivity extends AppCompatActivity {
         UserRepository userRepository = new UserRepository(application);
         userRepository.getLoggedInUser().observe(this, user -> {
             if (user != null && user.isLoggedIn()) {
-                Log.d("AutoLogin", "yes");
               Intent intent = new Intent(this, HomeActivity.class);
               intent.putExtra("USERNAME", user.getUsername());
               intent.putExtra("TOKEN", user.getToken());

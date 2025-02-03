@@ -67,8 +67,8 @@ public class LoginViewModel extends ViewModel {
                 int errorResId = R.string.error_unknown;
                 if (result instanceof Result.Error) {
                     Exception error = ((Result.Error) result).getError();
-                    String errorMessage = error.getMessage(); // Extract message from backend
-                    errorResId = ErrorMapper.getErrorResource(errorMessage); // Map to string resource
+                    String errorMessage = error.getMessage();
+                    errorResId = ErrorMapper.getErrorResource(errorMessage);
                 }
                 loginResult.postValue(new AuthResult(errorResId));
             }
