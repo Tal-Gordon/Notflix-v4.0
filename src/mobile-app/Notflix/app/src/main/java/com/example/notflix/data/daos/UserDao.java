@@ -22,10 +22,7 @@ public interface UserDao {
     LiveData<User> getLoggedInUser();
 
     @Query("SELECT * FROM Users WHERE token IS NOT NULL LIMIT 1")
-    User getLoggedInUserSync(); // Add this
-
-//    @Query("SELECT * FROM Users LIMIT 1")
-//    User getLoggedInUserSync(); // Synchronous method
+    User getLoggedInUserSync();
 
     @Query("DELETE FROM Users WHERE username = :username")
     void deleteUser(String username);

@@ -27,12 +27,14 @@ public interface ApiService {
     @POST("api/users")
     Call<AuthResponse> signup(@PartMap Map<String, RequestBody> parts);
 
-    // Fetch movies with userId in the headers
     @GET("api/movies")
     Call<HomeMoviesResponse> getHomeMovies(@Header("Authorization") String token);
 
     @GET("api/movies/{id}")
     Call<Movie> getMovieById(@Header("Authorization") String authToken, @Path("id") String movieId);
+
+    @GET("api/movies/{id}/recommend")
+    Call<List<Movie>> getRecommendations(@Header("Authorization") String token, @Path("id") String movieId);
 
     @GET("api/movies/search/{query}")
     Call<List<Movie>> getSearch(@Header("Authorization") String authToken, @Path("query") String query);

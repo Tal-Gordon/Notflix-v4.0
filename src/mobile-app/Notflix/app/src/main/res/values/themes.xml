@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Notflix" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary and Secondary -->
         <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primaryVariant</item>
         <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondaryVariant</item>
+
+        <!-- Background, Surface, and Error -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="colorSurface">@color/surface</item>
+        <!-- Custom attributes used in layouts -->
+        <item name="colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorError">@color/error</item>
+
+        <!-- On-colors for text and icons -->
+        <item name="colorOnPrimary">@color/onPrimary</item>
+        <item name="colorOnSecondary">@color/onSecondary</item>
+        <item name="colorOnBackground">@color/onBackground</item>
+        <item name="colorOnSurface">@color/onSurface</item>
+        <item name="colorOnError">@color/onError</item>
+
+        <!-- Optional: status bar -->
         <item name="android:statusBarColor">@color/background</item>
     </style>
 </resources>

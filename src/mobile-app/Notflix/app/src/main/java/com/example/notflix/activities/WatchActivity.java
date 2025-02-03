@@ -75,7 +75,6 @@ public class WatchActivity extends AppCompatActivity {
     }
 
     private void setupVideoPlayer(String videoPath) {
-        // Construct full URL - same as for images
         String baseUrl = "http://10.0.2.2:3001/";
         Uri videoUri = Uri.parse(baseUrl + videoPath);
 

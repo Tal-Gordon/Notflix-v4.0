@@ -1,4 +1,3 @@
-// Category.java
 package com.example.notflix.Entities;
 
 import androidx.annotation.NonNull;
@@ -32,13 +31,11 @@ public class Category {
         this.movieIds = movieIds;
     }
 
-    // Getters
     @NonNull public String getCategoryId() { return categoryId; }
     public String getName() { return name; }
     public boolean isPromoted() { return promoted; }
     public List<String> getMovieIds() { return movieIds; }
 
-    // Setters
     public void setCategoryId(@NonNull String categoryId) { this.categoryId = categoryId; }
     public void setName(String name) { this.name = name; }
     public void setPromoted(boolean promoted) { this.promoted = promoted; }
@@ -46,10 +43,10 @@ public class Category {
     @NonNull
     public String toString() {
         return "Category{" +
-//                "id='" + categoryId + '\'' +
+                "id='" + categoryId + '\'' +
                 ", name='" + name + '\'' +
-//                ", promoted=" + promoted +
-//                ", movies=" + movieIds +
+                ", promoted=" + promoted +
+                ", movies=" + movieIds +
                 '}';
     }
 }

@@ -28,18 +28,12 @@ public interface MovieDao {
     @Query("DELETE FROM Movies")
     void deleteAllMovies();
 
-    @Query("SELECT * FROM Movies WHERE :categoryId IN (categoryIds)") // Corrected query
+    @Query("SELECT * FROM Movies WHERE :categoryId IN (categoryIds)")
     LiveData<List<Movie>> getMoviesForCategory(String categoryId);
 
     @Query("SELECT * FROM Movies")
-    List<Movie> getAllMoviesSync(); // Synchronous version
-
-//    @Query("SELECT * FROM movies WHERE movieId IN (SELECT movieId FROM Category WHERE categoryId = :categoryId)")
-//    List<Movie> getMoviesForCategorySync(String categoryId);
+    List<Movie> getAllMoviesSync();
 
     @Query("SELECT * FROM Movies WHERE :categoryId IN (categoryIds)")
     List<Movie> getMoviesForCategorySync(String categoryId);
-
-//    @Query("SELECT * FROM movies WHERE ',' || categoryIds || ',' LIKE '%,' || :categoryId || ',%'")
-//    List<Movie> getMoviesForCategorySync(String categoryId);
 }

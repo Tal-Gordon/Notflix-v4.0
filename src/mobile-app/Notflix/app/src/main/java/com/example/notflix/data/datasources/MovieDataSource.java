@@ -1,7 +1,5 @@
 package com.example.notflix.data.datasources;
 
-import android.util.Log;
-
 import com.example.notflix.Entities.Category;
 import com.example.notflix.Entities.Movie;
 import com.example.notflix.data.database.ApiService;
@@ -31,8 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * <p>Base URL for the API requests is: {@code http://10.0.2.2:3001/}, which routes to the PC's localhost.
  */
 public class MovieDataSource {
-    private static final String TAG = "MovieDataSource";
-    private static final String BASE_URL = "http://10.0.2.2:3001/"; // Routes to PC's localhost
+    private static final String BASE_URL = "http://10.0.2.2:3001/";
     private final ApiService apiService;
 
     public interface HomeMoviesCallback {
@@ -137,11 +134,10 @@ public class MovieDataSource {
     }
 
     public void fetchMovieById(String token, String movieId, MovieCallback callback) {
-        apiService.getMovieById("Bearer " + token, movieId).enqueue(new Callback<Movie>() { // Ensure ID is passed
+        apiService.getMovieById("Bearer " + token, movieId).enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "The API returned: " + response.body().toString());
                     callback.onSuccess(response.body());
                 } else {
                     callback.onError("Failed to fetch movie: " + response.code());
@@ -163,16 +159,42 @@ public class MovieDataSource {
     }
 
     public void searchMovies(String token, String query, MovieListCallback callback) {
-        Log.d(TAG, "WE STARTED SEARCHING HURRAY");
         apiService.getSearch("Bearer " + token, query).enqueue(new Callback<List<Movie>>() {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
-                Log.d(TAG, "WE STARTED SEARCHING HURRAY");
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
                     try {
-                        // Use your ErrorResponse class
+                        ErrorResponse error = new Gson().fromJson(
+                                response.errorBody().charStream(),
+                                ErrorResponse.class
+                        );
+                        callback.onError(error != null ?
+                                error.getError() : "Error: " + response.code());
+                    } catch (Exception e) {
+                        callback.onError("Failed to parse error response");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    public void getRecommendations(String token, String movieId, MovieListCallback callback) {
+        apiService.getRecommendations("Bearer " + token, movieId).enqueue(new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else if (response.code() == 404) {
+                    callback.onSuccess(new ArrayList<>());
+                } else {
+                    try {
                         ErrorResponse error = new Gson().fromJson(
                                 response.errorBody().charStream(),
                                 ErrorResponse.class

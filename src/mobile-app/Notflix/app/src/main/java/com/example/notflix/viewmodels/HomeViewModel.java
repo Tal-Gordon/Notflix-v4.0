@@ -23,8 +23,6 @@ public class HomeViewModel extends AndroidViewModel {
         homeData = movieRepository.getHomeData();
         isLoading = movieRepository.getIsDataLoading();
         token = userRepository.getToken();
-
-        Log.d(TAG, "Token value in constructor: " + token);
     }
 
     public void refreshMovies() {
@@ -44,7 +42,6 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void logout() {
-        Log.d("HomeViewModel", "you got to logout");
         userRepository.logout();
     }
 }

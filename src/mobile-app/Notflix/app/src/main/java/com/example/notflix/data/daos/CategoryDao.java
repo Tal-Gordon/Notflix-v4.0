@@ -28,5 +28,5 @@ public interface CategoryDao {
     void deleteAllCategories();
 
     @Query("SELECT * FROM Categories")
-    List<Category> getAllCategoriesSync(); // No LiveData wrapper
+    List<Category> getAllCategoriesSync();
 }

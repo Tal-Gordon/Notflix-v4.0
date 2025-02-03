@@ -23,6 +23,11 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="logout">Logout</string>
+    <string name="categories_format">Categories: %s</string>
+    <string name="cast_format">Cast: %s</string>
+    <string name="directors_format">Directors: %s</string>
     <string name="search">Search</string>
     <string name="search_movies">Search</string>
+    <string name="back_button_desc">Back</string>
+    <string name="no_results_found">no results found</string>
 </resources>
