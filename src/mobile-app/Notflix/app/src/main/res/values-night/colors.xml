@@ -8,7 +8,7 @@
 
     <!-- Dark Background and Surface -->
     <color name="background">#121212</color>
-    <color name="surface_dark">#1E1E1E</color>
+    <color name="surface">#1E1E1E</color>
 
     <!-- Error Color for Dark Mode -->
     <color name="error">#CF6679</color>
