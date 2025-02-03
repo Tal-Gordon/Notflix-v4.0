@@ -520,7 +520,6 @@ const searchMovies = async (query) => {
       ...categoryMatches,
       ...actorMatches,
       ...directorMatches,
-      ...descriptionMatches,
       ...mongoIdMatches,
     ];
   } catch (error) {
