@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="background">#FFFFFF</color>
+    <color name="surface">#1E1E1E</color>
+    <color name="primary">#4100C3</color>
+    <color name="secondary">#03DAC6</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#CCCCCC</color>
+    <color name="snackbar_background">#323232</color>
 </resources>
