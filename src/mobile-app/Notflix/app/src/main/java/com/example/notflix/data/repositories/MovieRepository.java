@@ -16,6 +16,8 @@ import com.example.notflix.data.model.processeddata.HomeData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MovieRepository {
     private static final String TAG = "MovieRepository";
@@ -24,6 +26,8 @@ public class MovieRepository {
     private final MovieDataSource movieDataSource;
     private final MutableLiveData<Boolean> isDataLoading = new MutableLiveData<>(false);
     private final MutableLiveData<HomeData> homeData = new MutableLiveData<>();
+    private final MutableLiveData<List<Movie>> searchResults = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isSearching = new MutableLiveData<>(false);
 
     public MovieRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
@@ -112,6 +116,66 @@ public class MovieRepository {
                 callback.onError(errorMessage);
             }
         });
+    }
+
+    public LiveData<List<Movie>> getSearchResults() {
+        return searchResults;
+    }
+
+    public LiveData<Boolean> getIsSearching() {
+        return isSearching;
+    }
+
+    public void searchMovies(String token, String query, MovieListCallback callback) {
+        Log.d(TAG, "WE STARTED SEARCHING HURRAY");
+        isSearching.postValue(true);
+
+        movieDataSource.searchMovies(token, query, new MovieDataSource.MovieListCallback() {
+            @Override
+            public void onSuccess(List<Movie> movies) {
+                AppDatabase.executor.execute(() -> {
+                    try {
+                        // Filter out movies that already exist in Room
+                        List<Movie> existingMovies = movieDao.getAllMoviesSync();
+                        Set<String> existingMovieIds = existingMovies.stream()
+                                .map(Movie::getMovieId)
+                                .collect(Collectors.toSet());
+
+                        List<Movie> newMovies = movies.stream()
+                                .filter(movie -> !existingMovieIds.contains(movie.getMovieId()))
+                                .collect(Collectors.toList());
+
+                        // Save new movies to Room
+                        if (!newMovies.isEmpty()) {
+                            movieDao.insertMovies(newMovies);
+                        }
+
+                        // Post all search results to LiveData and callback
+                        searchResults.postValue(movies);
+                        isSearching.postValue(false);
+                        callback.onSuccess(movies);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error processing search results", e);
+                        searchResults.postValue(new ArrayList<>());
+                        isSearching.postValue(false);
+                        callback.onError("Error processing search results: " + e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e(TAG, "Search error: " + errorMessage);
+                searchResults.postValue(new ArrayList<>());
+                isSearching.postValue(false);
+                callback.onError(errorMessage);
+            }
+        });
+    }
+
+    public interface MovieListCallback {
+        void onSuccess(List<Movie> movies);
+        void onError(String errorMessage);
     }
     public LiveData<List<Movie>> getAllMovies() {
         return movieDao.getAllMovies();

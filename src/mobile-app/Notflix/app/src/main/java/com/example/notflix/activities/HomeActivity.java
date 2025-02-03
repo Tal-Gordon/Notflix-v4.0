@@ -86,6 +86,16 @@ public class HomeActivity extends AppCompatActivity implements MovieAdapter.OnMo
             homeViewModel.logout();
             navigateToLogin();
             return true;
+        } else if (item.getItemId() == R.id.action_search) {
+            String token = getIntent().getStringExtra("TOKEN");
+            if (token != null) {
+                Intent intent = new Intent(this, SearchActivity.class);
+                intent.putExtra("TOKEN", token);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
