@@ -18,7 +18,7 @@ public class ErrorMapper {
                 return R.string.error_incorrect_credentials;
             default:
                 if (errorMessage.toLowerCase().startsWith("error logging in: failed to connect")) {
-                    return R.string.error_connecton_refused;
+                    return R.string.error_connection_refused;
                 }
                 return R.string.error_unknown;
         }

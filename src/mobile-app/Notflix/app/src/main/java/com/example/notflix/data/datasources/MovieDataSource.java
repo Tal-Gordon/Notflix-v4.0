@@ -6,7 +6,9 @@ import com.example.notflix.Entities.Category;
 import com.example.notflix.Entities.Movie;
 import com.example.notflix.data.database.ApiService;
 import com.example.notflix.data.model.processeddata.HomeData;
+import com.example.notflix.data.model.response.ErrorResponse;
 import com.example.notflix.data.model.response.HomeMoviesResponse;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,16 +37,19 @@ public class MovieDataSource {
 
     public interface HomeMoviesCallback {
         void onSuccess(HomeMoviesResponse response);
+
         void onError(String errorMessage);
     }
 
     public interface HomeDataCallback {
         void onSuccess(HomeData data);
+
         void onError(String errorMessage);
     }
 
     public interface MovieCallback {
         void onSuccess(Movie response);
+
         void onError(String errorMessage);
     }
 
@@ -60,7 +65,7 @@ public class MovieDataSource {
      * Fetches the home screen data for the user.
      *
      * @param token    The token to fetch data for.
-     * @param callback  The callback to notify about the result of the operation.
+     * @param callback The callback to notify about the result of the operation.
      */
     public void fetchHomeData(String token, HomeMoviesCallback callback) {
         apiService.getHomeMovies("Bearer " + token).enqueue(new Callback<HomeMoviesResponse>() {
@@ -148,4 +153,42 @@ public class MovieDataSource {
                 callback.onError("Network error: " + throwable.getMessage());
             }
         });
-    }}
+    }
+
+    // In MovieDataSource.java
+    public interface MovieListCallback {
+        void onSuccess(List<Movie> movies);
+
+        void onError(String errorMessage);  // Matches other callbacks
+    }
+
+    public void searchMovies(String token, String query, MovieListCallback callback) {
+        Log.d(TAG, "WE STARTED SEARCHING HURRAY");
+        apiService.getSearch("Bearer " + token, query).enqueue(new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+                Log.d(TAG, "WE STARTED SEARCHING HURRAY");
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    try {
+                        // Use your ErrorResponse class
+                        ErrorResponse error = new Gson().fromJson(
+                                response.errorBody().charStream(),
+                                ErrorResponse.class
+                        );
+                        callback.onError(error != null ?
+                                error.getError() : "Error: " + response.code());
+                    } catch (Exception e) {
+                        callback.onError("Failed to parse error response");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+}

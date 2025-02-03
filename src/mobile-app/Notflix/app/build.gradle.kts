@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.swiperefreshlayout)
     implementation(libs.exoplayer)
     implementation(libs.exoplayer.ui)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

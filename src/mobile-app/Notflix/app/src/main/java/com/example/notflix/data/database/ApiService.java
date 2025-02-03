@@ -5,6 +5,7 @@ import com.example.notflix.data.model.request.LoginRequest;
 import com.example.notflix.data.model.response.AuthResponse;
 import com.example.notflix.data.model.response.HomeMoviesResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -32,4 +33,7 @@ public interface ApiService {
 
     @GET("api/movies/{id}")
     Call<Movie> getMovieById(@Header("Authorization") String authToken, @Path("id") String movieId);
+
+    @GET("api/movies/search/{query}")
+    Call<List<Movie>> getSearch(@Header("Authorization") String authToken, @Path("query") String query);
 }
