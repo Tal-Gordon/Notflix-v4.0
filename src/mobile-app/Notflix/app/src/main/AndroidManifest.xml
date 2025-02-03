@@ -20,6 +20,9 @@
             android:name=".activities.SearchActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.MovieInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.WatchActivity"
             android:exported="false" />
         <activity

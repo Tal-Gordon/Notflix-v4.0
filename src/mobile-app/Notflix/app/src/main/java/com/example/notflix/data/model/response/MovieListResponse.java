@@ -1,4 +1,3 @@
-// MovieListResponse.java
 package com.example.notflix.data.model.response;
 
 import com.example.notflix.Entities.Movie;

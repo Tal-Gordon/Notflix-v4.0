@@ -111,7 +111,7 @@ public class HomeActivity extends AppCompatActivity implements MovieAdapter.OnMo
     public void onMovieClick(Movie movie) {
         String token = getIntent().getStringExtra("TOKEN");
         if (token != null) {
-            Intent intent = new Intent(this, WatchActivity.class);
+            Intent intent = new Intent(this, MovieInfoActivity.class);
             intent.putExtra("TOKEN", token);
             intent.putExtra("MOVIE_ID", movie.getMovieId());
             startActivity(intent);

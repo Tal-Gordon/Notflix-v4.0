@@ -134,7 +134,7 @@ public class SearchActivity extends AppCompatActivity implements MovieAdapter.On
 
     @Override
     public void onMovieClick(Movie movie) {
-        Intent intent = new Intent(this, WatchActivity.class);
+        Intent intent = new Intent(this, MovieInfoActivity.class);
         intent.putExtra("TOKEN", token);
         intent.putExtra("MOVIE_ID", movie.getMovieId());
         startActivity(intent);

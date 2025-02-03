@@ -163,16 +163,40 @@ public class MovieDataSource {
     }
 
     public void searchMovies(String token, String query, MovieListCallback callback) {
-        Log.d(TAG, "WE STARTED SEARCHING HURRAY");
         apiService.getSearch("Bearer " + token, query).enqueue(new Callback<List<Movie>>() {
             @Override
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
-                Log.d(TAG, "WE STARTED SEARCHING HURRAY");
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
                     try {
-                        // Use your ErrorResponse class
+                        ErrorResponse error = new Gson().fromJson(
+                                response.errorBody().charStream(),
+                                ErrorResponse.class
+                        );
+                        callback.onError(error != null ?
+                                error.getError() : "Error: " + response.code());
+                    } catch (Exception e) {
+                        callback.onError("Failed to parse error response");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    public void getRecommendations(String token, String movieId, MovieListCallback callback) {
+        apiService.getRecommendations("Bearer " + token, movieId).enqueue(new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    try {
                         ErrorResponse error = new Gson().fromJson(
                                 response.errorBody().charStream(),
                                 ErrorResponse.class

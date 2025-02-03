@@ -34,6 +34,9 @@ public interface ApiService {
     @GET("api/movies/{id}")
     Call<Movie> getMovieById(@Header("Authorization") String authToken, @Path("id") String movieId);
 
+    @GET("api/movies/{id}/recommend")
+    Call<List<Movie>> getRecommendations(@Header("Authorization") String token, @Path("id") String movieId);
+
     @GET("api/movies/search/{query}")
     Call<List<Movie>> getSearch(@Header("Authorization") String authToken, @Path("query") String query);
 }

@@ -36,6 +36,11 @@ public class MovieRepository {
         movieDataSource = new MovieDataSource();
     }
 
+    public interface MovieListCallback {
+        void onSuccess(List<Movie> movies);
+        void onError(String errorMessage);
+    }
+
     public LiveData<Boolean> getIsDataLoading() {
         return isDataLoading;
     }
@@ -127,7 +132,6 @@ public class MovieRepository {
     }
 
     public void searchMovies(String token, String query, MovieListCallback callback) {
-        Log.d(TAG, "WE STARTED SEARCHING HURRAY");
         isSearching.postValue(true);
 
         movieDataSource.searchMovies(token, query, new MovieDataSource.MovieListCallback() {
@@ -173,9 +177,39 @@ public class MovieRepository {
         });
     }
 
-    public interface MovieListCallback {
-        void onSuccess(List<Movie> movies);
-        void onError(String errorMessage);
+    public void getRecommendations(String token, String movieId, MovieListCallback callback) {
+        movieDataSource.getRecommendations(token, movieId, new MovieDataSource.MovieListCallback() {
+            @Override
+            public void onSuccess(List<Movie> movies) {
+                AppDatabase.executor.execute(() -> {
+                    try {
+                        // Filter out movies that already exist in Room
+                        List<Movie> existingMovies = movieDao.getAllMoviesSync();
+                        Set<String> existingMovieIds = existingMovies.stream()
+                                .map(Movie::getMovieId)
+                                .collect(Collectors.toSet());
+
+                        List<Movie> newMovies = movies.stream()
+                                .filter(movie -> !existingMovieIds.contains(movie.getMovieId()))
+                                .collect(Collectors.toList());
+
+                        // Save new movies to Room
+                        if (!newMovies.isEmpty()) {
+                            movieDao.insertMovies(newMovies);
+                        }
+
+                        callback.onSuccess(movies);
+                    } catch (Exception e) {
+                        callback.onError("Error processing recommendation results: " + e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                callback.onError(errorMessage);
+            }
+        });
     }
     public LiveData<List<Movie>> getAllMovies() {
         return movieDao.getAllMovies();
