@@ -43,6 +43,19 @@ services:
     networks:
       - notflix-network
 
+  react:
+    build: ./src/react-frontend
+    container_name: react-app
+    depends_on:
+      - node-app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    networks:
+      - notflix-network
+    restart: always
+
 networks:
   notflix-network: # Shared network for all services
     driver: bridge
