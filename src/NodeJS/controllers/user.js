@@ -57,7 +57,7 @@ const createUser = async (req, res) => {
       });
     } else {
       const token = jwt.sign(
-        { userId: result.user._id, isAdmin: result.user.isAdmin },
+        { userId: result.user._id, isAdmin: result.user.isAdmin, picture: result.user.picture },
         process.env.JWT_SECRET
       );
 

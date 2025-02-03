@@ -45,7 +45,7 @@ const VideoPlayer = () => {
                     throw new Error(`Invalid movie ID format: ${id}`);
                 }
 
-                const response = await fetch(`/movies/${id}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/movies/${id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,7 +80,8 @@ const VideoPlayer = () => {
                 ]}
                 rightButtons={[
                     BUTTON_TYPES.LIGHTDARK,
-                    BUTTON_TYPES.LOGOUT
+                    BUTTON_TYPES.LOGOUT,
+                    BUTTON_TYPES.ACCOUNT
                 ]}
             />
             <div className={`video-player-container ${darkMode ? 'dark-mode' : ''}`}>
@@ -103,7 +104,7 @@ const VideoPlayer = () => {
                                     className="browser-video-player"
                                     onLoadedMetadata={handleLoadedMetadata}
                                 >
-                                    <source src={`http://localhost:3001/${movie.video}` || sampleVideo} type="video/mp4" />
+                                    <source src={`${process.env.REACT_APP_MEDIA_URL}/${movie.video}` || sampleVideo} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             </div>

@@ -37,7 +37,7 @@ function HomeAuth() {
                     throw new Error('No authentication token found. Please log in again.');
                 }
 
-                const response = await fetch('/movies', {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/movies`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ function HomeAuth() {
 
         setIsSearching(true);
         try {
-            const response = await fetch(`/movies/search/${query}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/movies/search/${query}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -188,7 +188,7 @@ function HomeAuth() {
                                                     className="movie-item" 
                                                     onClick={() => setSelectedMovie(movie)}
                                                     style={{
-                                                        backgroundImage: `url(http://localhost:3001/${movie.picture})`,
+                                                        backgroundImage: `url(${process.env.REACT_APP_MEDIA_URL}/${movie.picture})`,
                                                         backgroundSize: 'cover',
                                                         backgroundPosition: 'center'
                                                     }}
@@ -229,7 +229,7 @@ function HomeAuth() {
                                         className="featured-video"
                                     >
                                         <source 
-                                            src={`http://localhost:3001/${featuredMovie.video}`} 
+                                            src={`${process.env.REACT_APP_MEDIA_URL}/${featuredMovie.video}`} 
                                             type="video/mp4" 
                                         />
                                         Your browser does not support the video tag.
@@ -271,7 +271,7 @@ function HomeAuth() {
                                                             className="movie-item" 
                                                             onClick={() => setSelectedMovie(movie)}
                                                             style={{
-                                                                backgroundImage: `url(http://localhost:3001/${movie.picture})`,
+                                                                backgroundImage: `url(${process.env.REACT_APP_MEDIA_URL}/${movie.picture})`,
                                                                 backgroundSize: 'cover',
                                                                 backgroundPosition: 'center'
                                                             }}>
@@ -315,7 +315,7 @@ function HomeAuth() {
                                                     className="watched-item" 
                                                     onClick={() => setSelectedMovie(movie)}
                                                     style={{
-                                                        backgroundImage: `url(http://localhost:3001/${movie.picture})`,
+                                                        backgroundImage: `url(${process.env.REACT_APP_MEDIA_URL}/${movie.picture})`,
                                                         backgroundSize: 'cover',
                                                         backgroundPosition: 'center'
                                                     }}

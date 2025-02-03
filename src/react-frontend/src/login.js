@@ -16,7 +16,7 @@ function Login() {
             body: JSON.stringify({ username, password })
         };
         try {
-            const authResponse = await fetch('/tokens', authRequestOptions);
+            const authResponse = await fetch(`${process.env.REACT_APP_API_URL}/tokens`, authRequestOptions);
             if (authResponse.ok) {
                 const data = await authResponse.json();
                 const token = data.token;

@@ -63,7 +63,7 @@ const createUser = async (username, password, name, surname, picture, watchedMov
         {
             const uploadDir = 'Media/Profiles/';
             const fileExt = path.extname(picture.originalname);
-            const fileName = `${user._id}${fileExt}`;
+            const fileName = `${user.id}${fileExt}`;
             const filePath = path.join(uploadDir, fileName).replace(/\\/g, '/');
 
             await fs.writeFile(filePath, picture.buffer);
