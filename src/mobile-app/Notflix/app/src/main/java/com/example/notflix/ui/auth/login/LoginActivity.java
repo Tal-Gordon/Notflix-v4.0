@@ -19,12 +19,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.notflix.MainActivity;
-import com.example.notflix.R;
-import com.example.notflix.data.AppDatabase;
 import com.example.notflix.data.UserRepository;
 import com.example.notflix.databinding.ActivityLoginBinding;
 import com.example.notflix.ui.auth.LoggedInUserView;
+import com.example.notflix.ui.home.HomeActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 public class LoginActivity extends AppCompatActivity {
@@ -133,12 +131,12 @@ public class LoginActivity extends AppCompatActivity {
         userRepository.getLoggedInUser().observe(this, user -> {
             if (user != null && user.isLoggedIn()) {
                 Log.d("AutoLogin", "yes");
-//              Intent intent = new Intent(this, HomeActivity.class);
-//              intent.putExtra("USERNAME", user.getUsername());
-//              intent.putExtra("TOKEN", user.getToken());
+              Intent intent = new Intent(this, HomeActivity.class);
+              intent.putExtra("USERNAME", user.getUsername());
+              intent.putExtra("TOKEN", user.getToken());
 
-//              startActivity(intent);
-//              finish();
+              startActivity(intent);
+              finish();
             }
         });
     }
@@ -148,12 +146,12 @@ public class LoginActivity extends AppCompatActivity {
             snackbar.dismiss();
         }
 
-//        Intent intent = new Intent(this, HomeActivity.class);
-//        intent.putExtra("USERNAME", model.getUsername());
-//        intent.putExtra("TOKEN", model.getToken());
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("USERNAME", model.getUsername());
+        intent.putExtra("TOKEN", model.getToken());
 
-//         startActivity(intent);
-//         finish();
+         startActivity(intent);
+         finish();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {

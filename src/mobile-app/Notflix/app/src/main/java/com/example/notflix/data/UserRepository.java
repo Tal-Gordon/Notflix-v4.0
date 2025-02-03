@@ -1,13 +1,16 @@
 package com.example.notflix.data;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.example.notflix.data.model.LoggedInUser;
-import com.example.notflix.data.model.UserEntity;
+import com.example.notflix.data.model.User;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The {@code UserRepository} class acts as the single source of truth for handling user authentication
@@ -39,11 +42,11 @@ public class UserRepository {
                 // Save the user to Room
                 if (result instanceof Result.Success) {
                     LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
-                    UserEntity userEntity = new UserEntity(
+                    User user = new User(
                             loggedInUser.getToken(),
                             loggedInUser.getUsername()
                     );
-                    saveUser(userEntity);
+                    saveUser(user);
                     setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
@@ -63,11 +66,12 @@ public class UserRepository {
                 // Save the user to Room
                 if (result instanceof Result.Success) {
                     LoggedInUser loggedInUser = ((Result.Success<LoggedInUser>) result).getData();
-                    UserEntity userEntity = new UserEntity(
+                    User user = new User(
                             loggedInUser.getToken(),
                             loggedInUser.getUsername()
                     );
-                    saveUser(userEntity);
+                    saveUser(user);
+                    setLoggedInUser(loggedInUser);
                     setLoggedInUser(loggedInUser);
                 }
                 callback.onSuccess(result);
@@ -81,24 +85,41 @@ public class UserRepository {
     }
 
     public void logout() {
-        UserEntity user = getLoggedInUser().getValue();
-
-        if (user != null) {
-            user.invalidateToken();
-            userDao.updateUser(user);
-        }
-        setLoggedInUser(null);
+        AppDatabase.executor.execute(() -> {
+            try {
+                userDao.fullLogout();
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    setLoggedInUser(null);
+                    Log.d("Logout", "Successfully logged out");
+                });
+            } catch (Exception e) {
+                Log.e("Logout", "Error during logout", e);
+            }
+        });
     }
 
-    public LiveData<UserEntity> getLoggedInUser() {
+    public LiveData<User> getLoggedInUser() {
         return userDao.getLoggedInUser();
     }
 
-    public void saveUser(UserEntity user) {
+    public void saveUser(User user) {
         AppDatabase.executor.execute(() -> userDao.insertUser(user));
     }
 
     private void setLoggedInUser(LoggedInUser user) {
         this.user = user;
     }
+
+    public String getToken() {
+        try {
+            return AppDatabase.executor.submit(() -> {
+                User user = userDao.getLoggedInUserSync();
+                return user != null ? user.getToken() : null;
+            }).get(); // Blocks until result is available
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Log the exception for debugging
+            return null; // Return null if an error occurs
+        }
+    }
+
 }

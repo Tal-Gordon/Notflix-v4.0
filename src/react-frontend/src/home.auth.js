@@ -18,6 +18,7 @@ function HomeAuth() {
     });
     
     const token = sessionStorage.getItem('token');
+    
 
     useEffect(() => {
             const handleDarkModeChange = (event) => {

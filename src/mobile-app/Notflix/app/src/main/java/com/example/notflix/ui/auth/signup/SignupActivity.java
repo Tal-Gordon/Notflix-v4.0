@@ -1,34 +1,24 @@
 package com.example.notflix.ui.auth.signup;
 
 import android.app.Activity;
-
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.notflix.MainActivity;
-import com.example.notflix.R;
-import com.example.notflix.data.AppDatabase;
-import com.example.notflix.ui.auth.AuthResult;
-import com.example.notflix.ui.auth.LoggedInUserView;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.notflix.databinding.ActivitySignupBinding;
+import com.example.notflix.ui.auth.LoggedInUserView;
+import com.example.notflix.ui.home.HomeActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 public class SignupActivity extends AppCompatActivity {
@@ -139,12 +129,12 @@ public class SignupActivity extends AppCompatActivity {
             snackbar.dismiss();
         }
 
-//        Intent intent = new Intent(this, HomeActivity.class);
-//        intent.putExtra("USERNAME", model.getUsername());
-//        intent.putExtra("TOKEN", model.getToken());
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("USERNAME", model.getUsername());
+        intent.putExtra("TOKEN", model.getToken());
 
-//         startActivity(intent);
-//         finish();
+         startActivity(intent);
+         finish();
     }
 
     private void showSignupFailed(@StringRes Integer errorString) {
