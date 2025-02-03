@@ -2,17 +2,19 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/category_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceHeadline6"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorOnSurface"
         android:layout_marginBottom="8dp"
         tools:text="Category Title" />
 
@@ -23,5 +25,4 @@
         android:clipToPadding="false"
         android:paddingStart="4dp"
         android:paddingEnd="4dp" />
-
 </LinearLayout>

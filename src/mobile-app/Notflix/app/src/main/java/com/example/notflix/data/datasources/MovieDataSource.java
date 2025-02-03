@@ -195,6 +195,8 @@ public class MovieDataSource {
             public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
+                } else if (response.code() == 404) {
+                    callback.onSuccess(new ArrayList<>());
                 } else {
                     try {
                         ErrorResponse error = new Gson().fromJson(

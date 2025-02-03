@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary and Secondary remain the same -->
+    <color name="primary">#4100C3</color>
+    <color name="primaryVariant">#32009B</color>
+    <color name="secondary">#03DAC6</color>
+    <color name="secondaryVariant">#00B3A0</color>
+
+    <!-- Dark Background and Surface -->
+    <color name="background">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+
+    <!-- Error Color for Dark Mode -->
+    <color name="error">#CF6679</color>
+
+    <!-- On-colors for Dark Mode -->
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#000000</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="onError">#000000</color>
+
+    <!-- Additional Colors -->
+    <color name="snackbar_background">#323232</color>
+    <color name="gray">#AAAAAA</color>
+</resources>

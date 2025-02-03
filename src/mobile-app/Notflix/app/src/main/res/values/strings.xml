@@ -29,4 +29,5 @@
     <string name="search">Search</string>
     <string name="search_movies">Search</string>
     <string name="back_button_desc">Back</string>
+    <string name="no_results_found">no results found</string>
 </resources>

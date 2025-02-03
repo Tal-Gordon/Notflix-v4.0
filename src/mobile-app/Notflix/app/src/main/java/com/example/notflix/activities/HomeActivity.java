@@ -101,10 +101,7 @@ public class HomeActivity extends AppCompatActivity implements MovieAdapter.OnMo
     }
 
     private void navigateToLogin() {
-        // Replace with your login activity navigation
-        finish(); // Close current activity
-        // Add any login navigation logic here
-        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override

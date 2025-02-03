@@ -14,14 +14,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.notflix.Entities.Category;
 import com.example.notflix.Entities.Movie;
 import com.example.notflix.R;
-import com.example.notflix.activities.WatchActivity;
 import com.example.notflix.adapters.MovieAdapter;
 import com.example.notflix.adapters.MovieRowAdapter;
-import com.example.notflix.databinding.ActivityMovieInfoBinding;
 import com.example.notflix.data.repositories.CategoryRepository;
+import com.example.notflix.databinding.ActivityMovieInfoBinding;
 import com.example.notflix.viewmodels.MovieInfoViewModel;
 
 import java.util.ArrayList;
@@ -54,7 +52,7 @@ public class MovieInfoActivity extends AppCompatActivity implements MovieAdapter
         progressBar = binding.progressBar;
         RecyclerView recyclerView = binding.recyclerView;
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(layoutManager);
 
         movieAdapter = new MovieAdapter(new ArrayList<>(), this);
@@ -94,9 +92,9 @@ public class MovieInfoActivity extends AppCompatActivity implements MovieAdapter
         });
 
         movieInfoViewModel.getRecommendationsResults().observe(this, recommendedMovies -> {
-            if (recommendedMovies != null && !recommendedMovies.isEmpty()) {
-                movieAdapter.updateMovies(recommendedMovies);
-            }
+            List<Movie> safeList = recommendedMovies != null ? recommendedMovies : new ArrayList<>();
+
+            movieAdapter.updateMovies(safeList);
         });
     }
 

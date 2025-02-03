@@ -1,7 +1,6 @@
 package com.example.notflix.viewmodels;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -47,10 +46,6 @@ public class MovieInfoViewModel extends AndroidViewModel {
     }
 
     public void getRecommendations(String token, String movieId) {
-        if (movieId == null || movieId.isEmpty()) {
-            return;
-        }
-
         movieRepository.getRecommendations(token, movieId, new MovieRepository.MovieListCallback() {
             @Override
             public void onSuccess(List<Movie> movies) {
@@ -59,7 +54,7 @@ public class MovieInfoViewModel extends AndroidViewModel {
 
             @Override
             public void onError(String errorMessage) {
-                error.postValue(errorMessage);
+                recommendationsResults.postValue(new ArrayList<>());
             }
         });
     }
