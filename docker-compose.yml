@@ -20,12 +20,12 @@ services:
       - mongo
       - cpp-server # Ensure the C++ server starts first
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - NODE_ENV=local
       - CONNECTION_STRING=mongodb://mongo:27017/Notflix
       - CPP_SERVER=cpp-app:12345
-      - PORT=3000
+      - PORT=3001
     networks:
       - notflix-network
     volumes:
