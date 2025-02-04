@@ -11,7 +11,7 @@
         <item name="android:windowBackground">@color/background</item>
         <!-- Custom attributes used in layouts -->
         <item name="colorBackground">@color/background</item>
-        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurface">@color/surface</item>
         <item name="colorError">@color/error</item>
 
         <!-- On-colors for text and icons -->
@@ -21,7 +21,7 @@
         <item name="colorOnSurface">@color/onSurface</item>
         <item name="colorOnError">@color/onError</item>
 
-        <!-- Optional: status bar -->
+        <!-- status bar -->
         <item name="android:statusBarColor">@color/background</item>
     </style>
 </resources>

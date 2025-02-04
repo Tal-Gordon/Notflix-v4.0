@@ -10,7 +10,7 @@
 
     <!-- Background and Surface -->
     <color name="background">#FFFFFF</color>
-    <color name="surface_light">#F5F5F5</color>
+    <color name="surface">#F5F5F5</color>
 
     <!-- Error Color -->
     <color name="error">#B00020</color>
