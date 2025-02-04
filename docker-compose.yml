@@ -40,12 +40,13 @@ services:
       - mongo-data:/data/db
     networks:
       - notflix-network
-    environment:
-      - REACT_APP_API_URL=http://node-app:3001/api
-      - REACT_APP_MEDIA_URL=http://node-app:3001
 
   react:
-    build: ./src/react-frontend
+    build:
+      context: ./src/react-frontend
+      args:
+      - REACT_APP_API_URL=http://localhost:3001/api
+      - REACT_APP_MEDIA_URL=http://localhost:3001
     container_name: react-app
     depends_on:
       - node-app
@@ -53,6 +54,8 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
+      - REACT_APP_API_URL=http://localhost:3001/api
+      - REACT_APP_MEDIA_URL=http://localhost:3001
     networks:
       - notflix-network
     restart: always
